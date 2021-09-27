@@ -171,7 +171,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/09/27/%E5%9C%B0%E5%9B%BE%E5%BC%80%E5%8F%91/">地图开发</a>
+      <a class="article-title" href="/2021/09/27/%E5%9C%B0%E5%9B%BE%E5%BC%80%E5%8F%91/">地图app的试验</a>
     </h1>
   
 
@@ -184,7 +184,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>根据&lt;第一行代码&gt;第二版中11章,进行复现,有以下几个需要注意的现象</p>
+<p><strong>1. 如果只显示定位方式由网络获取,可能有两种情况:</strong></p>
+<p>第一是你的manifest文件中<meta-data> 配置定位sdk的apikey有错误或者没有添加定位sdk的service组件</p>
+<p>第二是因为你在室内,**室内是无法获取GPS信号,**可以走到室外进行尝试</p>
+<p><strong>2.定位中出现4.9E-324</strong></p>
+<p>这其实因为在sdk的apikey没有配置好的原因,导致出现这个数字</p>
+
       
 
       

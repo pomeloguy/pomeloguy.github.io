@@ -164,6 +164,169 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-graphhopper系列2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">graphhopper系列2</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/" class="archive-article-date">
+  	<time datetime="2021-10-23T06:21:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-graphhopper系列1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/">graphhopper系列1</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/" class="archive-article-date">
+  	<time datetime="2021-10-22T06:29:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="快速启动项目"><a href="#快速启动项目" class="headerlink" title="快速启动项目"></a>快速启动项目</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/graphhopper/graphhopper.git</span><br><span class="line"><span class="built_in">cd</span> graphhopper</span><br><span class="line">git checkout master <span class="comment"># if you prefer a less moving branch you can use e.g. 3.x</span></span><br><span class="line">./graphhopper.sh -a web -i europe_germany_berlin.pbf</span><br></pre></td></tr></table></figure>
+
+<p>最后一个指令是运行这个项目,在berlin地图的基础上,当然也可以选择其他地图如</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./graphhopper.sh -a web -i europe_france.pbf -o france-gh</span><br><span class="line">./graphhopper.sh -a web -i north-america_us_new-york.pbf -o new-york-gh</span><br></pre></td></tr></table></figure>
+
+<p>以上需要在git bash中执行</p>
+<h2 id="开发环境搭建"><a href="#开发环境搭建" class="headerlink" title="开发环境搭建"></a>开发环境搭建</h2><p>用idea打开项目文件夹,备好maven,jdk1.8,pom.xml可能会出现plugin依赖包找不到,将plugin依赖包暂时加入dependency中,等待本地有包后,plugin就能识别出来了</p>
+<p>一切完毕后,找到<code>Edit Configurations...</code>添加Application,命名为Web Server,完善以下的参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Main class: com.graphhopper.http.GraphHopperApplication</span><br><span class="line">VM options: -Xms1g -Xmx1g -server -Ddw.graphhopper.datareader.file=[your-area].osm.pbf -Ddw.graphhopper.graph.location=./[your-area].osm-gh</span><br><span class="line">Program arguments: server config.yml</span><br></pre></td></tr></table></figure>
+
+<p><img src="D:\blog\source_posts\graphhopper系列1.assets\image-20211022144424595.png" alt="image-20211022144424595"></p>
+<p>完善后,点击运行,我们就可访问8989端口使用了</p>
+<h3 id="VM-option参数解读"><a href="#VM-option参数解读" class="headerlink" title="VM option参数解读"></a>VM option参数解读</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms参数与-Xmx参数分别是设置JVM的堆内存的初始大小和最大大小</span><br></pre></td></tr></table></figure>
+
+<p>-Xms1g:JVM初始堆内存为1g</p>
+<p>-Xmx1g:JVM最大堆内存为1g</p>
+<p>-server 使用server模式的jvm</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-对地图测绘的调研" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -190,7 +353,16 @@
 <p>**一些疑问:**一组GCJ-02的坐标点对应了一组的WGS-84坐标点,我们能否通过一些方法找到这个保密算法的解析式?如果能找到,那么这个保密算法的意义又在哪里呢?</p>
 <p><strong>解惑:<strong>目前是无法精确还原这个保密算法的细节,但是可以通过数学算法进行WGS-84到GCJ-02进行转换并保留较高的精度,换种方法来这个保密算法名存实亡.国测局称该保密算法是</strong>地形图非线性保密处理技术</strong>,该算法的出发点是对地形图保密并解决社会化应用的难题,但是由于两种坐标系的存在的误差,也给出行带来了不便</p>
 <p>所以为啥高德地图,百度地图都能精准定位你的位置,那是因为他们自己也用着WGS-84到GCJ-02的转化算法,所以才能为用户提供高精度的地图服务</p>
-<h2 id="坐标系的转化算法"><a href="#坐标系的转化算法" class="headerlink" title="坐标系的转化算法"></a>坐标系的转化算法</h2><p>高德地图的坐标系是GCJ-02,而百度地图的坐标系是自己研发的,在GCJ-02上又加了一层加密算法</p>
+<h2 id="坐标系的转化算法"><a href="#坐标系的转化算法" class="headerlink" title="坐标系的转化算法"></a>坐标系的转化算法</h2><p><strong>地形图非线性保密处理技术</strong>:把卫星地图和官方的GCJ-02地图进行重合可以发现，两者的偏差是非线性的（无法通过平移和缩放把一个重合到另一个上去）。因此，有理由认为，GCJ-02地图是经过某种偏移的。（在卫星地图上一条直线在GCJ-02地图上将不是直线）</p>
+<p><strong>然而地图被偏移怎么可能不被察觉呢?</strong>:从现有资料看，偏移发生在大尺度上。即日常生活使用误差并不会很大</p>
+<p>高德地图的坐标系是GCJ-02,而百度地图的坐标系是自己研发的,在GCJ-02上又加了一层加密算法</p>
+<p>以下是各种转换算法的链接</p>
+<p><a target="_blank" rel="noopener" href="https://blog.genglinxiao.com/%e4%b8%ad%e5%9b%bd%e5%9c%b0%e5%9b%be%e5%9d%90%e6%a0%87%e5%81%8f%e7%a7%bb%e7%ae%97%e6%b3%95%e7%a0%b4%e8%a7%a3%e5%b0%8f%e5%8f%b2/">转换算法破解的历史</a></p>
+<p><a target="_blank" rel="noopener" href="https://wuyongzheng.wordpress.com/2010/01/22/china-map-deviation-as-a-regression-problem/">Wu Yongzheng</a></p>
+<p><a target="_blank" rel="noopener" href="http://wuyongzheng.github.io/china-map-deviation/paper.html">Wu Yongzheng关于回归求解的论文</a></p>
+<p><a target="_blank" rel="noopener" href="https://archive.codeplex.com/?p=on4wp7#353936">coolypf提出的解决方案</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/googollee/eviltransform">转换算法</a></p>
+<p>给自己留个任务:重新搞清楚回归算法,自己推导出一套转化算法</p>
 
       
 
@@ -981,6 +1153,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">android,地图</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">graphhopper</a>
               </li>
             
             <div class="clearfix"></div>

@@ -256,7 +256,7 @@
 <p>一切完毕后,找到<code>Edit Configurations...</code>添加Application,命名为Web Server,完善以下的参数</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Main class: com.graphhopper.http.GraphHopperApplication</span><br><span class="line">VM options: -Xms1g -Xmx1g -server -Ddw.graphhopper.datareader.file=[your-area].osm.pbf -Ddw.graphhopper.graph.location=./[your-area].osm-gh</span><br><span class="line">Program arguments: server config.yml</span><br></pre></td></tr></table></figure>
 
-<p><img src="file://D:/blog/source/_posts/graphhopper%E7%B3%BB%E5%88%971/image-20211022144424595.png?lastModify=1634972204" alt="image-20211022144424595"></p>
+<p><img src="D:\blog\source_posts\graphhopper系列1.assets\image-20211022144424595.png"></p>
 <p>完善后,点击运行,我们就可访问8989端口使用了</p>
 <h3 id="VM-option参数解读"><a href="#VM-option参数解读" class="headerlink" title="VM option参数解读"></a>VM option参数解读</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms参数与-Xmx参数分别是设置JVM的堆内存的初始大小和最大大小</span><br></pre></td></tr></table></figure>
 

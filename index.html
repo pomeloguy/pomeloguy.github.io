@@ -1007,6 +1007,21 @@
 <p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
 <p>这样我们保存图像进该文件夹内即可</p>
 <p>点击<strong>格式-&gt;图像-&gt;设置根目录</strong>为文章文件夹即可</p>
+<h2 id="解决图片加载失败问题"><a href="#解决图片加载失败问题" class="headerlink" title="解决图片加载失败问题"></a>解决图片加载失败问题</h2><p>1.修改_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
+<p>2.下载辅助模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><strong>这个模块有bug,需进行稍稍改动,如下:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="regexp">/.*\/index\.html$/</span>.test(link)) &#123;</span><br><span class="line">      <span class="comment">// when permalink is end with index.html, for example 2019/02/20/xxtitle/index.html</span></span><br><span class="line">      <span class="comment">// image in xxtitle/ will go to xxtitle/index/</span></span><br><span class="line">      appendLink = <span class="string">&#x27;index/&#x27;</span>;</span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="comment">//var endPos = link.lastIndexOf(&#x27;.&#x27;);此处为bug</span></span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);<span class="comment">//修改后</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024225944838.png" alt="image-20211024225944838"></p>
+<p>3.markdown设置图片路径</p>
+<p>!!!  一定要使用相对路径,否则生成的html页面的图片路径会有<strong>路径重复</strong>导致加载不出来</p>
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024230008411.png" alt="image-20211024230008411"></p>
+<hr>
 <h1 id="利用yilia主题对hexo美化"><a href="#利用yilia主题对hexo美化" class="headerlink" title="利用yilia主题对hexo美化"></a>利用yilia主题对hexo美化</h1><h2 id="应用主题"><a href="#应用主题" class="headerlink" title="应用主题"></a>应用主题</h2><p><strong>1.下载主题</strong></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
 

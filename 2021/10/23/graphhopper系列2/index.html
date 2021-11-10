@@ -8,17 +8,22 @@
   <link rel="dns-prefetch" href="http://example.com">
   <title>graphhopper系列2 | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="pomeloguy的博客">
+  <meta name="description" content="项目框架graphhopper-core:核心代码,实现了导航地图编码等功能 graphhopper-web:项目的启动入口,涉及相关资源配置,注册等 graphhopper-web-bundle:项目的resource基本都在这里 graphhopper-web-api:对项目web请求的一些参数处理代码都在这里  应用的启动配置加载项目的启动入口:GraphHopperApplication.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="graphhopper系列2">
 <meta property="og:url" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="pomeloguy的博客">
+<meta property="og:description" content="项目框架graphhopper-core:核心代码,实现了导航地图编码等功能 graphhopper-web:项目的启动入口,涉及相关资源配置,注册等 graphhopper-web-bundle:项目的resource基本都在这里 graphhopper-web-api:对项目web请求的一些参数处理代码都在这里  应用的启动配置加载项目的启动入口:GraphHopperApplication.">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png">
+<meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png">
+<meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png">
 <meta property="article:published_time" content="2021-10-23T06:21:09.000Z">
-<meta property="article:modified_time" content="2021-10-23T06:21:09.867Z">
+<meta property="article:modified_time" content="2021-11-04T07:33:29.634Z">
 <meta property="article:author" content="pomeloguy">
+<meta property="article:tag" content="graphhopper">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
   
@@ -184,7 +189,109 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="项目框架"><a href="#项目框架" class="headerlink" title="项目框架"></a>项目框架</h1><p>graphhopper-core:核心代码,实现了导航地图编码等功能</p>
+<p>graphhopper-web:项目的启动入口,涉及相关资源配置,注册等</p>
+<p>graphhopper-web-bundle:项目的resource基本都在这里</p>
+<p>graphhopper-web-api:对项目web请求的一些参数处理代码都在这里</p>
+<hr>
+<h1 id="应用的启动配置加载"><a href="#应用的启动配置加载" class="headerlink" title="应用的启动配置加载"></a>应用的启动配置加载</h1><p>项目的启动入口:GraphHopperApplication.main</p>
+<p>项目的初始化:GraphHopperApplication.initialize</p>
+<p>在initialize方法中我们看到bootstrap变量执行了bootstrap.addBundle(new GraphHopperBundle());</p>
+<p>每一个bundlle,可以理解成,为了appllication的可读性,分解成小的bundle,然后添加上去即可</p>
+<p>在GraphHopperBundle()的run方法中,我们利用配置文件完成了地图核心类graphHopper类的生成,如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> GraphHopperManaged graphHopperManaged = <span class="keyword">new</span> GraphHopperManaged(configuration.getGraphHopperConfiguration());</span><br><span class="line">environment.lifecycle().manage(graphHopperManaged);</span><br><span class="line"><span class="keyword">final</span> GraphHopper graphHopper = graphHopperManaged.getGraphHopper();</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到第一行生成利用构造器new出graphHopperManaged,构造器内传入配置文件,进入该构造器中可以看到,利用了该配置文件,生成了graphHopper变量并完成初始化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">GraphHopperManaged</span><span class="params">(GraphHopperConfig configuration)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (configuration.has(<span class="string">&quot;gtfs.file&quot;</span>)) &#123;</span><br><span class="line">            graphHopper = <span class="keyword">new</span> GraphHopperGtfs(configuration);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            graphHopper = <span class="keyword">new</span> GraphHopper();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String customModelFolder = configuration.getString(<span class="string">&quot;custom_model_folder&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        List&lt;Profile&gt; newProfiles = resolveCustomModelFiles(customModelFolder, configuration.getProfiles());</span><br><span class="line">        configuration.setProfiles(newProfiles);</span><br><span class="line"></span><br><span class="line">        graphHopper.init(configuration);<span class="comment">//将配置文件加载到该类中</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了graphhopper后,我们通过graphhopper.importOrLoad()方法,启动graphhopper.load()函数,在此方法中会启动GraphHopperStorage的构造函数,在构造函数中会new不同name属性的RAMDataAccess类(porperties,nodes,edge),这代表了osm解析出来的文件原型看,如下:</p>
+<table>
+<thead>
+<tr>
+<th align="left">name</th>
+<th>type</th>
+<th>order</th>
+<th align="left">segementSize</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">properties</td>
+<td>RAM_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">32768=$2^{15}$</td>
+</tr>
+<tr>
+<td align="left">geometry</td>
+<td>RAM_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">string_index_keys</td>
+<td>RAM_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">string_index_vals</td>
+<td>RAM_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">nodes</td>
+<td>RAM_INT_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">edges</td>
+<td>RAM_INT_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">nodes_ch_car</td>
+<td>RAM_INT_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">shortcuts_car</td>
+<td>RAM_INT_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+<tr>
+<td align="left">tmp_pillar_info</td>
+<td>RAM_INT_STORE</td>
+<td>LITTLE_ENDIAN</td>
+<td align="left">1048576=$2^{20}$</td>
+</tr>
+</tbody></table>
+<p>自此graphhopper拥有了实例化的GraphHopperStorage对象,知识以上格式的数据只是个空壳,我们还未对osm文件解析进行填充,所以graphhopper’接着执行process()方法在其执行了importOSM()方法,</p>
+<p>就可以将osm文件进行处理,并获得</p>
+<p>GraphHopperStorage类实例</p>
+<p>通过此类实例我们就可以读出osm中节点或者道路信息</p>
+<h1 id="OSM文件信息的读取组织"><a href="#OSM文件信息的读取组织" class="headerlink" title="OSM文件信息的读取组织"></a>OSM文件信息的读取组织</h1><p>GraphHoperStorage中称为“node”和“edge”的”DataAccess”(存疑)对象的数据布局如下所示：</p>
+<p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png" alt="storage layout"></p>
+<p>解释:</p>
+<p>1.每一个”node row”成员有:latitude,longitude,和first edgeID(即指向的第一条边的id)</p>
+<p>2.每个”edge row”成员有:两个edgeIDs即nextA,nextB,接着 two nodeIDs nodeA and nodeB,还有一些性质如:distance和the flages,….,nodeAid总是小于nodeBid</p>
+<p>3.一个node有多条边,这被实现为链表的形式,如:node3第一条边是0-3,接着找3的边从nextB出发找到边1-3,接着从next B出发找到3-5,这时候就得从nodeA出发找3的下一条边于是到了3-7;此时没有下一条边查找中止</p>
+<p>4.尽管node4,6没有边,但是他们仍然存在,需要消耗DataAccess的空间;对于OSMReader来说去除很少几点的网络也是不会这样做的</p>
+<h2 id="从DataAccess到AbstractDataAccess"><a href="#从DataAccess到AbstractDataAccess" class="headerlink" title="从DataAccess到AbstractDataAccess"></a>从DataAccess到AbstractDataAccess</h2><p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png" alt="image-20211102205650131"></p>
+<p>从继承我们可以看到,这几个对象之间的关系</p>
+<p>DataAccess:<strong>规定了数据接口的生命周期</strong>:1)对象的创建,2)配置(如segment size),3)crate or loadExisting,4)使用和确保足够的容量空间,5)关闭</p>
+<p>AbstractDataAccess:dui</p>
+<h1 id="导航api"><a href="#导航api" class="headerlink" title="导航api"></a>导航api</h1><p>请求URL:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8989/route?point=52.596375%2C13.368988&amp;point=52.525413%2C13.458252&amp;type=json&amp;locale=zh-CN&amp;key=&amp;elevation=false&amp;profile=car</span><br></pre></td></tr></table></figure>
+
+<p>请求方法:GET</p>
+<p>传入–&gt;RoutResource.java–&gt;……–&gt;调用Router类的方法routeVia(reques,solver)),</p>
+<p>其中的参数reques ,solver内的变量基本相同</p>
+<p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png" alt="image-20211028144954442"></p>
+
       
 
       
@@ -192,7 +299,29 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -394,6 +523,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">android,地图</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">linux</a>
               </li>
             
             <div class="clearfix"></div>

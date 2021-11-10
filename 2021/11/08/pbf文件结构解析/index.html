@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Category: graphhopper | pomeloguy的博客</title>
+  <title>pbf文件结构解析 | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="pomeloguy的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="pomeloguy的博客">
-<meta property="og:url" content="http://example.com/categories/graphhopper/index.html">
+  <meta name="description" content="pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据): 12345678910&lt;int&gt;&#x2F;&#x2F;第一个int型数据描述了head的的字节码长度&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码&lt;rawblob&gt;    &lt;rawHeaderBlock&gt;&lt;rawblob&gt;&lt;int&amp;g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pbf文件结构解析">
+<meta property="og:url" content="http://example.com/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="pomeloguy的博客">
+<meta property="og:description" content="pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据): 12345678910&lt;int&gt;&#x2F;&#x2F;第一个int型数据描述了head的的字节码长度&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码&lt;rawblob&gt;    &lt;rawHeaderBlock&gt;&lt;rawblob&gt;&lt;int&amp;g">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-08T08:14:35.000Z">
+<meta property="article:modified_time" content="2021-11-08T13:47:45.702Z">
 <meta property="article:author" content="pomeloguy">
+<meta property="article:tag" content="graphhopper">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
@@ -162,36 +165,59 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-pbf文件结构解析" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      pbf文件结构解析
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
+
+        
+        <a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
   	<time datetime="2021-11-08T08:14:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-08</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">pbf文件结构解析</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">int</span>&gt;<span class="comment">//第一个int型数据描述了head的的字节码长度</span></span><br><span class="line">&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawHeaderBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">&lt;<span class="keyword">int</span>&gt;</span><br><span class="line">&lt;rawblobHeader&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawPrimitiveBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
+<p>读文件时,第一个int型数据描述了head的的字节码长度</p>
+<p>当我们读出这么长的字节数组rawblobHeader后,需要进行转化成可以解读的blobHeader类</p>
+<p>blobHeader类,会存着Data的size(),因此我们需要接着向后面读size()大小的字节码得到rawblob</p>
+<p>同时blobHeader类中的Type属性会告知刚刚读的Data是个什么类型的用途,我们也可以解码该rawblobdata解码成blob类</p>
+<p>有两种rawblob,一种是揭示osmHeader数据信息的,一种是揭示osmdata数据信息的,他们的区分就是靠rawblobHeader的type信息</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>在PbfDecoder中我们设置了变量Queue<PbfBlobResult> blobResults,存了PbfBlobResult类,在这个类里设置变量 List<ReaderElement> entities.所以在处理过程中,对于每个blob解析出的多个ReaderElement存在PbfBlobResult类,再将多个这个对象存入队列中</ReaderElement></PbfBlobResult></p>
+<h2 id="对blobHeader的解析"><a href="#对blobHeader的解析" class="headerlink" title="对blobHeader的解析"></a>对blobHeader的解析</h2><p>把字节码rawblob转化为HeaderBlock类</p>
+<p>我们只读这个类的<strong>时间戳信息</strong>,并存入OSMFileHeader对象中,这个类是REaderElement的子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmHeader</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.HeaderBlock header = Osmformat.HeaderBlock.parseFrom(data);</span><br><span class="line">		.....</span><br><span class="line">            这里省略的是看pbf文件和不合规的代码</span><br><span class="line">        .....</span><br><span class="line">        OSMFileHeader fileheader = <span class="keyword">new</span> OSMFileHeader();</span><br><span class="line">        <span class="keyword">long</span> milliSecondDate = header.getOsmosisReplicationTimestamp();</span><br><span class="line">        fileheader.setTag(<span class="string">&quot;timestamp&quot;</span>, Helper.createFormatter().format(<span class="keyword">new</span> Date(milliSecondDate * <span class="number">1000</span>)));</span><br><span class="line">        decodedEntities.add(fileheader);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对PrimitiveBlock的解析"><a href="#对PrimitiveBlock的解析" class="headerlink" title="对PrimitiveBlock的解析"></a>对PrimitiveBlock的解析</h2><p>我们对从PrimitiveBlock数据分为两个部分,第一个部分是存着一些偏移量,第二个部分是PrimitiveGroup类对象list</p>
+<p>为了获取偏移量部分,我们构造了一个类PbfFieldDecoder如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfFieldDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">double</span> COORDINATE_SCALING_FACTOR = <span class="number">0.000000001</span>;</span><br><span class="line">    <span class="keyword">private</span> String[] strings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> coordGranularity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLatitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLongitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> dateGranularity;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> primitiveBlock The primitive block containing the fields to be decoded.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfFieldDecoder</span><span class="params">(Osmformat.PrimitiveBlock primitiveBlock)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.coordGranularity = primitiveBlock.getGranularity();</span><br><span class="line">        <span class="keyword">this</span>.coordLatitudeOffset = primitiveBlock.getLatOffset();</span><br><span class="line">        <span class="keyword">this</span>.coordLongitudeOffset = primitiveBlock.getLonOffset();</span><br><span class="line">        <span class="keyword">this</span>.dateGranularity = primitiveBlock.getDateGranularity();</span><br><span class="line"></span><br><span class="line">        Osmformat.StringTable stringTable = primitiveBlock.getStringtable();</span><br><span class="line">        strings = <span class="keyword">new</span> String[stringTable.getSCount()];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strings.length; i++) &#123;</span><br><span class="line">            strings[i] = stringTable.getS(i).toStringUtf8();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在初始化对象的时候,我们通过primitiveblock获取block中的5个变量,分别是坐标和日期粒度,经度纬度偏移,字符串数组变量</p>
+<p>接着我们遍历列表,取出PrimitiveGroup类,对之处理获得node,way等数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmPrimitives</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.PrimitiveBlock block = Osmformat.PrimitiveBlock.parseFrom(data);</span><br><span class="line">        PbfFieldDecoder fieldDecoder = <span class="keyword">new</span> PbfFieldDecoder(block);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Osmformat.PrimitiveGroup primitiveGroup : block.getPrimitivegroupList()) &#123;</span><br><span class="line">            processNodes(primitiveGroup.getDense(), fieldDecoder);</span><br><span class="line">            processNodes(primitiveGroup.getNodesList(), fieldDecoder);</span><br><span class="line">            processWays(primitiveGroup.getWaysList(), fieldDecoder);</span><br><span class="line">            processRelations(primitiveGroup.getRelationsList(), fieldDecoder);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>for循环中的四个方法为我们读出了所有的node,way,relation数据</p>
+<p>ReaderNode有两个变量lat,lon,还有<code>Map&lt;String, Object&gt; properties</code>变量存着可能的属性键值对</p>
+<p>…</p>
+<p>所以先读出头</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -203,7 +229,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -216,115 +242,104 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/" class="archive-article-date">
-  	<time datetime="2021-10-23T06:21:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-23</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">从graphhopper学多线程编程模式</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">graphhopper系列2</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/" class="archive-article-date">
-  	<time datetime="2021-10-22T06:29:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/">graphhopper系列1</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -347,10 +362,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
 		root: "/",

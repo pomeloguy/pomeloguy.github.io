@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Category: graphhopper | pomeloguy的博客</title>
+  <title>从graphhopper学多线程编程模式 | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="pomeloguy的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="pomeloguy的博客">
-<meta property="og:url" content="http://example.com/categories/graphhopper/index.html">
+  <meta name="description" content="前提:最近在学graphhopper,看源码的看到有关多线程的部分,所以在这里做一下笔记 多线程基础线程的创建和使用做个简单的比喻：进程&#x3D;火车，线程&#x3D;车厢    比喻细节见此 Java语言的JVM允许程序运行多个线程，它通过java.lang.Thread 类来体现。 1.每个线程都是通过某个特定Thread对象的run()方法来完成操作的，经常 把run()方法的主体称为线程体 2.线程的启动是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从graphhopper学多线程编程模式">
+<meta property="og:url" content="http://example.com/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="pomeloguy的博客">
+<meta property="og:description" content="前提:最近在学graphhopper,看源码的看到有关多线程的部分,所以在这里做一下笔记 多线程基础线程的创建和使用做个简单的比喻：进程&#x3D;火车，线程&#x3D;车厢    比喻细节见此 Java语言的JVM允许程序运行多个线程，它通过java.lang.Thread 类来体现。 1.每个线程都是通过某个特定Thread对象的run()方法来完成操作的，经常 把run()方法的主体称为线程体 2.线程的启动是">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-04T12:18:52.000Z">
+<meta property="article:modified_time" content="2021-11-10T09:08:29.256Z">
 <meta property="article:author" content="pomeloguy">
+<meta property="article:tag" content="graphhopper">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
@@ -162,36 +165,172 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-从graphhopper学多线程编程模式" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      从graphhopper学多线程编程模式
+    </h1>
+  
+
+        
+        <a href="/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
+  	<time datetime="2021-11-04T12:18:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-04</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前提:最近在学graphhopper,看源码的看到有关多线程的部分,所以在这里做一下笔记</p>
+<h1 id="多线程基础"><a href="#多线程基础" class="headerlink" title="多线程基础"></a>多线程基础</h1><h2 id="线程的创建和使用"><a href="#线程的创建和使用" class="headerlink" title="线程的创建和使用"></a>线程的创建和使用</h2><p>做个简单的比喻：进程=火车，线程=车厢    <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/25532384">比喻细节见此</a></p>
+<p>Java语言的JVM允许程序运行多个线程，它通过java.lang.Thread 类来体现。</p>
+<p>1.每个线程都是通过某个特定Thread对象的run()方法来完成操作的，经常 把run()方法的主体称为线程体</p>
+<p>2.线程的启动是通过调用该Thread对象的start()方法，而非直接调用run()</p>
+<h3 id="jdk5-0-之前创建新线程的两种方法"><a href="#jdk5-0-之前创建新线程的两种方法" class="headerlink" title="jdk5.0 之前创建新线程的两种方法"></a>jdk5.0 之前创建新线程的两种方法</h3><h4 id="1-继承Thread类的方式"><a href="#1-继承Thread类的方式" class="headerlink" title="1.继承Thread类的方式"></a>1.继承Thread类的方式</h4><ol>
+<li>定义子类继承Thread类</li>
+<li>子类中重写Thread类中的run方法</li>
+<li>创建Thread子类对象,即创建了线程对象</li>
+<li>调用线程对象start方法,start方法会为我们做好准备并调用run方法</li>
+</ol>
+<p><strong>注意</strong>:想启动多线程,必须调用start方法</p>
+<h4 id="2-实现Runnable接口-更建议使用"><a href="#2-实现Runnable接口-更建议使用" class="headerlink" title="2.实现Runnable接口(更建议使用)"></a>2.实现Runnable接口(更建议使用)</h4><ol>
+<li><p>定义子类，实现Runnable接口</p>
+</li>
+<li><p>子类中重写Runnable接口中的run方法</p>
+</li>
+<li><p> 通过Thread类含参构造器创建线程对象</p>
+</li>
+<li><p>将Runnable接口的子类对象作为实际参数传递给Thread类的构造器中</p>
+</li>
+<li><p>调用Thread类的start方法：开启线程，调用Runnable子类接口的run方法</p>
+</li>
+</ol>
+<h3 id="jdk5-0之后的两种新建线程的方法"><a href="#jdk5-0之后的两种新建线程的方法" class="headerlink" title="jdk5.0之后的两种新建线程的方法"></a>jdk5.0之后的两种新建线程的方法</h3><h4 id="Callable接口的方式"><a href="#Callable接口的方式" class="headerlink" title="Callable接口的方式"></a>Callable接口的方式</h4><p><strong>对比Runnable接口:</strong></p>
+<p>1.相比run()方法，可以有返回值</p>
+<p>2.方法可以抛出异常</p>
+<p>3.支持泛型的返回值</p>
+<p>4.需要借助FutureTask类，比如获取返回结果</p>
+<p><strong>利用Future接口,对Callable接口功能的补充:</strong></p>
+<p>1.可以对具体Runnable、Callable任务的执行结果进行取消、查询是 否完成、获取结果等</p>
+<p>2.FutrueTask是Futrue接口的唯一的实现类</p>
+<p>3.FutureTask 同时实现了Runnable, Future接口。它既可以作为 Runnable被线程执行，又可以作为Future得到Callable的返回值</p>
+<h4 id="使用线程池的方式"><a href="#使用线程池的方式" class="headerlink" title="使用线程池的方式"></a>使用线程池的方式</h4><p>背景思路:对于频繁需要创建销毁的的线程,提前创建多个线程,放入线程池中,使用时候取出来,用完放回去.</p>
+<p>相关api:ExecutorService 和 Executors</p>
+<p>ExcutorService:真正的线程池接口.常见子类ThreadPoolExecutor</p>
+<p>method:</p>
+<p>void execute(Runnable command) ：执行任务/命令，没有返回值，一般用来执行 Runnable</p>
+<p>Future submit(Callable task)：执行任务，有返回值，一般又来执行 Callable</p>
+<p>void shutdown() ：关闭连接池</p>
+<p>Executors：工具类、线程池的工厂类，用于创建并返回不同类型的线程池</p>
+<p>method:</p>
+<p>Executors.newCachedThreadPool()：创建一个可根据需要创建新线程的线程池</p>
+<p>Executors.newFixedThreadPool(n); 创建一个可重用固定线程数的线程池</p>
+<p>Executors.newSingleThreadExecutor() ：创建一个只有一个线程的线程池</p>
+<p>Executors.newScheduledThreadPool(n)：创建一个线程池，它可安排在给定延迟后运 行命令或者定期地执行。</p>
+<h2 id="线程的同步"><a href="#线程的同步" class="headerlink" title="线程的同步"></a>线程的同步</h2><p>多线程可能带来的麻烦**:执行结果的不稳定性**</p>
+<p>原因:同样一段代码,会有多个线程执行,这样会面临一种情况:a线程对多条语句只执行了一部分,还没执行完就到了时间片,被阻塞了,此时b线程参与执行了语句.之后a线程恢复,执行未完成部分,但是部分上下文环境已经发生了变化,不能保证当时a线程未被阻塞前执行效果的一致性了.(换句话说,由于b的插手,导致a的运行结果变了)</p>
+<p>解决办法:对于有多线程共享的数据的语句,加入同步机制,即一个线程必须执行完这段同步的代码,才能进入阻塞态.</p>
+<h3 id="同步机制synchronized-对资源加锁"><a href="#同步机制synchronized-对资源加锁" class="headerlink" title="同步机制synchronized,对资源加锁"></a>同步机制synchronized,对资源加锁</h3><p><strong>1.同步代码块</strong></p>
+<p>synchronized(类名.class/this){</p>
+<p>//需要被同步的代码</p>
+<p>}</p>
+<p><strong>2.synchronized还可以放在方法声明中，表示整个方法为同步方法</strong></p>
+<p> public synchronized void show (String name){ </p>
+<p> …. </p>
+<p>}</p>
+<h4 id="同步机制的执行时"><a href="#同步机制的执行时" class="headerlink" title="同步机制的执行时"></a>同步机制的执行时</h4><p>1.线程执行同步代码块或同步方法时，程序调用Thread.sleep()、 Thread.yield()方法暂停当前线程的执行</p>
+<p>2.线程执行同步代码块时，其他线程调用了该线程的suspend()方法将该线程 挂起，该线程不会释放锁（同步监视器）。 应尽量避免使用suspend()和resume()来控制线程</p>
+<h4 id="同步机制的失效"><a href="#同步机制的失效" class="headerlink" title="同步机制的失效"></a>同步机制的失效</h4><p>1.当前线程的同步方法、同步代码块执行结束。 </p>
+<p>2.当前线程在同步代码块、同步方法中遇到break、return终止了该代码块、 该方法的继续执行。 </p>
+<p>3.当前线程在同步代码块、同步方法中出现了未处理的Error或Exception，导 致异常结束。 </p>
+<p>4.当前线程在同步代码块、同步方法中执行了线程对象的wait()方法，当前线 程暂停，并释放锁。</p>
+<h4 id="同步机制带来的问题"><a href="#同步机制带来的问题" class="headerlink" title="同步机制带来的问题"></a>同步机制带来的问题</h4><p>死锁</p>
+<h3 id="Lock-锁-接口-jdk5-0开始"><a href="#Lock-锁-接口-jdk5-0开始" class="headerlink" title="Lock(锁)接口,jdk5.0开始"></a>Lock(锁)接口,jdk5.0开始</h3><p>与synchronized不同在</p>
+<p>1.Lock机制,<strong>需要手动关锁和开锁</strong></p>
+<p>2.只有代码块锁,没有方法锁</p>
+<p>3.性能更好</p>
+<p>注意:在使用锁lock加锁后,如果其他线程也要对某段资源加锁访问,因为有别的锁的存在会进入阻塞状态,等到之前锁那段资源访问完毕解锁或者进入wait()后,才会将阻塞状态接触,正式访问加锁资源</p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>一般是使用实现Lock接口的ReentrantLock类,示例如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReenTrantLock();</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m</span><span class="params">()</span></span>&#123;</span><br><span class="line">					lock.lock();</span><br><span class="line">					<span class="keyword">try</span>&#123;</span><br><span class="line">							<span class="comment">//保证线程安全的代码;</span></span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">finally</span>&#123;</span><br><span class="line">							lock.unlock(); </span><br><span class="line">						&#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="线程之间的通信"><a href="#线程之间的通信" class="headerlink" title="线程之间的通信"></a>线程之间的通信</h2><h3 id="在synchronized方法或者代码块中"><a href="#在synchronized方法或者代码块中" class="headerlink" title="在synchronized方法或者代码块中:"></a>在synchronized方法或者代码块中:</h3><p>注意:<strong>以下三个方法只有在synchronized方法或synchronized代码块中才能使用，否则会报 java.lang.IllegalMonitorStateException异常。</strong></p>
+<p><strong>wait()方法</strong></p>
+<p>作用:令当前线程挂起并放弃CPU、同步资源并等待，使别的线程可访问并修改共享资源，而当 前线程排队等候其他线程调用notify()或notifyAll()方法唤醒，唤醒后等待重新获得对监视器的所有 权后才能继续执行。</p>
+<p>如何使用:对象名.wait(),通常直接写wait()</p>
+<p><strong>notify()/notifyAll()</strong></p>
+<p>作用:唤醒正在排队等待同步资源的线程中优先级最高者结束等待/唤醒正在排队等待资源的所有线程结束等待</p>
+<p>如何使用:在当前线程中调用方法： 对象名.notify(),通常直接写notify()</p>
+<h3 id="在lock中"><a href="#在lock中" class="headerlink" title="在lock中:"></a>在lock中:</h3><p>为了线程之间的通信,我们需要通过lock来获取Condition,由Condition来操纵线程之间的通信.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = new ReentrantLock();</span><br><span class="line">Condition dataWaitCondition = lock.newCondition();</span><br></pre></td></tr></table></figure>
+
+<p>在我们需要的时候,我们就可以调用Condition.await(),去将lock的锁释放,同时该线程会被阻塞;</p>
+<p>满足条件时,会调用Condition.signal(),会把之前因为condition阻塞的一个线程激活,前提是调用Condition.signal()的线程必须加锁</p>
+<h1 id="graphhopper中的多线程写法"><a href="#graphhopper中的多线程写法" class="headerlink" title="graphhopper中的多线程写法"></a>graphhopper中的多线程写法</h1><p>当运行load()方法后,地图数据类对象生成,随后我们用process方法将osm数据导入地图中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GraphHopper.importOrLoad():</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> GraphHopper <span class="title">importOrLoad</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!load()) &#123;</span><br><span class="line">            printInfo();</span><br><span class="line">            process(<span class="keyword">false</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            printInfo();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>开始配置OSMReader,完备后开始读</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Graphhopper.importOSM():</span><br><span class="line">...</span><br><span class="line">OSMReader reader = <span class="keyword">new</span> OSMReader(ghStorage, osmReaderConfig).setFile(_getOSMFile()).</span><br><span class="line">  	setAreaIndex(areaIndex).setElevationProvider(eleProvider).</span><br><span class="line">    setCountryRuleFactory(countryRuleFactory);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">       reader.readGraph();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Cannot read file &quot;</span> + getOSMFile(), ex);</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>在readGraph()中先有一步预处理:preProcess(osmFile),可以先从osm中选出一些用于高速路段的节点</p>
+<p>此时我们尝试打开文件的输入流</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OSMReader:</span><br><span class="line">OSMInput in = openOsmInputFile(osmFile)</span><br></pre></td></tr></table></figure>
+
+<p>进入语句</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> OSMInput <span class="title">openOsmInputFile</span><span class="params">(File osmFile)</span> <span class="keyword">throws</span> XMLStreamException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> OSMInputFile(osmFile).setWorkerThreads(config.getWorkerThreads()).open();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>一句一句看,首先是new OSMInputFile(osmFile)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">OSMInputFile</span><span class="params">(File file)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        bis = decode(file);<span class="comment">//解码文件,并返回输入流,在osm,pbf格式下,是直接返回读取的输入流,并设置pbf时binary=ture,osm时为false</span></span><br><span class="line">        itemQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">50_000</span>);</span><br><span class="line">        itemBatch = <span class="keyword">new</span> ArrayDeque&lt;&gt;(MAX_BATCH_SIZE);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着setWorkerThreads(config.getWorkerThreads()):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> OSMInputFile <span class="title">setWorkerThreads</span><span class="params">(<span class="keyword">int</span> threads)</span> </span>&#123;</span><br><span class="line">        workerThreads = threads;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的作用是预先设置工人线程数,workerThreads模式也称为线程池模式,预先设置好,线程池中的线程数,然后去使用</p>
+<p>因为我们在config.yml中没有写关于线程数的配置文件,所以取了默认值2</p>
+<p>随后就是语句open(),</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> OSMInputFile <span class="title">open</span><span class="params">()</span> <span class="keyword">throws</span> XMLStreamException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (binary) &#123;</span><br><span class="line">            openPBFReader(bis);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            openXMLStream(bis);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>该语句执行了openPBFReader(bis);</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">openPBFReader</span><span class="params">(InputStream stream)</span> </span>&#123;</span><br><span class="line">        hasIncomingData = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (workerThreads &lt;= <span class="number">0</span>)</span><br><span class="line">            workerThreads = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        pbfReader = <span class="keyword">new</span> PbfReader(stream, <span class="keyword">this</span>, workerThreads);</span><br><span class="line">        pbfReaderThread = <span class="keyword">new</span> Thread(pbfReader, <span class="string">&quot;PBF Reader&quot;</span>);</span><br><span class="line">        pbfReaderThread.start();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>很明显上面的语句启动了新线程,pbfReader一定是实现了Runnable接口,但是这里没有用到workerthreads,我们在配置线程池中线程数目时才会用到,自此我们正式介绍这种</p>
+<p>WorkerThread模式.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfReader</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Throwable throwable;</span><br><span class="line">    <span class="keyword">private</span> InputStream inputStream;</span><br><span class="line">    <span class="keyword">private</span> Sink sink;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> workers;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> in      The file to read.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> workers The number of worker threads for decoding PBF blocks.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfReader</span><span class="params">(InputStream in, Sink sink, <span class="keyword">int</span> workers)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.inputStream = in;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line">        <span class="keyword">this</span>.workers = workers;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建了一个指定工人数的线程池</span></span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(workers);</span><br><span class="line">        <span class="comment">// Create a stream splitter to break the PBF stream into blobs.</span></span><br><span class="line">        PbfStreamSplitter streamSplitter = <span class="keyword">new</span> PbfStreamSplitter(<span class="keyword">new</span> DataInputStream(inputStream));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// Process all blobs of data in the stream using threads from the</span></span><br><span class="line">            <span class="comment">// executor service. We allow the decoder to issue an extra blob</span></span><br><span class="line">            <span class="comment">// than there are workers to ensure there is another blob</span></span><br><span class="line">            <span class="comment">// immediately ready for processing when a worker thread completes.</span></span><br><span class="line">            <span class="comment">// The main thread is responsible for splitting blobs from the</span></span><br><span class="line">            <span class="comment">// request stream, and sending decoded entities to the sink.</span></span><br><span class="line">            <span class="comment">//将pbf文件的分解器,线程池,传入解码器,之后解码器run</span></span><br><span class="line">            PbfDecoder pbfDecoder = <span class="keyword">new</span> PbfDecoder(streamSplitter, executorService, workers + <span class="number">1</span>, sink);</span><br><span class="line">            pbfDecoder.run();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            <span class="comment">// properly propagate exception inside Thread, #2269</span></span><br><span class="line">            throwable = t;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            sink.complete();</span><br><span class="line">            executorService.shutdownNow();</span><br><span class="line">            streamSplitter.release();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (throwable != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Unable to read PBF file.&quot;</span>, throwable);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>来到PbfDecoder</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">构造器:</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PbfDecoder</span><span class="params">(PbfStreamSplitter streamSplitter, ExecutorService executorService, <span class="keyword">int</span> maxPendingBlobs,</span></span></span><br><span class="line"><span class="params"><span class="function">                      Sink sink)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.streamSplitter = streamSplitter;</span><br><span class="line">        <span class="keyword">this</span>.executorService = executorService;</span><br><span class="line">        <span class="keyword">this</span>.maxPendingBlobs = maxPendingBlobs;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the thread synchronisation primitives.</span></span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        dataWaitCondition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the queue of blobs being decoded.</span></span><br><span class="line">        blobResults = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里创建了同步机制的锁Lock</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line">pbfDecoder:</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PbfStreamSplitter streamSplitter;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ExecutorService executorService;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> maxPendingBlobs;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Sink sink;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Lock lock;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition dataWaitCondition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;PbfBlobResult&gt; blobResults;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> streamSplitter  The PBF stream splitter providing the source of blobs to be decoded.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> executorService The executor service managing the thread pool.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxPendingBlobs The maximum number of blobs to have in progress at any point in time.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sink            The sink to send all decoded entities to.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfDecoder</span><span class="params">(PbfStreamSplitter streamSplitter, ExecutorService executorService, <span class="keyword">int</span> maxPendingBlobs,</span></span></span><br><span class="line"><span class="params"><span class="function">                      Sink sink)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.streamSplitter = streamSplitter;</span><br><span class="line">        <span class="keyword">this</span>.executorService = executorService;</span><br><span class="line">        <span class="keyword">this</span>.maxPendingBlobs = maxPendingBlobs;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the thread synchronisation primitives.</span></span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        dataWaitCondition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the queue of blobs being decoded.</span></span><br><span class="line">        blobResults = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Any thread can call this method when they wish to wait until an update has been performed by</span></span><br><span class="line"><span class="comment">     * another thread.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitForUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            dataWaitCondition.await();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Thread was interrupted.&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Any thread can call this method when they wish to signal another thread that an update has</span></span><br><span class="line"><span class="comment">     * occurred.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">signalUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        dataWaitCondition.signal();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendResultsToSink</span><span class="params">(<span class="keyword">int</span> targetQueueSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (blobResults.size() &gt; targetQueueSize) &#123;</span><br><span class="line">            <span class="comment">// Get the next result from the queue and wait for it to complete.</span></span><br><span class="line">            PbfBlobResult blobResult = blobResults.remove();</span><br><span class="line">            <span class="keyword">while</span> (!blobResult.isComplete()) &#123;</span><br><span class="line">                <span class="comment">// The thread hasn&#x27;t finished processing yet so wait for an</span></span><br><span class="line">                <span class="comment">// update from another thread before checking again.</span></span><br><span class="line">                waitForUpdate();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!blobResult.isSuccess()) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;A PBF decoding worker thread failed, aborting.&quot;</span>, blobResult.getException());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Send the processed entities to the sink. We can release the lock</span></span><br><span class="line">            <span class="comment">// for the duration of processing to allow worker threads to post</span></span><br><span class="line">            <span class="comment">// their results.</span></span><br><span class="line">            lock.unlock();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (ReaderElement entity : blobResult.getEntities()) &#123;</span><br><span class="line">                    sink.process(entity);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 该方法是启用了多线程的,并且该方法是加锁了的,不能被中断</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processBlobs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Process until the PBF stream is exhausted.</span></span><br><span class="line">        <span class="keyword">while</span> (streamSplitter.hasNext()) &#123;</span><br><span class="line">            <span class="comment">//取出下一个pbfRawblob,这个是还未经过处理的原型数据</span></span><br><span class="line">            <span class="comment">// Obtain the next raw blob from the PBF stream.</span></span><br><span class="line">            PbfRawBlob rawBlob = streamSplitter.next();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建结果数据类型去获取解码后的blob,并将其加入blob result 队列里</span></span><br><span class="line">            <span class="comment">// Create the result object to capture the results of the decoded</span></span><br><span class="line">            <span class="comment">// blob and add it to the blob results queue.</span></span><br><span class="line">            <span class="keyword">final</span> PbfBlobResult blobResult = <span class="keyword">new</span> PbfBlobResult();</span><br><span class="line">            blobResults.add(blobResult);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Create the listener object that will update the blob results</span></span><br><span class="line">            <span class="comment">// based on an event fired by the blob decoder.</span></span><br><span class="line">            PbfBlobDecoderListener decoderListener = <span class="keyword">new</span> PbfBlobDecoderListener() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">error</span><span class="params">(Exception ex)</span> </span>&#123;</span><br><span class="line">                    lock.lock();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">// System.out.println(&quot;ERROR: &quot; + new Date());</span></span><br><span class="line">                        blobResult.storeFailureResult(ex);</span><br><span class="line">                        signalUpdate();</span><br><span class="line"></span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">complete</span><span class="params">(List&lt;ReaderElement&gt; decodedEntities)</span> </span>&#123;</span><br><span class="line">                    lock.lock();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        blobResult.storeSuccessResult(decodedEntities);</span><br><span class="line">                        signalUpdate();</span><br><span class="line"></span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Create the blob decoder itself and execute it on a worker thread.</span></span><br><span class="line">            PbfBlobDecoder blobDecoder = <span class="keyword">new</span> PbfBlobDecoder(rawBlob.getType(), rawBlob.getData(), decoderListener);</span><br><span class="line">            executorService.execute(blobDecoder);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// If the number of pending blobs has reached capacity we must begin</span></span><br><span class="line">            <span class="comment">// sending results to the sink. This method will block until blob</span></span><br><span class="line">            <span class="comment">// decoding is complete.</span></span><br><span class="line">            sendResultsToSink(maxPendingBlobs - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// There are no more entities available in the PBF stream, so send all remaining data to the sink.</span></span><br><span class="line">        sendResultsToSink(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            processBlobs();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码的主要目的是:将一个个rawblob的数据给解析出来,因为线程池中只有两个workerthread,只能同时处理两个rawblob,当代码处理到第三个rawblob时,线程池没有空出来,只能等待其他线程结束后再分配,此时我们不能再让主线程再取第四个rawblob往线程池中放,所以在知道第三个rawblob后我们必须将主线程阻塞停下来,等待让两个工人线程完成任务.</p>
+<p>阻塞线程的前提是该线程加了锁,因此我们在run()方法处提前让线程有了锁.于是就可以在第三个rawblob进来时,</p>
+<p>可以调用Condition.await(),有两个作用一是将锁lock解开,二是将该线程阻塞等待;</p>
+<p>两个处理rawblob的工人线程运行到complete()方法,当该方法执行完<code>blobResult.storeSuccessResult(decodedEntities)</code>,即可唤醒主线程继续执行后面的任务,因为调用Condition.signal()的前提是该调用线程有锁,所以必须在此语句前加锁.</p>
+<p>当主线程被唤醒后,又会加上锁,所以当执行到</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (ReaderElement entity : blobResult.getEntities()) &#123;</span><br><span class="line">                    sink.process(entity);</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
+
+<p>时,如果<strong>不对</strong>这段获取数据的时间内解锁的话,线程池的工人线程在执行complete()方法时,会要求加锁lock,但是主线程锁还在,那么必须陷入阻塞等主线程的锁释放,这样<strong>效率不高</strong>;</p>
+<p>对这段获取数据时间解锁,那么两个工人线程就可以利用这段时间去处理数据,那么当主线程处理下一次的rawblob时,很大可能两个工人线程已经完成任务,主线程就不必陷入阻塞,直接取出数据后,就再处理下一个rawblob,<strong>充分利用时间.</strong></p>
+<p><strong>此外</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while (!blobResult.isComplete()) &#123;</span><br><span class="line">    // The thread hasn&#x27;t finished processing yet so wait for an</span><br><span class="line">    // update from another thread before checking again.</span><br><span class="line">    waitForUpdate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码中用的是while,而不是if去作为判断,因为有可能主线程想取出的是线程1的数据而陷入了阻塞,但是因为线程唤醒的随机性,有可能随即唤醒的是线程2,那么我们需要的线程1数据并没有被处理好.如果用if,当线程2处理完后,就立即唤醒了主线程,那么就会漏掉我们线程1的数据.用了while后,我们会一直判断blobResult是否处理好,知道我们需要的线程1数据被处理完,才能退出循环,即使主线程会因此多阻塞几次.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-11-08T08:14:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">pbf文件结构解析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -203,128 +342,126 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/" class="archive-article-date">
-  	<time datetime="2021-10-23T06:21:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-23</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          pbf文件结构解析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/10/25/%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%80%89%E9%A1%B9%E4%B8%8E%E5%8F%82%E6%95%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">命令行选项与参数</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">graphhopper系列2</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/" class="archive-article-date">
-  	<time datetime="2021-10-22T06:29:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/22/graphhopper%E7%B3%BB%E5%88%971/">graphhopper系列1</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/graphhopper//" class="article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -347,10 +484,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
 		root: "/",

@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png">
 <meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png">
 <meta property="article:published_time" content="2021-10-23T06:21:09.000Z">
-<meta property="article:modified_time" content="2021-11-04T07:33:29.634Z">
+<meta property="article:modified_time" content="2021-11-23T09:20:38.006Z">
 <meta property="article:author" content="pomeloguy">
 <meta property="article:tag" content="graphhopper">
 <meta name="twitter:card" content="summary">
@@ -269,28 +269,306 @@
 <td align="left">1048576=$2^{20}$</td>
 </tr>
 </tbody></table>
+<p>名词:</p>
+<p>tower node:指交叉路口的节点,即这条道路有了分叉,分叉处的节点,还包括路尽头的孤立结点</p>
+<p>pillar node:指所有位于两个tower node之间的way上的节点</p>
 <p>自此graphhopper拥有了实例化的GraphHopperStorage对象,知识以上格式的数据只是个空壳,我们还未对osm文件解析进行填充,所以graphhopper’接着执行process()方法在其执行了importOSM()方法,</p>
 <p>就可以将osm文件进行处理,并获得</p>
 <p>GraphHopperStorage类实例</p>
 <p>通过此类实例我们就可以读出osm中节点或者道路信息</p>
-<h1 id="OSM文件信息的读取组织"><a href="#OSM文件信息的读取组织" class="headerlink" title="OSM文件信息的读取组织"></a>OSM文件信息的读取组织</h1><p>GraphHoperStorage中称为“node”和“edge”的”DataAccess”(存疑)对象的数据布局如下所示：</p>
-<p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png" alt="storage layout"></p>
-<p>解释:</p>
-<p>1.每一个”node row”成员有:latitude,longitude,和first edgeID(即指向的第一条边的id)</p>
-<p>2.每个”edge row”成员有:两个edgeIDs即nextA,nextB,接着 two nodeIDs nodeA and nodeB,还有一些性质如:distance和the flages,….,nodeAid总是小于nodeBid</p>
-<p>3.一个node有多条边,这被实现为链表的形式,如:node3第一条边是0-3,接着找3的边从nextB出发找到边1-3,接着从next B出发找到3-5,这时候就得从nodeA出发找3的下一条边于是到了3-7;此时没有下一条边查找中止</p>
-<p>4.尽管node4,6没有边,但是他们仍然存在,需要消耗DataAccess的空间;对于OSMReader来说去除很少几点的网络也是不会这样做的</p>
-<h2 id="从DataAccess到AbstractDataAccess"><a href="#从DataAccess到AbstractDataAccess" class="headerlink" title="从DataAccess到AbstractDataAccess"></a>从DataAccess到AbstractDataAccess</h2><p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png" alt="image-20211102205650131"></p>
-<p>从继承我们可以看到,这几个对象之间的关系</p>
-<p>DataAccess:<strong>规定了数据接口的生命周期</strong>:1)对象的创建,2)配置(如segment size),3)crate or loadExisting,4)使用和确保足够的容量空间,5)关闭</p>
-<p>AbstractDataAccess:dui</p>
-<h1 id="导航api"><a href="#导航api" class="headerlink" title="导航api"></a>导航api</h1><p>请求URL:</p>
+<p>当然我们也需要保存相应的类的实例,所以我们通过RAMDataAccess类中的flush()函数去将类中的信息存储保存到文件中,用的是RandomAccessFile()去读取和写入文件,这个类在new的时候会建立相应的文件出来</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RandomAccessFile raFile = <span class="keyword">new</span> RandomAccessFile(getFullName(), <span class="string">&quot;rw&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="EncodingManager的build"><a href="#EncodingManager的build" class="headerlink" title="EncodingManager的build()"></a>EncodingManager的build()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> EncodingManager em = <span class="keyword">new</span> EncodingManager.Builder().</span><br><span class="line">            add(encoder).</span><br><span class="line">            add(<span class="keyword">new</span> BikeFlagEncoder()).add(<span class="keyword">new</span> FootFlagEncoder()).build();</span><br></pre></td></tr></table></figure>
+
+<p>这一串语句最终返回的是设置好后的EncodingManager实例,首先交由Builder()内部类调用空参构造器构造一个EncodingManager(),初始化基础变量.其中有三个变量,代表了对对某些数值的初始化配置.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig turnCostConfig;</span><br><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig relationConfig;</span><br><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig edgeConfig;</span><br></pre></td></tr></table></figure>
+
+<p>还有三个是标签解析器,此时都为空</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;RelationTagParser&gt; relationTagParsers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;TagParser&gt; edgeTagParsers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, TurnCostParser&gt; turnCostParsers = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>另外还有存储对数值编码的Map,EncodedValue就是一种对数值的编码,有对小数,布尔,整数,等等.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, EncodedValue&gt; encodedValueMap = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure>
+<p>EncodeValue有以下几种实现,并且是在特定的TagParser类中new出来的:</p>
+<table>
+<thead>
+<tr>
+<th>EdgeTagParser</th>
+<th>name</th>
+<th>EncodedValue</th>
+<th>bits</th>
+<th>storeTwoDirections</th>
+<th>fwdMask</th>
+<th>fwdDataIndex</th>
+<th>fwdShift</th>
+<th>maxValue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OSMRoundaboutParser</td>
+<td>roundabout</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>false</td>
+<td>1&lt;&lt;0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>OSMRoadClassParser</td>
+<td>road_class</td>
+<td>EnumEncodedValue</td>
+<td>5</td>
+<td>false</td>
+<td>31&lt;&lt;1</td>
+<td>0</td>
+<td>1</td>
+<td>31</td>
+</tr>
+<tr>
+<td>OSMRoadClassLinkParser</td>
+<td>road_class_link</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>false</td>
+<td>1&lt;&lt;6</td>
+<td>0</td>
+<td>6</td>
+<td>1</td>
+</tr>
+<tr>
+<td>OSMRoadEnvironmentParser</td>
+<td>road_environment</td>
+<td>EnumEncodedValue</td>
+<td>3</td>
+<td>false</td>
+<td>7&lt;&lt;7</td>
+<td>0</td>
+<td>7</td>
+<td>7</td>
+</tr>
+<tr>
+<td>OSMMaxSpeedParser</td>
+<td>max_speed</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>5</td>
+<td>true(此时两个方向,占用bit*2)</td>
+<td>31&lt;&lt;10</td>
+<td>0</td>
+<td>10</td>
+<td>31</td>
+</tr>
+<tr>
+<td>OSMRoadAccessParser</td>
+<td>road_access</td>
+<td>EnumEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;20</td>
+<td>0</td>
+<td>20</td>
+<td>15</td>
+</tr>
+<tr>
+<td>OSMBikeNetworkTagParser</td>
+<td>bike_network</td>
+<td>EnumEncodedValue</td>
+<td>3</td>
+<td>false</td>
+<td>7&lt;&lt;24</td>
+<td>0</td>
+<td>24</td>
+<td>7</td>
+</tr>
+<tr>
+<td>OSMGetOffBikeParser</td>
+<td>get_off_bike</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>false</td>
+<td>1&lt;&lt;27</td>
+<td>0</td>
+<td>27</td>
+<td>1</td>
+</tr>
+<tr>
+<td>OSMSmoothnessParser</td>
+<td>smoothness</td>
+<td>EnumEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;28</td>
+<td>0</td>
+<td>28</td>
+<td>15</td>
+</tr>
+<tr>
+<td>OSMFootNetworkTagParser</td>
+<td>foot_network</td>
+<td>EnumEncodedValue</td>
+<td>3</td>
+<td>false</td>
+<td>7&lt;&lt;0</td>
+<td>1</td>
+<td>0</td>
+<td>7</td>
+</tr>
+<tr>
+<td>carFlagEncoder</td>
+<td>car$access</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>true</td>
+<td>1&lt;&lt;3</td>
+<td>1</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>carFlagEncoder</td>
+<td>car$average_speed</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>5</td>
+<td>true</td>
+<td>31&lt;&lt;5</td>
+<td>1</td>
+<td>5</td>
+<td>31</td>
+</tr>
+<tr>
+<td>bikeFlagEncoder</td>
+<td>bike$access</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>true</td>
+<td>1&lt;&lt;15</td>
+<td>1</td>
+<td>15</td>
+<td>1</td>
+</tr>
+<tr>
+<td>bikeFlagEncoder</td>
+<td>bike$average_speed</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;17</td>
+<td>1</td>
+<td>17</td>
+<td>15</td>
+</tr>
+<tr>
+<td>bikeFlagEncoder</td>
+<td>bike$priority</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;21</td>
+<td>1</td>
+<td>21</td>
+<td>15</td>
+</tr>
+<tr>
+<td>footFlagEncoder</td>
+<td>foot$access</td>
+<td>SimpleBooleanEncodedValue</td>
+<td>1</td>
+<td>true</td>
+<td>1&lt;&lt;25</td>
+<td>1</td>
+<td>25</td>
+<td>1</td>
+</tr>
+<tr>
+<td>footFlagEncoder</td>
+<td>foot$average_speed</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;31</td>
+<td>1</td>
+<td>31</td>
+<td>15</td>
+</tr>
+<tr>
+<td>footFlagEncoder</td>
+<td>foot$priority</td>
+<td>UnsignedDecimalEncodedValue</td>
+<td>4</td>
+<td>false</td>
+<td>15&lt;&lt;0</td>
+<td>2</td>
+<td>0</td>
+<td>15</td>
+</tr>
+</tbody></table>
+<p>在new EncodeValue后,我们还需要通过InitializerConfig类实例来对EncodeValue实例初始化</p>
+<p>roundabout使用edgeconfig来初始化</p>
+<p>将此TagParser加入edgeTagParsers列表中</p>
+<table>
+<thead>
+<tr>
+<th>RelationTagParser</th>
+<th>name</th>
+<th>EncodedValue</th>
+<th>bits</th>
+<th>storeTwoDirections</th>
+<th>fwdMask</th>
+<th>fwdDataIndex</th>
+<th>fwdShift</th>
+<th>maxValue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OSMBikeNetworkTagParser</td>
+<td>bike$route_relation</td>
+<td>EnumEncodedValue</td>
+<td>3</td>
+<td>false</td>
+<td>7&lt;&lt;0</td>
+<td>0</td>
+<td>0</td>
+<td>7</td>
+</tr>
+<tr>
+<td>OSMFootNetworkTagParser</td>
+<td>foot$route_relation</td>
+<td>EnumEncodedValue</td>
+<td>3</td>
+<td>false</td>
+<td>7&lt;&lt;3</td>
+<td>0</td>
+<td>3</td>
+<td>7</td>
+</tr>
+</tbody></table>
+<h1 id="OSM文件信息的读取组织"><a href="#OSM文件信息的读取组织" class="headerlink" title="OSM文件信息的读取组织"></a><strong>OSM文件信息的读取组织</strong></h1><p><strong>GraphHoperStorage中称为“node”和“edge”的”DataAccess”(存疑)对象的数据布局如下所示：</strong></p>
+<p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png" alt="storage layout"></strong></p>
+<p><strong>解释:</strong></p>
+<p><strong>1.每一个”node row”成员有:latitude,longitude,和first edgeID(即指向的第一条边的id)</strong></p>
+<p><strong>2.每个”edge row”成员有:两个edgeIDs即nextA,nextB,接着 two nodeIDs nodeA and nodeB,还有一些性质如:distance和the flages,….,nodeAid总是小于nodeBid</strong></p>
+<p><strong>3.一个node有多条边,这被实现为链表的形式,如:node3第一条边是0-3,接着找3的边从nextB出发找到边1-3,接着从next B出发找到3-5,这时候就得从nodeA出发找3的下一条边于是到了3-7;此时没有下一条边查找中止</strong></p>
+<p><strong>4.尽管node4,6没有边,但是他们仍然存在,需要消耗DataAccess的空间;对于OSMReader来说去除很少几点的网络也是不会这样做的</strong></p>
+<p>5.edgeref等同于node数据结构出的指针,edge处的nextA,B,换了个名称</p>
+<p>以LowLevelAPIExample.java中的一段代码为例,描述上述数据结构的生成过程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">createAndSaveGraph</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        FlagEncoder encoder = <span class="keyword">new</span> CarFlagEncoder();</span><br><span class="line">        EncodingManager em = EncodingManager.create(encoder);</span><br><span class="line">        GraphHopperStorage graph = <span class="keyword">new</span> GraphBuilder(em).setRAM(graphLocation, <span class="keyword">true</span>).create();</span><br><span class="line">        <span class="comment">// Make a weighted edge between two nodes and set average speed to 50km/h</span></span><br><span class="line">        EdgeIteratorState edge = graph.edge(<span class="number">0</span>, <span class="number">1</span>).setDistance(<span class="number">1234</span>).set(encoder.getAverageSpeedEnc(), <span class="number">50</span>);</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在初始化后,我们手动为添加一条edge,nodeA,B的id分别为0,1,即graph.edge(0, 1)方法.在此方法的<strong>调用栈内部</strong>,首先检测了当前现有edge的总数目是否超标,再检测node数据结构的容量,当新nodeA/B的id&gt;目前nodecount数目后,对于我们线性增加当前node数目到最新id,并且为这些新node分配一个默认edgeref id 值-1.之后接着为edge数据结构内填入nodeA,Bid,再根据nodeA,B的edgeref填入到NextA,B.填入后,再将nodeA,B的edgeref设为该条边的id.</p>
+<p>默认情况下edge数据结构还有Dist(距离),Flag(一些tag,标注速度,路况等等复杂信息,由flagencoder来决定),Geo,Name</p>
+<h2 id="从DataAccess到AbstractDataAccess"><a href="#从DataAccess到AbstractDataAccess" class="headerlink" title="从DataAccess到AbstractDataAccess"></a><strong>从DataAccess到AbstractDataAccess</strong></h2><p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png" alt="image-20211102205650131"></strong></p>
+<p><strong>从继承我们可以看到,这几个对象之间的关系</strong></p>
+<p><strong>DataAccess:规定了数据接口的生命周期:1)对象的创建,2)配置(如segment size),3)crate or loadExisting,4)使用和确保足够的容量空间,5)关闭</strong></p>
+<p><strong>AbstractDataAccess:dui</strong></p>
+<h1 id="导航api"><a href="#导航api" class="headerlink" title="导航api"></a><strong>导航api</strong></h1><p><strong>请求URL:</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8989/route?point=52.596375%2C13.368988&amp;point=52.525413%2C13.458252&amp;type=json&amp;locale=zh-CN&amp;key=&amp;elevation=false&amp;profile=car</span><br></pre></td></tr></table></figure>
 
-<p>请求方法:GET</p>
-<p>传入–&gt;RoutResource.java–&gt;……–&gt;调用Router类的方法routeVia(reques,solver)),</p>
-<p>其中的参数reques ,solver内的变量基本相同</p>
-<p><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png" alt="image-20211028144954442"></p>
+<p><strong>请求方法:GET</strong></p>
+<p><strong>传入–&gt;RoutResource.java–&gt;……–&gt;调用Router类的方法routeVia(reques,solver)),</strong></p>
+<p><strong>其中的参数reques ,solver内的变量基本相同</strong></p>
+<p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png" alt="image-20211028144954442"></strong></p>
 
       
 
@@ -527,6 +805,30 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">linux</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">gradle,java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">maven,java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">database</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">encryption</a>
               </li>
             
             <div class="clearfix"></div>

@@ -851,153 +851,6 @@
 
 
   
-    <article id="post-build-gradle知识点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">build.gradle知识点</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2021-12-04T08:23:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dependecies中implementation和compile的区别"><a href="#dependecies中implementation和compile的区别" class="headerlink" title="dependecies中implementation和compile的区别"></a>dependecies中implementation和compile的区别</h3><p>都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码:</p>
-<p>当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节</p>
-<p>当你用compile,你的代码中引入的依赖类,别人就能访问查看细节</p>
-<h3 id="本地jar包如何引用-不推荐api方式"><a href="#本地jar包如何引用-不推荐api方式" class="headerlink" title="本地jar包如何引用,不推荐api方式"></a>本地jar包如何引用,不推荐api方式</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile fileTree(<span class="attr">dir:</span><span class="string">&#x27;src/libs&#x27;</span>,<span class="attr">include:</span>[<span class="string">&#x27;*.jar&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-<p>不能把compile改成api,即使compile语法已经在7.0中被弃用了,但是在测试6.7版本中,必须使用compile,否则打包的时候无法将本地jar包打包进去</p>
-<h3 id="provided关键词"><a href="#provided关键词" class="headerlink" title="provided关键词"></a>provided关键词</h3><p>附有provided关键词,则该依赖不会打包进war包</p>
-<h3 id="bootjar与jar打包插件"><a href="#bootjar与jar打包插件" class="headerlink" title="bootjar与jar打包插件"></a>bootjar与jar打包插件</h3><p>注意:使用了bootjar或者jar打包插件后,使用传统jar包打包流程,build/libs底下不会生成jar包,即<strong>传统流程失效</strong></p>
-<p><strong>传统jar包,打包流程:</strong></p>
-<p>gradle clean </p>
-<p>gradle build -x test</p>
-<p>之后去build/libs底下即可找到jar包</p>
-<p>传统jar包打包方式,会将配置文件,依赖的libs包统统打包进jar包,使得jar包比较臃肿</p>
-<p>bootjar是一种打包插件</p>
-<p>打包方式是将配置文件和依赖的libs包分离出来放在两个文件夹中,只将自己的代码打包成jar包,.</p>
-<p>代码结构如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">    -config</span><br><span class="line">    -lib</span><br><span class="line">    key-core-web.jar</span><br></pre></td></tr></table></figure>
-
-
-
-<p>bootjar的好处:可以直接在文件外面改配置文件如application.properties,坏处是只适合本地使用,不适合交付服务器环境</p>
-<p>当然你也可以将一整个dist文件夹传给别人</p>
-<p>bootjar在gradle中的配置如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">bootJar &#123;</span><br><span class="line">    <span class="comment">//指放在根目录哪个文件夹下</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    <span class="comment">//指打包的jar包名字</span></span><br><span class="line">    archiveName project.name  + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    <span class="comment">//从哪个目录下打包源码,排除一切.xml文件</span></span><br><span class="line">    from(<span class="string">&#x27;src/main/java&#x27;</span>)&#123;</span><br><span class="line">        include <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//排除一切properties,yml后缀的文件</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line">    <span class="comment">//最后,从以下目录中复制文件到指定目录</span></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//将runtimec的包放入lib中</span></span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/application.properties&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;.&#x27;</span>).listFiles().findAll&#123;File f -&gt; (f.name.endsWith(<span class="string">&#x27;.crt&#x27;</span>) || f.name.endsWith(<span class="string">&#x27;.keystore&#x27;</span>))&#125;</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;config/contract/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/contract&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>另外还有一种jar打包插件,功能同上述类似</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">jar &#123;</span><br><span class="line">    enabled = <span class="literal">true</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    archiveName project.name + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line"></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="使用bootjar或者jar插件-依赖没有打包到dist-lib目录中"><a href="#使用bootjar或者jar插件-依赖没有打包到dist-lib目录中" class="headerlink" title="使用bootjar或者jar插件,依赖没有打包到dist/lib目录中"></a>使用bootjar或者jar插件,依赖没有打包到dist/lib目录中</h3><p>如果你使用的是以下语句</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>请改成</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtimeClasspath.files</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="提示有被gardle弃用的特性"><a href="#提示有被gardle弃用的特性" class="headerlink" title="提示有被gardle弃用的特性"></a>提示有被gardle弃用的特性</h3><p>一般是使用了compile,在7.0版本已被启用,转而使用api</p>
-<p>但是有可能出现没有api方法,可以将apply plugin: ‘java’  改为apply plugin:’java-library’</p>
-<hr>
-<h3 id="gradle提示有警告-但是并没有告诉具体原因"><a href="#gradle提示有警告-但是并没有告诉具体原因" class="headerlink" title="gradle提示有警告,但是并没有告诉具体原因"></a>gradle提示有警告,但是并没有告诉具体原因</h3><p>使用以下命令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradlew --warning-mode all</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="gradle在执行test任务时报错"><a href="#gradle在执行test任务时报错" class="headerlink" title="gradle在执行test任务时报错"></a>gradle在执行test任务时报错</h3><p>我们在gradle build 的时候会默认执行所有的test任务,所以有些test的任务在不满足条件时就会报错.其实我们可以执行gradle build -x test 就可以跳过test</p>
-<hr>
-<h3 id="配置springboot"><a href="#配置springboot" class="headerlink" title="配置springboot"></a>配置springboot</h3><p>step1.配置buildscript</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext&#123;</span><br><span class="line">        springBootVersion=<span class="string">&#x27;2.1.2.RELEASE&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(<span class="string">&quot;org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>往buildscript中写入以上脚本,作用是下载该依赖,让此依赖中包含一些插件</p>
-<p>为了让这些插件,加入gradle中,辅助build该项目.因此还需要应用该插件plugin,如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;org.springframework.boot&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>此种应用插件的语法是专门针对使用buildscript引入的外来依赖中的插件,可见官方文档<a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/plugins.html#sec:applying_plugins_buildscript">Applying plugins with the buildscript block</a></p>
-<p>当使用io.spring.dependency-management插件后,当我们再引用springboot的依赖,可以不用再写版本号,以spring-boot-gradle-plugin的版本为准</p>
-<p>step2.引入依赖</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">gradle</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/gradle//" class="article-tag-list-link color2">gradle</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-pom-xml知识点记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1294,6 +1147,115 @@
 
 
   
+    <article id="post-pbf文件结构解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">pbf文件结构解析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-11-08T08:14:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">int</span>&gt;<span class="comment">//第一个int型数据描述了head的的字节码长度</span></span><br><span class="line">&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawHeaderBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">&lt;<span class="keyword">int</span>&gt;</span><br><span class="line">&lt;rawblobHeader&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawPrimitiveBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br></pre></td></tr></table></figure>
+
+<p>读文件时,第一个int型数据描述了head的的字节码长度</p>
+<p>当我们读出这么长的字节数组rawblobHeader后,需要进行转化成可以解读的blobHeader类</p>
+<p>blobHeader类,会存着Data的size(),因此我们需要接着向后面读size()大小的字节码得到rawblob</p>
+<p>同时blobHeader类中的Type属性会告知刚刚读的Data是个什么类型的用途,我们也可以解码该rawblobdata解码成blob类</p>
+<p>有两种rawblob,一种是揭示osmHeader数据信息的,一种是揭示osmdata数据信息的,他们的区分就是靠rawblobHeader的type信息</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>在PbfDecoder中我们设置了变量Queue<PbfBlobResult> blobResults,存了PbfBlobResult类,在这个类里设置变量 List<ReaderElement> entities.所以在处理过程中,对于每个blob解析出的多个ReaderElement存在PbfBlobResult类,再将多个这个对象存入队列中</ReaderElement></PbfBlobResult></p>
+<h2 id="对blobHeader的解析"><a href="#对blobHeader的解析" class="headerlink" title="对blobHeader的解析"></a>对blobHeader的解析</h2><p>把字节码rawblob转化为HeaderBlock类</p>
+<p>我们只读这个类的<strong>时间戳信息</strong>,并存入OSMFileHeader对象中,这个类是REaderElement的子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmHeader</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.HeaderBlock header = Osmformat.HeaderBlock.parseFrom(data);</span><br><span class="line">		.....</span><br><span class="line">            这里省略的是看pbf文件和不合规的代码</span><br><span class="line">        .....</span><br><span class="line">        OSMFileHeader fileheader = <span class="keyword">new</span> OSMFileHeader();</span><br><span class="line">        <span class="keyword">long</span> milliSecondDate = header.getOsmosisReplicationTimestamp();</span><br><span class="line">        fileheader.setTag(<span class="string">&quot;timestamp&quot;</span>, Helper.createFormatter().format(<span class="keyword">new</span> Date(milliSecondDate * <span class="number">1000</span>)));</span><br><span class="line">        decodedEntities.add(fileheader);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对PrimitiveBlock的解析"><a href="#对PrimitiveBlock的解析" class="headerlink" title="对PrimitiveBlock的解析"></a>对PrimitiveBlock的解析</h2><p>我们对从PrimitiveBlock数据分为两个部分,第一个部分是存着一些偏移量,第二个部分是PrimitiveGroup类对象list</p>
+<p>为了获取偏移量部分,我们构造了一个类PbfFieldDecoder如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfFieldDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">double</span> COORDINATE_SCALING_FACTOR = <span class="number">0.000000001</span>;</span><br><span class="line">    <span class="keyword">private</span> String[] strings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> coordGranularity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLatitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLongitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> dateGranularity;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> primitiveBlock The primitive block containing the fields to be decoded.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfFieldDecoder</span><span class="params">(Osmformat.PrimitiveBlock primitiveBlock)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.coordGranularity = primitiveBlock.getGranularity();</span><br><span class="line">        <span class="keyword">this</span>.coordLatitudeOffset = primitiveBlock.getLatOffset();</span><br><span class="line">        <span class="keyword">this</span>.coordLongitudeOffset = primitiveBlock.getLonOffset();</span><br><span class="line">        <span class="keyword">this</span>.dateGranularity = primitiveBlock.getDateGranularity();</span><br><span class="line"></span><br><span class="line">        Osmformat.StringTable stringTable = primitiveBlock.getStringtable();</span><br><span class="line">        strings = <span class="keyword">new</span> String[stringTable.getSCount()];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strings.length; i++) &#123;</span><br><span class="line">            strings[i] = stringTable.getS(i).toStringUtf8();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在初始化对象的时候,我们通过primitiveblock获取block中的5个变量,分别是坐标和日期粒度,经度纬度偏移,字符串数组变量</p>
+<p>接着我们遍历列表,取出PrimitiveGroup类,对之处理获得node,way等数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmPrimitives</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.PrimitiveBlock block = Osmformat.PrimitiveBlock.parseFrom(data);</span><br><span class="line">        PbfFieldDecoder fieldDecoder = <span class="keyword">new</span> PbfFieldDecoder(block);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Osmformat.PrimitiveGroup primitiveGroup : block.getPrimitivegroupList()) &#123;</span><br><span class="line">            processNodes(primitiveGroup.getDense(), fieldDecoder);</span><br><span class="line">            processNodes(primitiveGroup.getNodesList(), fieldDecoder);</span><br><span class="line">            processWays(primitiveGroup.getWaysList(), fieldDecoder);</span><br><span class="line">            processRelations(primitiveGroup.getRelationsList(), fieldDecoder);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>for循环中的四个方法为我们读出了所有的node,way,relation数据</p>
+<p>ReaderNode有两个变量lat,lon,还有<code>Map&lt;String, Object&gt; properties</code>变量存着可能的属性键值对</p>
+<p>…</p>
+<p>所以先读出头</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1400,15 +1362,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">encryption</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">gradle</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1417,6 +1375,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1437,10 +1399,6 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">地图</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">encryption</a>
               </li>
             
             <div class="clearfix"></div>

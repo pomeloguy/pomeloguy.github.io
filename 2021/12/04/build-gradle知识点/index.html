@@ -6,16 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Tag: mysql | pomeloguy的博客</title>
+  <title>build.gradle知识点 | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="pomeloguy的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="pomeloguy的博客">
-<meta property="og:url" content="http://example.com/tags/mysql/index.html">
+  <meta name="description" content="dependecies中implementation和compile的区别都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码: 当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节 当你用compile,你的代码中引入的依赖类,别人就能访问查看细节 本地jar包如何引用,不推荐api方式1compile fileTre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="build.gradle知识点">
+<meta property="og:url" content="http://example.com/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="pomeloguy的博客">
+<meta property="og:description" content="dependecies中implementation和compile的区别都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码: 当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节 当你用compile,你的代码中引入的依赖类,别人就能访问查看细节 本地jar包如何引用,不推荐api方式1compile fileTre">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-04T08:23:36.000Z">
+<meta property="article:modified_time" content="2022-01-09T06:53:14.401Z">
 <meta property="article:author" content="pomeloguy">
+<meta property="article:tag" content="gradle">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
@@ -162,75 +166,247 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-build-gradle知识点" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" class="archive-article-date">
-  	<time datetime="2021-12-25T16:13:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-26</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">mysql疑难杂症</a>
+    <h1 class="article-title" itemprop="name">
+      build.gradle知识点
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
+  	<time datetime="2021-12-04T08:23:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="dependecies中implementation和compile的区别"><a href="#dependecies中implementation和compile的区别" class="headerlink" title="dependecies中implementation和compile的区别"></a>dependecies中implementation和compile的区别</h3><p>都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码:</p>
+<p>当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节</p>
+<p>当你用compile,你的代码中引入的依赖类,别人就能访问查看细节</p>
+<h3 id="本地jar包如何引用-不推荐api方式"><a href="#本地jar包如何引用-不推荐api方式" class="headerlink" title="本地jar包如何引用,不推荐api方式"></a>本地jar包如何引用,不推荐api方式</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile fileTree(<span class="attr">dir:</span><span class="string">&#x27;src/libs&#x27;</span>,<span class="attr">include:</span>[<span class="string">&#x27;*.jar&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<p>不能把compile改成api,即使compile语法已经在7.0中被弃用了,但是在测试6.7版本中,必须使用compile,否则打包的时候无法将本地jar包打包进去</p>
+<h3 id="provided关键词"><a href="#provided关键词" class="headerlink" title="provided关键词"></a>provided关键词</h3><p>附有provided关键词,则该依赖不会打包进war包</p>
+<h3 id="bootjar与jar打包插件"><a href="#bootjar与jar打包插件" class="headerlink" title="bootjar与jar打包插件"></a>bootjar与jar打包插件</h3><p>注意:使用了bootjar或者jar打包插件后,使用传统jar包打包流程,build/libs底下不会生成jar包,即<strong>传统流程失效</strong></p>
+<p><strong>传统jar包,打包流程:</strong></p>
+<p>gradle clean </p>
+<p>gradle build -x test</p>
+<p>之后去build/libs底下即可找到jar包</p>
+<p>传统jar包打包方式,会将配置文件,依赖的libs包统统打包进jar包,使得jar包比较臃肿</p>
+<p>bootjar是一种打包插件</p>
+<p>打包方式是将配置文件和依赖的libs包分离出来放在两个文件夹中,只将自己的代码打包成jar包,.</p>
+<p>代码结构如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">    -config</span><br><span class="line">    -lib</span><br><span class="line">    key-core-web.jar</span><br></pre></td></tr></table></figure>
+
+
+
+<p>bootjar的好处:可以直接在文件外面改配置文件如application.properties,坏处是只适合本地使用,不适合交付服务器环境</p>
+<p>当然你也可以将一整个dist文件夹传给别人</p>
+<p>bootjar在gradle中的配置如下</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">bootJar &#123;</span><br><span class="line">    <span class="comment">//指放在根目录哪个文件夹下</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    <span class="comment">//指打包的jar包名字</span></span><br><span class="line">    archiveName project.name  + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    <span class="comment">//从哪个目录下打包源码,排除一切.xml文件</span></span><br><span class="line">    from(<span class="string">&#x27;src/main/java&#x27;</span>)&#123;</span><br><span class="line">        include <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//排除一切properties,yml后缀的文件</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line">    <span class="comment">//最后,从以下目录中复制文件到指定目录</span></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//将runtimec的包放入lib中</span></span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/application.properties&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;.&#x27;</span>).listFiles().findAll&#123;File f -&gt; (f.name.endsWith(<span class="string">&#x27;.crt&#x27;</span>) || f.name.endsWith(<span class="string">&#x27;.keystore&#x27;</span>))&#125;</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;config/contract/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/contract&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>另外还有一种jar打包插件,功能同上述类似</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">jar &#123;</span><br><span class="line">    enabled = <span class="literal">true</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    archiveName project.name + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line"></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用bootjar或者jar插件-依赖没有打包到dist-lib目录中"><a href="#使用bootjar或者jar插件-依赖没有打包到dist-lib目录中" class="headerlink" title="使用bootjar或者jar插件,依赖没有打包到dist/lib目录中"></a>使用bootjar或者jar插件,依赖没有打包到dist/lib目录中</h3><p>如果你使用的是以下语句</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请改成</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtimeClasspath.files</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="提示有被gardle弃用的特性"><a href="#提示有被gardle弃用的特性" class="headerlink" title="提示有被gardle弃用的特性"></a>提示有被gardle弃用的特性</h3><p>一般是使用了compile,在7.0版本已被启用,转而使用api</p>
+<p>但是有可能出现没有api方法,可以将apply plugin: ‘java’  改为apply plugin:’java-library’</p>
+<hr>
+<h3 id="gradle提示有警告-但是并没有告诉具体原因"><a href="#gradle提示有警告-但是并没有告诉具体原因" class="headerlink" title="gradle提示有警告,但是并没有告诉具体原因"></a>gradle提示有警告,但是并没有告诉具体原因</h3><p>使用以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradlew --warning-mode all</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="gradle在执行test任务时报错"><a href="#gradle在执行test任务时报错" class="headerlink" title="gradle在执行test任务时报错"></a>gradle在执行test任务时报错</h3><p>我们在gradle build 的时候会默认执行所有的test任务,所以有些test的任务在不满足条件时就会报错.其实我们可以执行gradle build -x test 就可以跳过test</p>
+<hr>
+<h3 id="配置springboot"><a href="#配置springboot" class="headerlink" title="配置springboot"></a>配置springboot</h3><p>step1.配置buildscript</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext&#123;</span><br><span class="line">        springBootVersion=<span class="string">&#x27;2.1.2.RELEASE&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(<span class="string">&quot;org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>往buildscript中写入以上脚本,作用是下载该依赖,让此依赖中包含一些插件</p>
+<p>为了让这些插件,加入gradle中,辅助build该项目.因此还需要应用该插件plugin,如下</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;org.springframework.boot&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>此种应用插件的语法是专门针对使用buildscript引入的外来依赖中的插件,可见官方文档<a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/plugins.html#sec:applying_plugins_buildscript">Applying plugins with the buildscript block</a></p>
+<p>当使用io.spring.dependency-management插件后,当我们再引用springboot的依赖,可以不用再写版本号,以spring-boot-gradle-plugin的版本为准</p>
+<p>step2.引入依赖</p>
+<p>未完成…..</p>
+<hr>
+<h2 id="提示Gradle当前版本与java11不兼容"><a href="#提示Gradle当前版本与java11不兼容" class="headerlink" title="提示Gradle当前版本与java11不兼容"></a>提示Gradle当前版本与java11不兼容</h2><p><strong>原因</strong>:</p>
+<p>idea高版本后，是基于Java11编写的，所以也是运行再Java11上；<br>低版本的Gradle是依赖于idea的运行环境，所以当基于java8的Gradle遇到java11的idea会出现不兼容报错</p>
+<p><strong>解决办法:</strong></p>
+<p>1.打开idea中的PLUGIN，搜索Choose Runtime找到这款由jetbrain出品的插件并安装<br>2.CTRL+shift+A，打开搜索框，输入choose runtime，打开<br>3.手动选择到jdk1.8的目录下install即可</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">gradle</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mysql</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        			<a href="/categories/gradle//" class="article-tag-list-link color2">gradle</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          论java连接数据库的各种姿势
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">pom.xml知识点记录</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#dependecies%E4%B8%ADimplementation%E5%92%8Ccompile%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">dependecies中implementation和compile的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0jar%E5%8C%85%E5%A6%82%E4%BD%95%E5%BC%95%E7%94%A8-%E4%B8%8D%E6%8E%A8%E8%8D%90api%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">本地jar包如何引用,不推荐api方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#provided%E5%85%B3%E9%94%AE%E8%AF%8D"><span class="toc-number">3.</span> <span class="toc-text">provided关键词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bootjar%E4%B8%8Ejar%E6%89%93%E5%8C%85%E6%8F%92%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">bootjar与jar打包插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8bootjar%E6%88%96%E8%80%85jar%E6%8F%92%E4%BB%B6-%E4%BE%9D%E8%B5%96%E6%B2%A1%E6%9C%89%E6%89%93%E5%8C%85%E5%88%B0dist-lib%E7%9B%AE%E5%BD%95%E4%B8%AD"><span class="toc-number">5.</span> <span class="toc-text">使用bootjar或者jar插件,依赖没有打包到dist&#x2F;lib目录中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA%E6%9C%89%E8%A2%ABgardle%E5%BC%83%E7%94%A8%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">提示有被gardle弃用的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gradle%E6%8F%90%E7%A4%BA%E6%9C%89%E8%AD%A6%E5%91%8A-%E4%BD%86%E6%98%AF%E5%B9%B6%E6%B2%A1%E6%9C%89%E5%91%8A%E8%AF%89%E5%85%B7%E4%BD%93%E5%8E%9F%E5%9B%A0"><span class="toc-number">7.</span> <span class="toc-text">gradle提示有警告,但是并没有告诉具体原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gradle%E5%9C%A8%E6%89%A7%E8%A1%8Ctest%E4%BB%BB%E5%8A%A1%E6%97%B6%E6%8A%A5%E9%94%99"><span class="toc-number">8.</span> <span class="toc-text">gradle在执行test任务时报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEspringboot"><span class="toc-number">9.</span> <span class="toc-text">配置springboot</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%A4%BAGradle%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC%E4%B8%8Ejava11%E4%B8%8D%E5%85%BC%E5%AE%B9"><span class="toc-number"></span> <span class="toc-text">提示Gradle当前版本与java11不兼容</span></a>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -253,9 +429,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,

@@ -164,6 +164,115 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-pbf文件结构解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">pbf文件结构解析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-11-08T08:14:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">int</span>&gt;<span class="comment">//第一个int型数据描述了head的的字节码长度</span></span><br><span class="line">&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawHeaderBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">&lt;<span class="keyword">int</span>&gt;</span><br><span class="line">&lt;rawblobHeader&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawPrimitiveBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br></pre></td></tr></table></figure>
+
+<p>读文件时,第一个int型数据描述了head的的字节码长度</p>
+<p>当我们读出这么长的字节数组rawblobHeader后,需要进行转化成可以解读的blobHeader类</p>
+<p>blobHeader类,会存着Data的size(),因此我们需要接着向后面读size()大小的字节码得到rawblob</p>
+<p>同时blobHeader类中的Type属性会告知刚刚读的Data是个什么类型的用途,我们也可以解码该rawblobdata解码成blob类</p>
+<p>有两种rawblob,一种是揭示osmHeader数据信息的,一种是揭示osmdata数据信息的,他们的区分就是靠rawblobHeader的type信息</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>在PbfDecoder中我们设置了变量Queue<PbfBlobResult> blobResults,存了PbfBlobResult类,在这个类里设置变量 List<ReaderElement> entities.所以在处理过程中,对于每个blob解析出的多个ReaderElement存在PbfBlobResult类,再将多个这个对象存入队列中</ReaderElement></PbfBlobResult></p>
+<h2 id="对blobHeader的解析"><a href="#对blobHeader的解析" class="headerlink" title="对blobHeader的解析"></a>对blobHeader的解析</h2><p>把字节码rawblob转化为HeaderBlock类</p>
+<p>我们只读这个类的<strong>时间戳信息</strong>,并存入OSMFileHeader对象中,这个类是REaderElement的子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmHeader</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.HeaderBlock header = Osmformat.HeaderBlock.parseFrom(data);</span><br><span class="line">		.....</span><br><span class="line">            这里省略的是看pbf文件和不合规的代码</span><br><span class="line">        .....</span><br><span class="line">        OSMFileHeader fileheader = <span class="keyword">new</span> OSMFileHeader();</span><br><span class="line">        <span class="keyword">long</span> milliSecondDate = header.getOsmosisReplicationTimestamp();</span><br><span class="line">        fileheader.setTag(<span class="string">&quot;timestamp&quot;</span>, Helper.createFormatter().format(<span class="keyword">new</span> Date(milliSecondDate * <span class="number">1000</span>)));</span><br><span class="line">        decodedEntities.add(fileheader);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对PrimitiveBlock的解析"><a href="#对PrimitiveBlock的解析" class="headerlink" title="对PrimitiveBlock的解析"></a>对PrimitiveBlock的解析</h2><p>我们对从PrimitiveBlock数据分为两个部分,第一个部分是存着一些偏移量,第二个部分是PrimitiveGroup类对象list</p>
+<p>为了获取偏移量部分,我们构造了一个类PbfFieldDecoder如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfFieldDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">double</span> COORDINATE_SCALING_FACTOR = <span class="number">0.000000001</span>;</span><br><span class="line">    <span class="keyword">private</span> String[] strings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> coordGranularity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLatitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLongitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> dateGranularity;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> primitiveBlock The primitive block containing the fields to be decoded.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfFieldDecoder</span><span class="params">(Osmformat.PrimitiveBlock primitiveBlock)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.coordGranularity = primitiveBlock.getGranularity();</span><br><span class="line">        <span class="keyword">this</span>.coordLatitudeOffset = primitiveBlock.getLatOffset();</span><br><span class="line">        <span class="keyword">this</span>.coordLongitudeOffset = primitiveBlock.getLonOffset();</span><br><span class="line">        <span class="keyword">this</span>.dateGranularity = primitiveBlock.getDateGranularity();</span><br><span class="line"></span><br><span class="line">        Osmformat.StringTable stringTable = primitiveBlock.getStringtable();</span><br><span class="line">        strings = <span class="keyword">new</span> String[stringTable.getSCount()];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strings.length; i++) &#123;</span><br><span class="line">            strings[i] = stringTable.getS(i).toStringUtf8();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在初始化对象的时候,我们通过primitiveblock获取block中的5个变量,分别是坐标和日期粒度,经度纬度偏移,字符串数组变量</p>
+<p>接着我们遍历列表,取出PrimitiveGroup类,对之处理获得node,way等数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmPrimitives</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.PrimitiveBlock block = Osmformat.PrimitiveBlock.parseFrom(data);</span><br><span class="line">        PbfFieldDecoder fieldDecoder = <span class="keyword">new</span> PbfFieldDecoder(block);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Osmformat.PrimitiveGroup primitiveGroup : block.getPrimitivegroupList()) &#123;</span><br><span class="line">            processNodes(primitiveGroup.getDense(), fieldDecoder);</span><br><span class="line">            processNodes(primitiveGroup.getNodesList(), fieldDecoder);</span><br><span class="line">            processWays(primitiveGroup.getWaysList(), fieldDecoder);</span><br><span class="line">            processRelations(primitiveGroup.getRelationsList(), fieldDecoder);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>for循环中的四个方法为我们读出了所有的node,way,relation数据</p>
+<p>ReaderNode有两个变量lat,lon,还有<code>Map&lt;String, Object&gt; properties</code>变量存着可能的属性键值对</p>
+<p>…</p>
+<p>所以先读出头</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-从graphhopper学多线程编程模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1513,102 +1622,6 @@
 
 
   
-    <article id="post-android官方开发教程的app知识点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/09/01/android%E5%AE%98%E6%96%B9%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%9A%84app%E7%9F%A5%E8%AF%86%E7%82%B9/">android官方开发教程的app知识点</a>
-    </h1>
-  
-
-        
-        <a href="/2021/09/01/android%E5%AE%98%E6%96%B9%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%9A%84app%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2021-09-01T11:55:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <table>
-<thead>
-<tr>
-<th>app</th>
-<th>知识点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>WhoWroteIt</td>
-<td>学习利用AsyncTaskLoader,在后台运行某段代码,访问某个api,获取返回的json,处理后回显,并实现屏幕旋转后,仍保持后台的继续运行</td>
-</tr>
-</tbody></table>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/android//" class="article-tag-list-link color3">android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/09/01/android%E5%AE%98%E6%96%B9%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%9A%84app%E7%9F%A5%E8%AF%86%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
@@ -1719,6 +1732,14 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">gradle</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">android</a>
               </li>
              
@@ -1728,10 +1749,6 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">

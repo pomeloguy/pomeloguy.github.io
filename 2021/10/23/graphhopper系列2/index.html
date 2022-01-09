@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png">
 <meta property="og:image" content="http://example.com/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png">
 <meta property="article:published_time" content="2021-10-23T06:21:09.000Z">
-<meta property="article:modified_time" content="2021-11-23T09:20:38.006Z">
+<meta property="article:modified_time" content="2022-01-05T03:05:49.434Z">
 <meta property="article:author" content="pomeloguy">
 <meta property="article:tag" content="graphhopper">
 <meta name="twitter:card" content="summary">
@@ -72,7 +72,7 @@
 	        
 				<li><a href="/categories/linux/">Linux</a></li>
 	        
-				<li><a href="/categories/windows/">杂项</a></li>
+				<li><a href="/categories/other/">杂项</a></li>
 	        
 			</ul>
 		</nav>
@@ -154,7 +154,7 @@
 		        
 					<li style="width: 16.666666666666668%"><a href="/categories/linux/">Linux</a></li>
 		        
-					<li style="width: 16.666666666666668%"><a href="/categories/windows/">杂项</a></li>
+					<li style="width: 16.666666666666668%"><a href="/categories/other/">杂项</a></li>
 		        
 				</ul>
 			</nav>
@@ -562,6 +562,9 @@
 <p><strong>从继承我们可以看到,这几个对象之间的关系</strong></p>
 <p><strong>DataAccess:规定了数据接口的生命周期:1)对象的创建,2)配置(如segment size),3)crate or loadExisting,4)使用和确保足够的容量空间,5)关闭</strong></p>
 <p><strong>AbstractDataAccess:dui</strong></p>
+<p>以node举例,一张地图有成千上万的节点,存储节点的方式,以系统中的构建为例</p>
+<p>我们在构造GraphHopperStorage时,会同时构造BaseGraph,在BaseGraph中又继续构造了BaseGraphNodesAndEdges,在这个类中我们定义了一个对象DataAccess nodes,此后地图中的所有节点,都会存储其中.被实现后的DataAccees中,拥有一个数组结构int [] [] segments二维数组来存储节点node信息.当然像我们提到的一个node会有很多属性,当我们确定这些属性后,一个node所占据的字节数也就确定了,超出4个字节就多占一个int. </p>
+<p>为什么会有那么多flagecoder,这些flagencoder确定后,就知道给edge的属性+flagencoder会占据多大空间,再根据这个进行空间的分配和索引</p>
 <h1 id="导航api"><a href="#导航api" class="headerlink" title="导航api"></a><strong>导航api</strong></h1><p><strong>请求URL:</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8989/route?point=52.596375%2C13.368988&amp;point=52.525413%2C13.458252&amp;type=json&amp;locale=zh-CN&amp;key=&amp;elevation=false&amp;profile=car</span><br></pre></td></tr></table></figure>
 
@@ -717,7 +720,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 pomeloguy
+    		&copy; 2022 pomeloguy
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

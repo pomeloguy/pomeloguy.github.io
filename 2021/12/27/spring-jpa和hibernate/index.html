@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2021/12/27/spring-jpa%E5%92%8Chibernate/image-20211228101713404.png">
 <meta property="article:published_time" content="2021-12-27T11:49:47.000Z">
-<meta property="article:modified_time" content="2021-12-28T02:17:13.450Z">
+<meta property="article:modified_time" content="2021-12-28T02:48:11.432Z">
 <meta property="article:author" content="pomeloguy">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
@@ -70,7 +70,7 @@
 	        
 				<li><a href="/categories/linux/">Linux</a></li>
 	        
-				<li><a href="/categories/windows/">杂项</a></li>
+				<li><a href="/categories/other/">杂项</a></li>
 	        
 			</ul>
 		</nav>
@@ -152,7 +152,7 @@
 		        
 					<li style="width: 16.666666666666668%"><a href="/categories/linux/">Linux</a></li>
 		        
-					<li style="width: 16.666666666666668%"><a href="/categories/windows/">杂项</a></li>
+					<li style="width: 16.666666666666668%"><a href="/categories/other/">杂项</a></li>
 		        
 				</ul>
 			</nav>
@@ -220,11 +220,13 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">Users</span>, <span class="title">Integer</span>&gt;</span></span><br><span class="line"><span class="class">					, <span class="title">JpaSpecificationExecutor</span>&lt;<span class="title">Users</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">单条件查询</span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">   Specification&lt;Users&gt; spec = <span class="keyword">new</span> Specification&lt;Users&gt;() &#123;</span><br><span class="line">       <span class="comment">/**</span></span><br><span class="line"><span class="comment">        * <span class="doctag">@return</span> Predicate:定义了查询条件</span></span><br><span class="line"><span class="comment">        * <span class="doctag">@param</span> Root&lt;Users&gt; root:根对象。封装了查询条件的对象</span></span><br><span class="line"><span class="comment">        * <span class="doctag">@param</span> CriteriaQuery&lt;?&gt; query:定义了一个基本的查询.一般不</span></span><br><span class="line"><span class="comment">       使用</span></span><br><span class="line"><span class="comment">        * <span class="doctag">@param</span> CriteriaBuilder cb:创建一个查询条件</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> Predicate <span class="title">toPredicate</span><span class="params">(Root&lt;Users&gt; root,</span></span></span><br><span class="line"><span class="params"><span class="function">                                    CriteriaQuery&lt;?&gt; query, CriteriaBuilder cb)</span> </span>&#123;</span><br><span class="line">           Predicate pre = cb.equal(root.get(<span class="string">&quot;username&quot;</span>), <span class="string">&quot;王五&quot;</span>);</span><br><span class="line">           <span class="keyword">return</span> pre;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;;</span><br><span class="line">   List&lt;Users&gt; list = <span class="keyword">this</span>.usersDao.findAll(spec);</span><br><span class="line">   <span class="keyword">for</span> (Users users : list) &#123;</span><br><span class="line">       System.out.println(users);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>我理解该种方法是在使用findall(参数)方法时,其中的参数是Specification,我们需要提前实现这个类,实现其中的谓词Predicate生成方法,这里面定义了查询的详细要求,这时Specification就会包含了查询的语句要求.这里的使用参考自<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1429349">此处</a>,后面还介绍了分页,排序,相关的查询方法.</p>
-<p>介绍第二种方法和注入原理,参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/andy_zhang2007/article/details/84064862">此处</a>,以我本身代码为例<br>首先我们会在配置文件处使用@EnableJpaRepositories注解</p>
+<p>介绍第二种方法和注入原理,参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/andy_zhang2007/article/details/84064862">此处</a>,以我本身代码为例</p>
+<p><strong>第二种方法</strong>就是使用jpa中的derived特性,见<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.core-concepts">spring-data-jpa官网链接</a>十分方便</p>
+<p><strong>注入原理</strong>:首先我们会在配置文件处使用@EnableJpaRepositories注解</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConditionalOnExpression(&quot;&#x27;db&#x27;.equals(&#x27;$&#123;system.mgrStyle&#125;&#x27;)&quot;)</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@DependsOn(&quot;transactionManager&quot;)</span></span><br><span class="line"><span class="meta">@EnableJpaRepositories(</span></span><br><span class="line"><span class="meta">        basePackages = &quot;com.webank.keymgr.db.encryptkey.repository&quot;,</span></span><br><span class="line"><span class="meta">        entityManagerFactoryRef = &quot;encryptKeyEntityManagerFactory&quot;, </span></span><br><span class="line"><span class="meta">        transactionManagerRef = &quot;transactionManager&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EncryptKeyJpaConfig</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;encryptKeyDataSource&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> DataSource encryptKeyDataSource;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JpaProperties jpaProperties; </span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>@EnableJpaRepositories(<br>        basePackages = “com.webank.keymgr.db.encryptkey.repository”,<br>        entityManagerFactoryRef = “encryptKeyEntityManagerFactory”,<br>        transactionManagerRef = “transactionManager”)</p>
-<p>里面加入了三个参数,basePackages指的是要扫描的repository包,其实也就是我们前面指出的EncryptKeyInfoRepository接口,当被指明后此接口就可以被扫描到,上面提到的文章指出此接口被spring data jpa中的实现类SimpleJpaRepository代理了,所以我们直接就可以注入了.</p>
+<p>里面加入了三个参数,basePackages指的是要扫描的repository包,其实也就是我们前面指出的EncryptKeyInfoRepository接口,当被指明后此接口就可以被扫描到,上面提到的文章指出此接口被spring data jpa中的实现类SimpleJpaRepository代理了,所以我们直接就可以注入了.在官网也提到了使用代理为这些接口创建实例<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods">见此</a></p>
 
       
 
@@ -319,6 +321,15 @@
   
 <nav id="article-nav">
   
+    <a href="/2022/01/06/java%E8%AF%AD%E6%B3%95%E8%AE%B0%E5%BD%95/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          java语法记录
+        
+      </div>
+    </a>
+  
   
     <a href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">mysql疑难杂症</div>
@@ -364,7 +375,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 pomeloguy
+    		&copy; 2022 pomeloguy
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

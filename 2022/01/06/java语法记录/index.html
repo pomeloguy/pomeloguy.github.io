@@ -6,16 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives | pomeloguy的博客</title>
+  <title>java语法记录 | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="pomeloguy的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="pomeloguy的博客">
-<meta property="og:url" content="http://example.com/archives/page/3/index.html">
+  <meta name="description" content="关于protectedpublic: 被public修饰的类成员能被 所有的类访问 private: 是能在被定义的类中访问 不修饰: 包访问权限,只能被同一包中的类访问 protected: 被protected修饰的成员对于本包和其子类可见,可用 本包可见:理解成,在本包中调用此类的protected方法 如包com.jinlei.bao1中的类A 是继承object的 子类可见可用:理解成只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java语法记录">
+<meta property="og:url" content="http://example.com/2022/01/06/java%E8%AF%AD%E6%B3%95%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="pomeloguy的博客">
+<meta property="og:description" content="关于protectedpublic: 被public修饰的类成员能被 所有的类访问 private: 是能在被定义的类中访问 不修饰: 包访问权限,只能被同一包中的类访问 protected: 被protected修饰的成员对于本包和其子类可见,可用 本包可见:理解成,在本包中调用此类的protected方法 如包com.jinlei.bao1中的类A 是继承object的 子类可见可用:理解成只">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-06T09:03:29.000Z">
+<meta property="article:modified_time" content="2022-01-06T13:38:55.057Z">
 <meta property="article:author" content="pomeloguy">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
@@ -162,150 +165,171 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-java语法记录" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/09/01/android%E5%AE%98%E6%96%B9%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%9A%84app%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2021-09-01T11:55:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/09/01/android%E5%AE%98%E6%96%B9%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%9A%84app%E7%9F%A5%E8%AF%86%E7%82%B9/">android官方开发教程的app知识点</a>
+    <h1 class="article-title" itemprop="name">
+      java语法记录
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2022/01/06/java%E8%AF%AD%E6%B3%95%E8%AE%B0%E5%BD%95/" class="archive-article-date">
+  	<time datetime="2022-01-06T09:03:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-01-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="关于protected"><a href="#关于protected" class="headerlink" title="关于protected"></a>关于protected</h2><p>public: 被public修饰的类成员能被 所有的类访问</p>
+<p>private: 是能在被定义的类中访问</p>
+<p>不修饰: 包访问权限,只能被同一包中的类访问</p>
+<p>protected: 被protected修饰的成员对于<strong>本包和其子类可见,可用</strong></p>
+<p>本包可见:理解成,在本包中调用此类的protected方法</p>
+<p>如包com.jinlei.bao1中的类A 是继承object的</p>
+<p>子类可见可用:理解成只能在<strong>子类A中</strong>,利用<strong>子类实例化对象</strong>调用protected方法如clone(),才可以<strong>成功</strong>.  如果只是子类中单纯<strong>new object()的实例化对象</strong>是不能用clone()方法的.  同样在任何非object包下的类B中,<strong>new A()实例</strong>也是不能调用clone()方法的</p>
+<p>根本原因如下(可以不看,说的不好,不准确):</p>
+<p>如果以修饰方法函数为例,方法函数经过编译后会暴露<strong>方法访问的二进制地址</strong>,以此修饰方法,本身代表了一种<strong>访问权限</strong></p>
+<p>例如:java.lang包中的类Object</p>
+<p>包com.jinlei.bao2中的类B 默认extends Object</p>
+<p>当我们在类B中,将类Object new成实例A后,再在代码中使用类中的方法如A.clone(),当我们<strong>编译</strong>的时候,我们就需要去找这些方法的二进制地址,将其加入编译后的文件</p>
+<p>但是如果此时类Object中的clone()方法修饰为protected,那么当编译后,此方法的二进制访问入口,只会暴露给java.lang包和类Object的子类. 因此B在编译的时候想找二进制入口,但是会找不到,于是编译失败.</p>
+<p>因此对于protected修饰,应该加上一句:<strong>且本包和其子类,不可将此二进制访问入口交给给非本包和非子类,即使是孙子类</strong></p>
+<p>而且子类可见,要进行区分,只是子类可见super的二进制访问入口,而不是任何一个父类的实例</p>
+<p>可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/justloveyou_/article/details/61672133">此文中的代码</a>增加理解</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">android</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/android//" class="article-tag-list-link color3">android</a>
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2022/01/06/java%E8%AF%AD%E6%B3%95%E8%AE%B0%E5%BD%95/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/" class="archive-article-date">
-  	<time datetime="2021-08-30T07:40:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-30</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/12/27/spring-jpa%E5%92%8Chibernate/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">spring.jpa和hibernate</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/">LWE\理想格\格中嵌入陷门</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="archive-article-date">
-  	<time datetime="2021-08-20T10:41:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">hexo博客搭建</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/hexo//" class="article-tag-list-link color5">hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
   
   
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
+  
+
+  
+
   
 
 
@@ -329,8 +353,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,

@@ -16,7 +16,7 @@
 <meta property="og:description" content="dependecies中implementation和compile的区别都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码: 当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节 当你用compile,你的代码中引入的依赖类,别人就能访问查看细节 本地jar包如何引用,不推荐api方式1compile fileTre">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-04T08:23:36.000Z">
-<meta property="article:modified_time" content="2022-01-09T06:53:14.401Z">
+<meta property="article:modified_time" content="2022-01-09T07:21:00.055Z">
 <meta property="article:author" content="pomeloguy">
 <meta property="article:tag" content="gradle">
 <meta property="article:tag" content="java">
@@ -229,12 +229,6 @@
 <h3 id="提示有被gardle弃用的特性"><a href="#提示有被gardle弃用的特性" class="headerlink" title="提示有被gardle弃用的特性"></a>提示有被gardle弃用的特性</h3><p>一般是使用了compile,在7.0版本已被启用,转而使用api</p>
 <p>但是有可能出现没有api方法,可以将apply plugin: ‘java’  改为apply plugin:’java-library’</p>
 <hr>
-<h3 id="gradle提示有警告-但是并没有告诉具体原因"><a href="#gradle提示有警告-但是并没有告诉具体原因" class="headerlink" title="gradle提示有警告,但是并没有告诉具体原因"></a>gradle提示有警告,但是并没有告诉具体原因</h3><p>使用以下命令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradlew --warning-mode all</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="gradle在执行test任务时报错"><a href="#gradle在执行test任务时报错" class="headerlink" title="gradle在执行test任务时报错"></a>gradle在执行test任务时报错</h3><p>我们在gradle build 的时候会默认执行所有的test任务,所以有些test的任务在不满足条件时就会报错.其实我们可以执行gradle build -x test 就可以跳过test</p>
-<hr>
 <h3 id="配置springboot"><a href="#配置springboot" class="headerlink" title="配置springboot"></a>配置springboot</h3><p>step1.配置buildscript</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext&#123;</span><br><span class="line">        springBootVersion=<span class="string">&#x27;2.1.2.RELEASE&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(<span class="string">&quot;org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -247,10 +241,6 @@
 <p>step2.引入依赖</p>
 <p>未完成…..</p>
 <hr>
-<h2 id="提示Gradle当前版本与java11不兼容"><a href="#提示Gradle当前版本与java11不兼容" class="headerlink" title="提示Gradle当前版本与java11不兼容"></a>提示Gradle当前版本与java11不兼容</h2><p><strong>原因</strong>:</p>
-<p>idea高版本后，是基于Java11编写的，所以也是运行再Java11上；<br>低版本的Gradle是依赖于idea的运行环境，所以当基于java8的Gradle遇到java11的idea会出现不兼容报错</p>
-<p><strong>解决办法:</strong></p>
-<p>1.打开idea中的PLUGIN，搜索Choose Runtime找到这款由jetbrain出品的插件并安装<br>2.CTRL+shift+A，打开搜索框，输入choose runtime，打开<br>3.手动选择到jdk1.8的目录下install即可</p>
 
       
 
@@ -280,7 +270,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/gradle//" class="article-tag-list-link color2">gradle</a>
+        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
         		</li>
       		
 		</ul>
@@ -387,7 +377,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#dependecies%E4%B8%ADimplementation%E5%92%8Ccompile%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">dependecies中implementation和compile的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0jar%E5%8C%85%E5%A6%82%E4%BD%95%E5%BC%95%E7%94%A8-%E4%B8%8D%E6%8E%A8%E8%8D%90api%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">本地jar包如何引用,不推荐api方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#provided%E5%85%B3%E9%94%AE%E8%AF%8D"><span class="toc-number">3.</span> <span class="toc-text">provided关键词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bootjar%E4%B8%8Ejar%E6%89%93%E5%8C%85%E6%8F%92%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">bootjar与jar打包插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8bootjar%E6%88%96%E8%80%85jar%E6%8F%92%E4%BB%B6-%E4%BE%9D%E8%B5%96%E6%B2%A1%E6%9C%89%E6%89%93%E5%8C%85%E5%88%B0dist-lib%E7%9B%AE%E5%BD%95%E4%B8%AD"><span class="toc-number">5.</span> <span class="toc-text">使用bootjar或者jar插件,依赖没有打包到dist&#x2F;lib目录中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA%E6%9C%89%E8%A2%ABgardle%E5%BC%83%E7%94%A8%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">提示有被gardle弃用的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gradle%E6%8F%90%E7%A4%BA%E6%9C%89%E8%AD%A6%E5%91%8A-%E4%BD%86%E6%98%AF%E5%B9%B6%E6%B2%A1%E6%9C%89%E5%91%8A%E8%AF%89%E5%85%B7%E4%BD%93%E5%8E%9F%E5%9B%A0"><span class="toc-number">7.</span> <span class="toc-text">gradle提示有警告,但是并没有告诉具体原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#gradle%E5%9C%A8%E6%89%A7%E8%A1%8Ctest%E4%BB%BB%E5%8A%A1%E6%97%B6%E6%8A%A5%E9%94%99"><span class="toc-number">8.</span> <span class="toc-text">gradle在执行test任务时报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEspringboot"><span class="toc-number">9.</span> <span class="toc-text">配置springboot</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%A4%BAGradle%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC%E4%B8%8Ejava11%E4%B8%8D%E5%85%BC%E5%AE%B9"><span class="toc-number"></span> <span class="toc-text">提示Gradle当前版本与java11不兼容</span></a>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#dependecies%E4%B8%ADimplementation%E5%92%8Ccompile%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">dependecies中implementation和compile的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0jar%E5%8C%85%E5%A6%82%E4%BD%95%E5%BC%95%E7%94%A8-%E4%B8%8D%E6%8E%A8%E8%8D%90api%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">本地jar包如何引用,不推荐api方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#provided%E5%85%B3%E9%94%AE%E8%AF%8D"><span class="toc-number">3.</span> <span class="toc-text">provided关键词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bootjar%E4%B8%8Ejar%E6%89%93%E5%8C%85%E6%8F%92%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">bootjar与jar打包插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8bootjar%E6%88%96%E8%80%85jar%E6%8F%92%E4%BB%B6-%E4%BE%9D%E8%B5%96%E6%B2%A1%E6%9C%89%E6%89%93%E5%8C%85%E5%88%B0dist-lib%E7%9B%AE%E5%BD%95%E4%B8%AD"><span class="toc-number">5.</span> <span class="toc-text">使用bootjar或者jar插件,依赖没有打包到dist&#x2F;lib目录中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA%E6%9C%89%E8%A2%ABgardle%E5%BC%83%E7%94%A8%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">提示有被gardle弃用的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEspringboot"><span class="toc-number">7.</span> <span class="toc-text">配置springboot</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -512,6 +502,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">gradle</a>
               </li>
              
@@ -520,7 +514,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">android</a>
+                <a href="javascript:void(0)" class="js-tag color1">other</a>
               </li>
              
               <li class="article-tag-list-item">

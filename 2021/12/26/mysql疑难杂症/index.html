@@ -16,7 +16,7 @@
 <meta property="og:description" content="安装与卸载安装和配置(适用于Mariadb10.1,mysql5.*)step1,安装(mariadb为例) 1apt install mariadb-server  step2启动 1service  mysql start  step3配置root密码等 1mysql_secure_installation  step4 配置端口 12cd &#x2F;etc&#x2F;mysql&#x2F;mariadb.conf.dv">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-25T16:13:35.000Z">
-<meta property="article:modified_time" content="2022-01-09T03:19:09.285Z">
+<meta property="article:modified_time" content="2022-05-25T09:50:24.673Z">
 <meta property="article:author" content="pomeloguy">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="mysql">
@@ -230,6 +230,15 @@
 <p>此时就会报错</p>
 <p>因此必须将改回utf8,才能正常.如果表已经创建了,可以删除后重新建表</p>
 <p>utf8-4编码的好处是兼容更多钟多样的字符</p>
+<h2 id="mysql查看操作记录"><a href="#mysql查看操作记录" class="headerlink" title="mysql查看操作记录"></a>mysql查看操作记录</h2><p>仅使用于实时查看操作记录，而且开启后记得关闭，因为一直开启会影响mysql效率</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//查看日志是否开启，此时会显示off状态</span><br><span class="line">show variables like &#x27;general%&#x27;;</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">| Variable_name    | Value                 |</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">| general_log      | OFF                   |</span><br><span class="line">| general_log_file | /var/lib/mysql/jl.log |</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">//开启日志</span><br><span class="line">set global general_log=1;</span><br><span class="line"></span><br><span class="line">//此时继续查看，会显示ON状态</span><br><span class="line">show variables like &#x27;general%&#x27;;</span><br><span class="line"></span><br><span class="line">//退出mysql控制台，打印日志流</span><br><span class="line">tail -f /var/lib/mysql/jl.log</span><br><span class="line"></span><br><span class="line">//进入mysql，控制台，关闭日志</span><br><span class="line">set global general_log=0;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
 
       
 
@@ -366,7 +375,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.</span> <span class="toc-text">安装与卸载</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE-%E9%80%82%E7%94%A8%E4%BA%8EMariadb10-1-mysql5"><span class="toc-number">1.1.</span> <span class="toc-text">安装和配置(适用于Mariadb10.1,mysql5.*)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.2.</span> <span class="toc-text">卸载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87"><span class="toc-number">2.</span> <span class="toc-text">疑难杂症</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E4%B8%8A%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">连接上的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E7%89%88%E6%9C%AC%E4%B8%8D%E5%90%8C"><span class="toc-number">2.1.1.</span> <span class="toc-text">驱动版本不同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E5%8C%BA%E4%B8%8D%E5%90%8C"><span class="toc-number">2.1.2.</span> <span class="toc-text">时区不同</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E6%B3%95%E5%88%9B%E5%BB%BAkey%E6%88%96%E8%80%85index-%E6%8A%A5%E9%94%99%E8%B6%85%E8%BF%87767bytes"><span class="toc-number">2.2.</span> <span class="toc-text">无法创建key或者index,报错超过767bytes</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.</span> <span class="toc-text">安装与卸载</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE-%E9%80%82%E7%94%A8%E4%BA%8EMariadb10-1-mysql5"><span class="toc-number">1.1.</span> <span class="toc-text">安装和配置(适用于Mariadb10.1,mysql5.*)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.2.</span> <span class="toc-text">卸载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87"><span class="toc-number">2.</span> <span class="toc-text">疑难杂症</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E4%B8%8A%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">连接上的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E7%89%88%E6%9C%AC%E4%B8%8D%E5%90%8C"><span class="toc-number">2.1.1.</span> <span class="toc-text">驱动版本不同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E5%8C%BA%E4%B8%8D%E5%90%8C"><span class="toc-number">2.1.2.</span> <span class="toc-text">时区不同</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E6%B3%95%E5%88%9B%E5%BB%BAkey%E6%88%96%E8%80%85index-%E6%8A%A5%E9%94%99%E8%B6%85%E8%BF%87767bytes"><span class="toc-number">2.2.</span> <span class="toc-text">无法创建key或者index,报错超过767bytes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95"><span class="toc-number">2.3.</span> <span class="toc-text">mysql查看操作记录</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -520,6 +529,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">maven</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">security</a>
               </li>
              
               <li class="article-tag-list-item">

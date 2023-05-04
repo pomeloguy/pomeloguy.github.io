@@ -164,384 +164,6 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-论java连接数据库的各种姿势" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/">论java连接数据库的各种姿势</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" class="archive-article-date">
-  	<time datetime="2021-12-08T09:06:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="使用Mybatis"><a href="#使用Mybatis" class="headerlink" title="使用Mybatis"></a>使用Mybatis</h1><p>目前感受到的好处:把所有的数据库curd操作命令,抽取出来,放入一个xml文件中便于管理</p>
-<p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jdbc.driver=com.mysql.jdbc.Driver</span><br><span class="line">jdbc.url=jdbc:mysql://localhost:3306/test</span><br><span class="line">jdbc.username=root</span><br><span class="line">jdbc.password=123456</span><br></pre></td></tr></table></figure>
-
-<p>step2.配置SqlMapConfig.xml文件,在此文件中配置数据库连接池datasource和Mapper文件</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">configuration</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//mybatis.org//DTD Config 3.0//EN&quot;</span> <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--通过properties标签加载外部properties文件--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span> <span class="attr">resource</span>=<span class="string">&quot;jdbc.properties&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--数据源环境--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">environments</span> <span class="attr">default</span>=<span class="string">&quot;development&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">environment</span> <span class="attr">id</span>=<span class="string">&quot;development&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">transactionManager</span> <span class="attr">type</span>=<span class="string">&quot;JDBC&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dataSource</span> <span class="attr">type</span>=<span class="string">&quot;POOLED&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;driver&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.driver&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;url&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.url&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;username&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.username&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.password&#125;&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dataSource</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">environments</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">resource</span>=<span class="string">&quot;UserMapper.xml&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step3.书写Mapper配置文件,可以有多个,只需在sqlmapconfig文件中添加即可,以查询User的UserMapper.xml为例</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span></span></span><br><span class="line"><span class="meta">        <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;userMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;findAll&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.jinlei.pojo.User&quot;</span>&gt;</span></span><br><span class="line">        select * from user</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step4.进行查询的连接,以测试类为例</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith(SpringJUnit4ClassRunner.class)</span></span><br><span class="line"><span class="meta">@ContextConfiguration(value=&#123;&quot;classpath:applicationContext.xml&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBatisTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取核心配置文件</span></span><br><span class="line">        InputStream resourceAsStream= Resources.getResourceAsStream(<span class="string">&quot;sqlMapConfig.xml&quot;</span>);</span><br><span class="line">        <span class="comment">//获取session工厂对象</span></span><br><span class="line">        SqlSessionFactory sqlSessionFactory=<span class="keyword">new</span> SqlSessionFactoryBuilder().build(resourceAsStream);</span><br><span class="line">        <span class="comment">//获得session回话对象</span></span><br><span class="line">        SqlSession sqlSession=sqlSessionFactory.openSession();</span><br><span class="line">        <span class="comment">//执行操作 参数:namespace+id</span></span><br><span class="line">        List&lt;User&gt; userList =sqlSession.selectList(<span class="string">&quot;userMapper.findAll&quot;</span>);</span><br><span class="line">        <span class="comment">//打印数据</span></span><br><span class="line">        System.out.println(userList);</span><br><span class="line">        <span class="comment">//释放资源</span></span><br><span class="line">        sqlSession.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="使用spring-jdbc"><a href="#使用spring-jdbc" class="headerlink" title="使用spring-jdbc"></a>使用spring-jdbc</h1><p>此为有spring和springmvc的情况下</p>
-<p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jdbc.driver=com.mysql.jdbc.Driver</span><br><span class="line">jdbc.url=jdbc:mysql:<span class="comment">//localhost:3306/test</span></span><br><span class="line">jdbc.username=root</span><br><span class="line">jdbc.password=<span class="number">123456</span></span><br></pre></td></tr></table></figure>
-
-<p>step2.在spring配置文件applicationContext.xml中写入dataSource的bean和jdbctemplate的bean</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">&quot;http://www.springframework.org/schema/context&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=</span></span><br><span class="line"><span class="tag">               <span class="string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">                http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--加载外部的properties文件--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:property-placeholder</span> <span class="attr">location</span>=<span class="string">&quot;classpath:jdbc.properties&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">context:property-placeholder</span>&gt;</span></span><br><span class="line">	 <span class="comment">&lt;!--配置数据源的datasource--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;dataSource&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;driverClass&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.driver&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;jdbcUrl&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.url&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.username&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.password&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">	 <span class="comment">&lt;!--配置jdbc的bean,并引用datasource--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;jdbcTemplate&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.jdbc.core.JdbcTemplate&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;dataSource&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;dataSource&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--扫描注解--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">&quot;com.jinlei&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">context:component-scan</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step3.将配置文件导入web.xml中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;web-app xmlns=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span></span><br><span class="line">         xmlns:xsi=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="line">         xsi:schemaLocation=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span></span><br><span class="line">         version=<span class="string">&quot;4.0&quot;</span>&gt;</span><br><span class="line">    &lt;!--配置全局初始参数,用于初始化时将配置文件加载进去--&gt;</span><br><span class="line">    &lt;context-param&gt;</span><br><span class="line">        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;</span><br><span class="line">    &lt;/context-param&gt;         </span><br><span class="line"> &lt;/web-app&gt;            </span><br></pre></td></tr></table></figure>
-
-<p>step4.使用jdbctemplate进行sql查询</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDaoImpl</span> <span class="keyword">implements</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">findByUsernameAndPassworc</span><span class="params">(String username, String password)</span> </span>&#123;</span><br><span class="line">        User user= jdbcTemplate.queryForObject(<span class="string">&quot;select * from sys_user where username=?&quot;</span> +<span class="string">&quot; and password=?&quot;</span>, <span class="keyword">new</span> BeanPropertyRowMapper&lt;User&gt;(User.class),username,password);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="手动连接"><a href="#手动连接" class="headerlink" title="手动连接"></a>手动连接</h1><p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">username=root</span><br><span class="line">password=<span class="number">123456</span></span><br><span class="line">url=jdbc:mysql:<span class="comment">//localhost:3306/book</span></span><br><span class="line">driverClassName=com.mysql.jdbc.Driver</span><br></pre></td></tr></table></figure>
-
-<p>step2.手动创建datasource并声明连接和关闭方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdbcUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DruidDataSource dataSource;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Connection&gt; conns=<span class="keyword">new</span> ThreadLocal&lt;Connection&gt;();</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Properties properties=<span class="keyword">new</span> Properties();<span class="comment">//new数据库连接池中的Properties类</span></span><br><span class="line"><span class="comment">//  getResourceAsStream()方法只读取工程路径下的文件,之后用于读取jdbc.properties属性配置文件</span></span><br><span class="line">            InputStream inputStream = JdbcUtils.class.getClassLoader().getResourceAsStream(<span class="string">&quot;jdbc.properties&quot;</span>);</span><br><span class="line">            <span class="comment">//从将配置文件流加载进Properties类对象中</span></span><br><span class="line">            properties.load(inputStream);</span><br><span class="line">            <span class="comment">//再把Properties类传入Druid数据池中</span></span><br><span class="line">            dataSource= (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据库连接池中的连接</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 如果返回null,说明获取连接失败,有值就是获取成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">()</span></span>&#123;</span><br><span class="line">       Connection conn=conns.get();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn==<span class="keyword">null</span>)&#123;</span><br><span class="line">                conn=dataSource.getConnection();</span><br><span class="line">                conns.set(conn);</span><br><span class="line">                conn.setAutoCommit(<span class="keyword">false</span>);<span class="comment">//设置手动管理事务</span></span><br><span class="line">            &#125;</span><br><span class="line">            conn=dataSource.getConnection();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> conn;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提交事务,并关闭释放连接</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">commitAndClose</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Connection connection=conns.get();</span><br><span class="line">        <span class="keyword">if</span> (connection!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection.commit();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.close();<span class="comment">//关闭连接</span></span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        conns.remove();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 回滚事务,并关闭释放连接</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">rollbackAndClose</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Connection connection=conns.get();</span><br><span class="line">    <span class="keyword">if</span> (connection!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            connection.rollback();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    conns.remove();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>step3.先声明各种查询方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDao</span> </span>&#123;</span><br><span class="line">    <span class="comment">//使用DbUtils操作数据库</span></span><br><span class="line">    <span class="keyword">private</span> QueryRunner queryRunner=<span class="keyword">new</span> QueryRunner();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * update()方法用来执行:insert/update/delete语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 如果返回-1,说明执行失败;返回正常数字,数字代表更新的行数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">update</span><span class="params">(String sql,Object ... args)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;BaseDao程序在[&quot;</span>+Thread.currentThread().getName()+<span class="string">&quot;]&quot;</span>);</span><br><span class="line">        Connection connection = JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.update(connection,sql,args);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> type</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sql</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> &lt;T&gt;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">T  <span class="title">queryForOne</span><span class="params">(Class&lt;T&gt; type,String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> BeanHandler&lt;T&gt;(type),args );</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">queryForList</span><span class="params">(Class&lt;T&gt; type,String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> BeanListHandler&lt;T&gt;(type),args );</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行返回一行一列的sql语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sql 执行sql语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args sql的参数值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">queryForSinglevalue</span><span class="params">(String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> ScalarHandler(),args);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>step4.利用刚刚写的方法,进行针对性查询</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookDaoImpl</span> <span class="keyword">extends</span> <span class="title">BaseDao</span> <span class="keyword">implements</span> <span class="title">BookDao</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addBook</span><span class="params">(Book book)</span> </span>&#123;</span><br><span class="line">        String sql = <span class="string">&quot;insert into t_book(`name`,author,price,sales,stock,img_path)&quot;</span> +</span><br><span class="line">                <span class="string">&quot;values(?,?,?,?,?,?)&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> update(sql, book.getName(), book.getAuthor(), book.getPrice(),</span><br><span class="line">                book.getSales(), book.getStock(), book.getImgPath());</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">queryBookById</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        String sql=<span class="string">&quot;select id,`name`,author,price,sales,stock,img_path from&quot;</span> +</span><br><span class="line">                <span class="string">&quot; t_book where id=?&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> queryForOne(Book.class, sql, id);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-build-gradle知识点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">build.gradle知识点</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2021-12-04T08:23:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dependecies中implementation和compile的区别"><a href="#dependecies中implementation和compile的区别" class="headerlink" title="dependecies中implementation和compile的区别"></a>dependecies中implementation和compile的区别</h3><p>都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码:</p>
-<p>当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节</p>
-<p>当你用compile,你的代码中引入的依赖类,别人就能访问查看细节</p>
-<h3 id="本地jar包如何引用-不推荐api方式"><a href="#本地jar包如何引用-不推荐api方式" class="headerlink" title="本地jar包如何引用,不推荐api方式"></a>本地jar包如何引用,不推荐api方式</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile fileTree(<span class="attr">dir:</span><span class="string">&#x27;src/libs&#x27;</span>,<span class="attr">include:</span>[<span class="string">&#x27;*.jar&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-<p>不能把compile改成api,即使compile语法已经在7.0中被弃用了,但是在测试6.7版本中,必须使用compile,否则打包的时候无法将本地jar包打包进去</p>
-<h3 id="provided关键词"><a href="#provided关键词" class="headerlink" title="provided关键词"></a>provided关键词</h3><p>附有provided关键词,则该依赖不会打包进war包</p>
-<h3 id="bootjar与jar打包插件"><a href="#bootjar与jar打包插件" class="headerlink" title="bootjar与jar打包插件"></a>bootjar与jar打包插件</h3><p>注意:使用了bootjar或者jar打包插件后,使用传统jar包打包流程,build/libs底下不会生成jar包,即<strong>传统流程失效</strong></p>
-<p><strong>传统jar包,打包流程:</strong></p>
-<p>gradle clean </p>
-<p>gradle build -x test</p>
-<p>之后去build/libs底下即可找到jar包</p>
-<p>传统jar包打包方式,会将配置文件,依赖的libs包统统打包进jar包,使得jar包比较臃肿</p>
-<p>bootjar是一种打包插件</p>
-<p>打包方式是将配置文件和依赖的libs包分离出来放在两个文件夹中,只将自己的代码打包成jar包,.</p>
-<p>代码结构如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">    -config</span><br><span class="line">    -lib</span><br><span class="line">    key-core-web.jar</span><br></pre></td></tr></table></figure>
-
-
-
-<p>bootjar的好处:可以直接在文件外面改配置文件如application.properties,坏处是只适合本地使用,不适合交付服务器环境</p>
-<p>当然你也可以将一整个dist文件夹传给别人</p>
-<p>bootjar在gradle中的配置如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">bootJar &#123;</span><br><span class="line">    <span class="comment">//指放在根目录哪个文件夹下</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    <span class="comment">//指打包的jar包名字</span></span><br><span class="line">    archiveName project.name  + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    <span class="comment">//从哪个目录下打包源码,排除一切.xml文件</span></span><br><span class="line">    from(<span class="string">&#x27;src/main/java&#x27;</span>)&#123;</span><br><span class="line">        include <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//排除一切properties,yml后缀的文件</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line">    <span class="comment">//最后,从以下目录中复制文件到指定目录</span></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//将runtimec的包放入lib中</span></span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/application.properties&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;.&#x27;</span>).listFiles().findAll&#123;File f -&gt; (f.name.endsWith(<span class="string">&#x27;.crt&#x27;</span>) || f.name.endsWith(<span class="string">&#x27;.keystore&#x27;</span>))&#125;</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;config/contract/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/contract&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>另外还有一种jar打包插件,功能同上述类似</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">jar &#123;</span><br><span class="line">    enabled = <span class="literal">true</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    archiveName project.name + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line"></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="使用bootjar或者jar插件-依赖没有打包到dist-lib目录中"><a href="#使用bootjar或者jar插件-依赖没有打包到dist-lib目录中" class="headerlink" title="使用bootjar或者jar插件,依赖没有打包到dist/lib目录中"></a>使用bootjar或者jar插件,依赖没有打包到dist/lib目录中</h3><p>如果你使用的是以下语句</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>请改成</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtimeClasspath.files</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="提示有被gardle弃用的特性"><a href="#提示有被gardle弃用的特性" class="headerlink" title="提示有被gardle弃用的特性"></a>提示有被gardle弃用的特性</h3><p>一般是使用了compile,在7.0版本已被启用,转而使用api</p>
-<p>但是有可能出现没有api方法,可以将apply plugin: ‘java’  改为apply plugin:’java-library’</p>
-<hr>
-<h3 id="配置springboot"><a href="#配置springboot" class="headerlink" title="配置springboot"></a>配置springboot</h3><p>step1.配置buildscript</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext&#123;</span><br><span class="line">        springBootVersion=<span class="string">&#x27;2.1.2.RELEASE&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(<span class="string">&quot;org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>往buildscript中写入以上脚本,作用是下载该依赖,让此依赖中包含一些插件</p>
-<p>为了让这些插件,加入gradle中,辅助build该项目.因此还需要应用该插件plugin,如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;org.springframework.boot&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>此种应用插件的语法是专门针对使用buildscript引入的外来依赖中的插件,可见官方文档<a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/plugins.html#sec:applying_plugins_buildscript">Applying plugins with the buildscript block</a></p>
-<p>当使用io.spring.dependency-management插件后,当我们再引用springboot的依赖,可以不用再写版本号,以spring-boot-gradle-plugin的版本为准</p>
-<p>step2.引入依赖</p>
-<p>未完成…..</p>
-<hr>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">gradle</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-pom-xml知识点记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">pom.xml知识点记录</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" class="archive-article-date">
-  	<time datetime="2021-12-02T12:04:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="parent标签"><a href="#parent标签" class="headerlink" title="parent标签"></a>parent标签</h3><p>此说法改自<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41254677/article/details/81011681">链接</a></p>
-<p>当引入parent标签后,再引入的依赖的版本,由parent标签中坐标指向的pom来管理,当且仅当parent中的pom管理着此依赖</p>
-<p>情景一:用于本项目的依赖管理</p>
-<p>我的一个project,专门在project目录下的pom.xml中写入dependencyManagement标签,往其中加入依赖并指定版本.在这里管理着所有用到这些依赖的module所使用依赖的version</p>
-<p>那么此时,其他多个module在使用一些共同的依赖如A时,可以在此module下的pom.xml中引入parent标签填入project下的pom.xml的坐标,这样在<dependencies>中引入依赖A时,只需填入坐标,不需要指定版本,版本已经由parent的dependencyManagement中指定了.</dependencies></p>
-<p>当我想更新依赖A的version时,只需要在project下的pom.xml中改依赖A的version,不必再去一个个module中改掉</p>
-<p>情景二:用于引用maven库中的一些项目</p>
-<p>比如我用spring-boot-starter-web依赖,为了方便,我在parent中写入spring-boot-starter-parent坐标</p>
-<p>这一切的前提是,我知道spring-boot-starter-parent管理着spring-boot-starter-web依赖相应依赖的版本</p>
-<p>此时我也只需要写spring-boot-starter-parent的version,而不需要写spring-boot-starter-web的version,因为在spring-boot-starter-parent的dependencyManagement标签中指定了spring-boot-starter-web的version</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">       &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">       &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">       &lt;version&gt;<span class="number">2.1</span><span class="number">.18</span>.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/parent&gt;</span><br><span class="line">&lt;dependencies&gt;</span><br><span class="line">       &lt;dependency&gt;</span><br><span class="line">           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">           &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">       &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="properties标签中java-version和maven-compiler-source-target的区别"><a href="#properties标签中java-version和maven-compiler-source-target的区别" class="headerlink" title="properties标签中java.version和maven.compiler.source/target的区别"></a>properties标签中java.version和maven.compiler.source/target的区别</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;properties&gt;</span><br><span class="line">    &lt;maven.compiler.source&gt;<span class="number">8</span>&lt;/maven.compiler.source&gt;</span><br><span class="line">    &lt;maven.compiler.target&gt;<span class="number">8</span>&lt;/maven.compiler.target&gt; </span><br><span class="line">&lt;/properties&gt;</span><br><span class="line"> &lt;properties&gt;</span><br><span class="line">    &lt;java.version&gt;<span class="number">8</span>&lt;/java.version&gt;</span><br><span class="line">&lt;/properties&gt;</span><br></pre></td></tr></table></figure>
-
-<p>都是8,所以两者是等价的,java.version更常用于springboot的pom.xml模板中</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">maven</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-椭圆曲线加密" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -603,450 +225,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/11/30/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%8A%A0%E5%AF%86/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-graphhopper系列3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/11/25/graphhopper%E7%B3%BB%E5%88%973/">graphhopper系列3</a>
-    </h1>
-  
-
-        
-        <a href="/2021/11/25/graphhopper%E7%B3%BB%E5%88%973/" class="archive-article-date">
-  	<time datetime="2021-11-25T14:11:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>index</p>
-<p>传入的两个参数Bbox和minResolutionInMeter,</p>
-<p>首先获取最小的纬度值,纬度值越小,对应的地球周长越大</p>
-<p>我们计算这篇区域的最大长度,因为地球是椭圆的,由Bbox决定的区域,不是单纯的矩形.我们先计算两个纬度之间的距离,再计算两个经度之间的最大距离(维度越小,两经度之间距离越大)</p>
-<p>因此由Bbox计算出可以分解成出多少个小块,</p>
-<p>以下内容参考翻译自:<a target="_blank" rel="noopener" href="http://blog.notdot.net/2009/11/Damn-Cool-Algorithms-Spatial-indexing-with-Quadtrees-and-Hilbert-Curves">Damn Cool Algorithms: Spatial indexing with Quadtrees and Hilbert Curves</a></p>
-<p>quadtree:</p>
-<p>结构:从根节点每个节点有四个子节点,一直到叶子节点停止.换言之把空间地图四分再四分到一定程度(比如该区域没有索引点了).每个内部节点表示一个大框框覆盖某一片区域不存储任何索引点信息,而叶子节点存储多个索引点即地图中的实体点.</p>
-<p><img src="/2021/11/25/graphhopper%E7%B3%BB%E5%88%973/500px-Point_quadtree.svg.png" alt="File:Point quadtree.svg"></p>
-<p>插入索引点数据:从根开始根据此点所在象限,进入对应根节点的子节点,然后按照这个规律再找下一个象限一直递归到叶子节点,然后插入.如果该叶子节点容纳索引点数目超标,则拆分叶子节点,原叶子节点变成内部节点,分化出四个叶子节点,并将索引点正确转移到对应叶子节点中.</p>
-<p>查询:从根节点开始查每个子节点,并检查是否于要查询区域相交.如果是,则递归到该子节点.当到达叶子节点时,查询是否存在查找目标</p>
-<p>从上可以看出quadtree是一个trie前缀树或称字典树,前缀树的特点是我们可以对其进行编码,这就引出了geohash</p>
-<p>geohash:</p>
-<p>geohash有quadtree的灵魂,却抛去了quadtree的树结构.quadtree叶子节点并不在同一深度,为了编码geohash保证所有叶子节点再同一深度即编码bit数目保持一致.</p>
-<p>构造:当我们当我们抛弃树结构开始,我们就不能动态的构建搜索集,只能提前就构造好搜索集,即提前确定好深度.</p>
-<p><img src="/2021/11/25/graphhopper%E7%B3%BB%E5%88%973/spatial-key2.png" alt="img"></p>
-<p>查询:如果只查询一个点的话,我个人觉得和quadtree没区别</p>
-<h2 id="LocationIndexTreeTest源码学习记录"><a href="#LocationIndexTreeTest源码学习记录" class="headerlink" title="LocationIndexTreeTest源码学习记录"></a>LocationIndexTreeTest源码学习记录</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//  0------\</span><br><span class="line">// /|       \</span><br><span class="line">// |1----3-\|</span><br><span class="line">// |____/   4</span><br><span class="line">// 2-------/</span><br><span class="line">		na.setNode(0, 0.5, -0.5);</span><br><span class="line">       	na.setNode(1, -0.5, -0.5);</span><br><span class="line">        na.setNode(2, -1, -1);</span><br><span class="line">        na.setNode(3, -0.4, 0.9);</span><br><span class="line">        na.setNode(4, -0.6, 1.6);</span><br></pre></td></tr></table></figure>
-
-<p>根据上述形状的地图，创建locationIndexTree，</p>
-<p>第1步：在Test函数中，首先是创建地图Graph graph = createTestGraph(encodingManager);该地图道路双向可行，平均速度60</p>
-<p>第2步：构建LocationIndex，首先createIndexNoPrepare(graph, 500000)，根据当前Graph g，设置minResolutionInMeter，minResolutionInMeter该值表示最后IndexTree叶子节点所代表的tile块的面积应该是多大，通过设置此项参数就可以在初始化是确定Tree的深度。之后通过prepareIndex()函数正式生成Index。</p>
-<p>prepareIndex()中会执行locationIndexTree.prepareInMemConstructionIndex函数，此函数往InMemConstructionIndex这个数据结构中放入每个tile经过的edge的id</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/11/25/graphhopper%E7%B3%BB%E5%88%973/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-pbf文件结构解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">pbf文件结构解析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-11-08T08:14:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>pbf时osm文件进行压缩后的格式(带raw的都是字节码的数据):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">int</span>&gt;<span class="comment">//第一个int型数据描述了head的的字节码长度</span></span><br><span class="line">&lt;rawblobHeader&gt;即rawblobHeader编码后的blobHeader,是字节码</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawHeaderBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">&lt;<span class="keyword">int</span>&gt;</span><br><span class="line">&lt;rawblobHeader&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br><span class="line">    &lt;rawPrimitiveBlock&gt;</span><br><span class="line">&lt;rawblob&gt;</span><br></pre></td></tr></table></figure>
-
-<p>读文件时,第一个int型数据描述了head的的字节码长度</p>
-<p>当我们读出这么长的字节数组rawblobHeader后,需要进行转化成可以解读的blobHeader类</p>
-<p>blobHeader类,会存着Data的size(),因此我们需要接着向后面读size()大小的字节码得到rawblob</p>
-<p>同时blobHeader类中的Type属性会告知刚刚读的Data是个什么类型的用途,我们也可以解码该rawblobdata解码成blob类</p>
-<p>有两种rawblob,一种是揭示osmHeader数据信息的,一种是揭示osmdata数据信息的,他们的区分就是靠rawblobHeader的type信息</p>
-<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>在PbfDecoder中我们设置了变量Queue<PbfBlobResult> blobResults,存了PbfBlobResult类,在这个类里设置变量 List<ReaderElement> entities.所以在处理过程中,对于每个blob解析出的多个ReaderElement存在PbfBlobResult类,再将多个这个对象存入队列中</ReaderElement></PbfBlobResult></p>
-<h2 id="对blobHeader的解析"><a href="#对blobHeader的解析" class="headerlink" title="对blobHeader的解析"></a>对blobHeader的解析</h2><p>把字节码rawblob转化为HeaderBlock类</p>
-<p>我们只读这个类的<strong>时间戳信息</strong>,并存入OSMFileHeader对象中,这个类是REaderElement的子类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmHeader</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.HeaderBlock header = Osmformat.HeaderBlock.parseFrom(data);</span><br><span class="line">		.....</span><br><span class="line">            这里省略的是看pbf文件和不合规的代码</span><br><span class="line">        .....</span><br><span class="line">        OSMFileHeader fileheader = <span class="keyword">new</span> OSMFileHeader();</span><br><span class="line">        <span class="keyword">long</span> milliSecondDate = header.getOsmosisReplicationTimestamp();</span><br><span class="line">        fileheader.setTag(<span class="string">&quot;timestamp&quot;</span>, Helper.createFormatter().format(<span class="keyword">new</span> Date(milliSecondDate * <span class="number">1000</span>)));</span><br><span class="line">        decodedEntities.add(fileheader);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="对PrimitiveBlock的解析"><a href="#对PrimitiveBlock的解析" class="headerlink" title="对PrimitiveBlock的解析"></a>对PrimitiveBlock的解析</h2><p>我们对从PrimitiveBlock数据分为两个部分,第一个部分是存着一些偏移量,第二个部分是PrimitiveGroup类对象list</p>
-<p>为了获取偏移量部分,我们构造了一个类PbfFieldDecoder如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfFieldDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">double</span> COORDINATE_SCALING_FACTOR = <span class="number">0.000000001</span>;</span><br><span class="line">    <span class="keyword">private</span> String[] strings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> coordGranularity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLatitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> coordLongitudeOffset;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> dateGranularity;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> primitiveBlock The primitive block containing the fields to be decoded.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfFieldDecoder</span><span class="params">(Osmformat.PrimitiveBlock primitiveBlock)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.coordGranularity = primitiveBlock.getGranularity();</span><br><span class="line">        <span class="keyword">this</span>.coordLatitudeOffset = primitiveBlock.getLatOffset();</span><br><span class="line">        <span class="keyword">this</span>.coordLongitudeOffset = primitiveBlock.getLonOffset();</span><br><span class="line">        <span class="keyword">this</span>.dateGranularity = primitiveBlock.getDateGranularity();</span><br><span class="line"></span><br><span class="line">        Osmformat.StringTable stringTable = primitiveBlock.getStringtable();</span><br><span class="line">        strings = <span class="keyword">new</span> String[stringTable.getSCount()];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; strings.length; i++) &#123;</span><br><span class="line">            strings[i] = stringTable.getS(i).toStringUtf8();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在初始化对象的时候,我们通过primitiveblock获取block中的5个变量,分别是坐标和日期粒度,经度纬度偏移,字符串数组变量</p>
-<p>接着我们遍历列表,取出PrimitiveGroup类,对之处理获得node,way等数据</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PbfBlobDecoder:  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processOsmPrimitives</span><span class="params">(<span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> InvalidProtocolBufferException </span>&#123;</span><br><span class="line">        Osmformat.PrimitiveBlock block = Osmformat.PrimitiveBlock.parseFrom(data);</span><br><span class="line">        PbfFieldDecoder fieldDecoder = <span class="keyword">new</span> PbfFieldDecoder(block);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Osmformat.PrimitiveGroup primitiveGroup : block.getPrimitivegroupList()) &#123;</span><br><span class="line">            processNodes(primitiveGroup.getDense(), fieldDecoder);</span><br><span class="line">            processNodes(primitiveGroup.getNodesList(), fieldDecoder);</span><br><span class="line">            processWays(primitiveGroup.getWaysList(), fieldDecoder);</span><br><span class="line">            processRelations(primitiveGroup.getRelationsList(), fieldDecoder);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>for循环中的四个方法为我们读出了所有的node,way,relation数据</p>
-<p>ReaderNode有两个变量lat,lon,还有<code>Map&lt;String, Object&gt; properties</code>变量存着可能的属性键值对</p>
-<p>…</p>
-<p>所以先读出头</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/11/08/pbf%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-从graphhopper学多线程编程模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/">从graphhopper学多线程编程模式</a>
-    </h1>
-  
-
-        
-        <a href="/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2021-11-04T12:18:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>前提:最近在学graphhopper,看源码的看到有关多线程的部分,所以在这里做一下笔记</p>
-<h1 id="多线程基础"><a href="#多线程基础" class="headerlink" title="多线程基础"></a>多线程基础</h1><p>快速复习使用，详细看java核心技术第12章</p>
-<h2 id="线程的创建和使用"><a href="#线程的创建和使用" class="headerlink" title="线程的创建和使用"></a>线程的创建和使用</h2><p>做个简单的比喻：进程=火车，线程=车厢    <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/25532384">比喻细节见此</a></p>
-<p>Java语言的JVM允许程序运行多个线程，它通过java.lang.Thread 类来体现。</p>
-<p>1.每个线程都是通过某个特定Thread对象的run()方法来完成操作的，经常 把run()方法的主体称为线程体</p>
-<p>2.线程的启动是通过调用该Thread对象的start()方法，而非直接调用run()</p>
-<h3 id="jdk5-0-之前创建新线程的两种方法"><a href="#jdk5-0-之前创建新线程的两种方法" class="headerlink" title="jdk5.0 之前创建新线程的两种方法"></a>jdk5.0 之前创建新线程的两种方法</h3><h4 id="1-继承Thread类的方式"><a href="#1-继承Thread类的方式" class="headerlink" title="1.继承Thread类的方式"></a>1.继承Thread类的方式</h4><ol>
-<li>定义子类继承Thread类</li>
-<li>子类中重写Thread类中的run方法</li>
-<li>创建Thread子类对象,即创建了线程对象</li>
-<li>调用线程对象start方法,start方法会为我们做好准备并调用run方法</li>
-</ol>
-<p><strong>注意</strong>:想启动多线程,必须调用start方法</p>
-<h4 id="2-实现Runnable接口-更建议使用"><a href="#2-实现Runnable接口-更建议使用" class="headerlink" title="2.实现Runnable接口(更建议使用)"></a>2.实现Runnable接口(更建议使用)</h4><ol>
-<li><p>定义子类，实现Runnable接口</p>
-</li>
-<li><p>子类中重写Runnable接口中的run方法</p>
-</li>
-<li><p> 通过Thread类含参构造器创建线程对象</p>
-</li>
-<li><p>将Runnable接口的子类对象作为实际参数传递给Thread类的构造器中</p>
-</li>
-<li><p>调用Thread类的start方法：开启线程，调用Runnable子类接口的run方法</p>
-</li>
-</ol>
-<h3 id="jdk5-0之后的两种新建线程的方法"><a href="#jdk5-0之后的两种新建线程的方法" class="headerlink" title="jdk5.0之后的两种新建线程的方法"></a>jdk5.0之后的两种新建线程的方法</h3><h4 id="Callable接口的方式"><a href="#Callable接口的方式" class="headerlink" title="Callable接口的方式"></a>Callable接口的方式</h4><p><strong>对比Runnable接口:</strong></p>
-<p>1.相比run()方法，可以有返回值</p>
-<p>2.方法可以抛出异常</p>
-<p>3.支持泛型的返回值</p>
-<p>4.需要借助FutureTask类，比如获取返回结果</p>
-<p><strong>利用Future接口,对Callable接口功能的补充:</strong></p>
-<p>1.可以对具体Runnable、Callable任务的执行结果进行取消、查询是 否完成、获取结果等</p>
-<p>2.FutrueTask是Futrue接口的唯一的实现类</p>
-<p>3.FutureTask 同时实现了Runnable, Future接口。它既可以作为 Runnable被线程执行，又可以作为Future得到Callable的返回值</p>
-<h4 id="使用线程池的方式"><a href="#使用线程池的方式" class="headerlink" title="使用线程池的方式"></a>使用线程池的方式</h4><p>背景思路:对于频繁需要创建销毁的的线程,提前创建多个线程,放入线程池中,使用时候取出来,用完放回去.</p>
-<p>相关api:ExecutorService 和 Executors</p>
-<p>ExcutorService:真正的线程池接口.常见子类ThreadPoolExecutor</p>
-<p>method:</p>
-<p>void execute(Runnable command) ：执行任务/命令，没有返回值，一般用来执行 Runnable</p>
-<p>Future submit(Callable task)：执行任务，有返回值，一般又来执行 Callable</p>
-<p>void shutdown() ：关闭连接池</p>
-<p>Executors：工具类、线程池的工厂类，用于创建并返回不同类型的线程池</p>
-<p>method:</p>
-<p>Executors.newCachedThreadPool()：创建一个可根据需要创建新线程的线程池</p>
-<p>Executors.newFixedThreadPool(n); 创建一个可重用固定线程数的线程池</p>
-<p>Executors.newSingleThreadExecutor() ：创建一个只有一个线程的线程池</p>
-<p>Executors.newScheduledThreadPool(n)：创建一个线程池，它可安排在给定延迟后运 行命令或者定期地执行。</p>
-<h2 id="线程的同步"><a href="#线程的同步" class="headerlink" title="线程的同步"></a>线程的同步</h2><p>多线程可能带来的麻烦**:执行结果的不稳定性**</p>
-<p>原因:同样一段代码,会有多个线程执行,这样会面临一种情况:a线程对多条语句只执行了一部分,还没执行完就到了时间片,被阻塞了,此时b线程参与执行了语句.之后a线程恢复,执行未完成部分,但是部分上下文环境已经发生了变化,不能保证当时a线程未被阻塞前执行效果的一致性了.(换句话说,由于b的插手,导致a的运行结果变了)</p>
-<p>解决办法:对于有多线程共享的数据的语句,加入同步机制,即一个线程必须执行完这段同步的代码,才能进入阻塞态.</p>
-<p>写多线程代码时，需牢记Brian Goetz的同步格言：<strong>如果写一个变量，而这个变量接下来可能会被另一个线程读取，或者，如果读一个变量，而这个变量可能已经被另一个线程写入值，那么必须使用同步</strong>。</p>
-<h3 id="同步机制synchronized-对资源加锁"><a href="#同步机制synchronized-对资源加锁" class="headerlink" title="同步机制synchronized,对资源加锁"></a>同步机制synchronized,对资源加锁</h3><p><strong>1.同步代码块</strong></p>
-<p>synchronized(类名.class/this){</p>
-<p>//需要被同步的代码</p>
-<p>}</p>
-<p><strong>2.synchronized还可以放在方法声明中，表示整个方法为同步方法</strong>，俗称内部对象锁</p>
-<p> public synchronized void show (String name){ </p>
-<p> …. </p>
-<p>}</p>
-<h4 id="同步机制的失效"><a href="#同步机制的失效" class="headerlink" title="同步机制的失效"></a>同步机制的失效</h4><p>1.当前线程的同步方法、同步代码块执行结束。 </p>
-<p>2.当前线程在同步代码块、同步方法中遇到break、return终止了该代码块、 该方法的继续执行。 </p>
-<p>3.当前线程在同步代码块、同步方法中出现了未处理的Error或Exception，导 致异常结束。 </p>
-<p>4.当前线程在同步代码块、同步方法中执行了线程对象的wait()方法，当前线 程暂停，并释放锁。</p>
-<h4 id="同步机制带来的问题"><a href="#同步机制带来的问题" class="headerlink" title="同步机制带来的问题"></a>同步机制带来的问题</h4><p>死锁</p>
-<h3 id="Lock-锁-接口-jdk5-0开始"><a href="#Lock-锁-接口-jdk5-0开始" class="headerlink" title="Lock(锁)接口,jdk5.0开始"></a>Lock(锁)接口,jdk5.0开始</h3><p>与synchronized不同在</p>
-<p>1.Lock机制,<strong>需要手动关锁和开锁</strong></p>
-<p>2.只有代码块锁,没有方法锁</p>
-<p>3.性能更好</p>
-<p>注意:在使用锁lock加锁后,如果其他线程也要对加锁代码块访问,识别到已加锁会进入阻塞状态,等到之前锁那段资源访问完毕解锁或者进入wait()后,才会将阻塞状态接触,正式访问加锁资源</p>
-<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>一般是使用实现Lock接口的ReentrantLock类,示例如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReenTrantLock();</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m</span><span class="params">()</span></span>&#123;</span><br><span class="line">					lock.lock();</span><br><span class="line">					<span class="keyword">try</span>&#123;</span><br><span class="line">							<span class="comment">//保证线程安全的代码;</span></span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">finally</span>&#123;</span><br><span class="line">							lock.unlock(); </span><br><span class="line">						&#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h2 id="线程之间的通信"><a href="#线程之间的通信" class="headerlink" title="线程之间的通信"></a>线程之间的通信</h2><h3 id="在synchronized方法或者代码块中"><a href="#在synchronized方法或者代码块中" class="headerlink" title="在synchronized方法或者代码块中:"></a>在synchronized方法或者代码块中:</h3><p>注意:<strong>以下三个方法只有在synchronized方法或synchronized代码块中才能使用，否则会报 java.lang.IllegalMonitorStateException异常。</strong></p>
-<p><strong>wait()方法</strong></p>
-<p>作用:令当前线程挂起并放弃CPU、同步资源并等待，使别的线程可访问并修改共享资源，而当 前线程排队等候其他线程调用notify()或notifyAll()方法唤醒，唤醒后等待重新获得对监视器的所有 权后才能继续执行。</p>
-<p>如何使用:对象名.wait(),通常直接写wait()</p>
-<p><strong>notify()/notifyAll()</strong></p>
-<p>作用:唤醒正在排队等待同步资源的线程中优先级最高者结束等待/唤醒正在排队等待资源的所有线程结束等待</p>
-<p>如何使用:在当前线程中调用方法： 对象名.notify(),通常直接写notify()</p>
-<h3 id="在lock中"><a href="#在lock中" class="headerlink" title="在lock中:"></a>在lock中:</h3><p>为了线程之间的通信,我们需要通过lock来获取Condition,由Condition来操纵线程之间的通信.</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = new ReentrantLock();</span><br><span class="line">Condition dataWaitCondition = lock.newCondition();</span><br></pre></td></tr></table></figure>
-
-<p>在我们需要的时候,我们就可以调用Condition.await(),去将lock的锁释放,同时该线程会被阻塞;</p>
-<p>满足条件时,会调用Condition.signal()/signalAll(),会把之前因为condition阻塞的一个线程激活,前提是调用Condition.signal()/signalAll()的线程必须加锁</p>
-<h2 id="应该使用哪种锁？"><a href="#应该使用哪种锁？" class="headerlink" title="应该使用哪种锁？"></a>应该使用哪种锁？</h2><p>来自java核心技术中的建议：</p>
-<p>1.最好既不使用Lock/Condition也不使用同步方法(synchronized)。在许多情况下，可以使用java.util.concurrent包中的某些机制，它会为你处理所有的锁定。</p>
-<p>2.如果synchronized关键字适合你的程序，那么尽量使用这种做法</p>
-<p>3.如果特别需要lock/condition结构提供额外的能力，则使用Lock/Condition</p>
-<h3 id="volatile字段"><a href="#volatile字段" class="headerlink" title="volatile字段"></a>volatile字段</h3><p>用途：将变量声明为volatile后，该变量拥有了内存可见性的语义(semantics for memory visibility),我猜测该变量不会再从寄存器中读取了，每次读取都从内存中读出来。可以保证你的修改，对读取这个变量的所有线程都是可见的。                                                                                                           </p>
-<p>警告：使用volatile字段的变量并不能提供原子性，即不能保证读取、翻转、写入不被中断。</p>
-<h1 id="graphhopper中的多线程写法"><a href="#graphhopper中的多线程写法" class="headerlink" title="graphhopper中的多线程写法"></a>graphhopper中的多线程写法</h1><p>当运行load()方法后,地图数据类对象生成,随后我们用process方法将osm数据导入地图中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GraphHopper.importOrLoad():</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> GraphHopper <span class="title">importOrLoad</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!load()) &#123;</span><br><span class="line">            printInfo();</span><br><span class="line">            process(<span class="keyword">false</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            printInfo();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>开始配置OSMReader,完备后开始读</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Graphhopper.importOSM():</span><br><span class="line">...</span><br><span class="line">OSMReader reader = <span class="keyword">new</span> OSMReader(ghStorage, osmReaderConfig).setFile(_getOSMFile()).</span><br><span class="line">  	setAreaIndex(areaIndex).setElevationProvider(eleProvider).</span><br><span class="line">    setCountryRuleFactory(countryRuleFactory);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">       reader.readGraph();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Cannot read file &quot;</span> + getOSMFile(), ex);</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>在readGraph()中先有一步预处理:preProcess(osmFile),可以先从osm中选出一些用于高速路段的节点</p>
-<p>此时我们尝试打开文件的输入流</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OSMReader:</span><br><span class="line">OSMInput in = openOsmInputFile(osmFile)</span><br></pre></td></tr></table></figure>
-
-<p>进入语句</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> OSMInput <span class="title">openOsmInputFile</span><span class="params">(File osmFile)</span> <span class="keyword">throws</span> XMLStreamException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> OSMInputFile(osmFile).setWorkerThreads(config.getWorkerThreads()).open();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>一句一句看,首先是new OSMInputFile(osmFile)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">OSMInputFile</span><span class="params">(File file)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        bis = decode(file);<span class="comment">//解码文件,并返回输入流,在osm,pbf格式下,是直接返回读取的输入流,并设置pbf时binary=ture,osm时为false</span></span><br><span class="line">        itemQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">50_000</span>);</span><br><span class="line">        itemBatch = <span class="keyword">new</span> ArrayDeque&lt;&gt;(MAX_BATCH_SIZE);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>接着setWorkerThreads(config.getWorkerThreads()):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> OSMInputFile <span class="title">setWorkerThreads</span><span class="params">(<span class="keyword">int</span> threads)</span> </span>&#123;</span><br><span class="line">        workerThreads = threads;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的作用是预先设置工人线程数,workerThreads模式也称为线程池模式,预先设置好,线程池中的线程数,然后去使用</p>
-<p>因为我们在config.yml中没有写关于线程数的配置文件,所以取了默认值2</p>
-<p>随后就是语句open(),</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">public</span> OSMInputFile <span class="title">open</span><span class="params">()</span> <span class="keyword">throws</span> XMLStreamException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (binary) &#123;</span><br><span class="line">            openPBFReader(bis);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            openXMLStream(bis);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>该语句执行了openPBFReader(bis);</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">OSMInputFile:</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">openPBFReader</span><span class="params">(InputStream stream)</span> </span>&#123;</span><br><span class="line">        hasIncomingData = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (workerThreads &lt;= <span class="number">0</span>)</span><br><span class="line">            workerThreads = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        pbfReader = <span class="keyword">new</span> PbfReader(stream, <span class="keyword">this</span>, workerThreads);</span><br><span class="line">        pbfReaderThread = <span class="keyword">new</span> Thread(pbfReader, <span class="string">&quot;PBF Reader&quot;</span>);</span><br><span class="line">        pbfReaderThread.start();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>很明显上面的语句启动了新线程,pbfReader一定是实现了Runnable接口,但是这里没有用到workerthreads,我们在配置线程池中线程数目时才会用到,自此我们正式介绍这种</p>
-<p>WorkerThread模式.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfReader</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Throwable throwable;</span><br><span class="line">    <span class="keyword">private</span> InputStream inputStream;</span><br><span class="line">    <span class="keyword">private</span> Sink sink;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> workers;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> in      The file to read.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> workers The number of worker threads for decoding PBF blocks.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfReader</span><span class="params">(InputStream in, Sink sink, <span class="keyword">int</span> workers)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.inputStream = in;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line">        <span class="keyword">this</span>.workers = workers;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建了一个指定工人数的线程池</span></span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(workers);</span><br><span class="line">        <span class="comment">// Create a stream splitter to break the PBF stream into blobs.</span></span><br><span class="line">        PbfStreamSplitter streamSplitter = <span class="keyword">new</span> PbfStreamSplitter(<span class="keyword">new</span> DataInputStream(inputStream));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// Process all blobs of data in the stream using threads from the</span></span><br><span class="line">            <span class="comment">// executor service. We allow the decoder to issue an extra blob</span></span><br><span class="line">            <span class="comment">// than there are workers to ensure there is another blob</span></span><br><span class="line">            <span class="comment">// immediately ready for processing when a worker thread completes.</span></span><br><span class="line">            <span class="comment">// The main thread is responsible for splitting blobs from the</span></span><br><span class="line">            <span class="comment">// request stream, and sending decoded entities to the sink.</span></span><br><span class="line">            <span class="comment">//将pbf文件的分解器,线程池,传入解码器,之后解码器run</span></span><br><span class="line">            PbfDecoder pbfDecoder = <span class="keyword">new</span> PbfDecoder(streamSplitter, executorService, workers + <span class="number">1</span>, sink);</span><br><span class="line">            pbfDecoder.run();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            <span class="comment">// properly propagate exception inside Thread, #2269</span></span><br><span class="line">            throwable = t;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            sink.complete();</span><br><span class="line">            executorService.shutdownNow();</span><br><span class="line">            streamSplitter.release();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (throwable != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Unable to read PBF file.&quot;</span>, throwable);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>来到PbfDecoder</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">构造器:</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PbfDecoder</span><span class="params">(PbfStreamSplitter streamSplitter, ExecutorService executorService, <span class="keyword">int</span> maxPendingBlobs,</span></span></span><br><span class="line"><span class="params"><span class="function">                      Sink sink)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.streamSplitter = streamSplitter;</span><br><span class="line">        <span class="keyword">this</span>.executorService = executorService;</span><br><span class="line">        <span class="keyword">this</span>.maxPendingBlobs = maxPendingBlobs;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the thread synchronisation primitives.</span></span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        dataWaitCondition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the queue of blobs being decoded.</span></span><br><span class="line">        blobResults = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这里创建了同步机制的锁Lock</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line">pbfDecoder:</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PbfDecoder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PbfStreamSplitter streamSplitter;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ExecutorService executorService;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> maxPendingBlobs;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Sink sink;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Lock lock;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition dataWaitCondition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;PbfBlobResult&gt; blobResults;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new instance.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> streamSplitter  The PBF stream splitter providing the source of blobs to be decoded.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> executorService The executor service managing the thread pool.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxPendingBlobs The maximum number of blobs to have in progress at any point in time.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sink            The sink to send all decoded entities to.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PbfDecoder</span><span class="params">(PbfStreamSplitter streamSplitter, ExecutorService executorService, <span class="keyword">int</span> maxPendingBlobs,</span></span></span><br><span class="line"><span class="params"><span class="function">                      Sink sink)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.streamSplitter = streamSplitter;</span><br><span class="line">        <span class="keyword">this</span>.executorService = executorService;</span><br><span class="line">        <span class="keyword">this</span>.maxPendingBlobs = maxPendingBlobs;</span><br><span class="line">        <span class="keyword">this</span>.sink = sink;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the thread synchronisation primitives.</span></span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        dataWaitCondition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the queue of blobs being decoded.</span></span><br><span class="line">        blobResults = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Any thread can call this method when they wish to wait until an update has been performed by</span></span><br><span class="line"><span class="comment">     * another thread.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">waitForUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            dataWaitCondition.await();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Thread was interrupted.&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Any thread can call this method when they wish to signal another thread that an update has</span></span><br><span class="line"><span class="comment">     * occurred.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">signalUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        dataWaitCondition.signal();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendResultsToSink</span><span class="params">(<span class="keyword">int</span> targetQueueSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (blobResults.size() &gt; targetQueueSize) &#123;</span><br><span class="line">            <span class="comment">// Get the next result from the queue and wait for it to complete.</span></span><br><span class="line">            PbfBlobResult blobResult = blobResults.remove();</span><br><span class="line">            <span class="keyword">while</span> (!blobResult.isComplete()) &#123;</span><br><span class="line">                <span class="comment">// The thread hasn&#x27;t finished processing yet so wait for an</span></span><br><span class="line">                <span class="comment">// update from another thread before checking again.</span></span><br><span class="line">                waitForUpdate();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!blobResult.isSuccess()) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;A PBF decoding worker thread failed, aborting.&quot;</span>, blobResult.getException());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Send the processed entities to the sink. We can release the lock</span></span><br><span class="line">            <span class="comment">// for the duration of processing to allow worker threads to post</span></span><br><span class="line">            <span class="comment">// their results.</span></span><br><span class="line">            lock.unlock();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (ReaderElement entity : blobResult.getEntities()) &#123;</span><br><span class="line">                    sink.process(entity);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 该方法是启用了多线程的,并且该方法是加锁了的,不能被中断</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processBlobs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Process until the PBF stream is exhausted.</span></span><br><span class="line">        <span class="keyword">while</span> (streamSplitter.hasNext()) &#123;</span><br><span class="line">            <span class="comment">//取出下一个pbfRawblob,这个是还未经过处理的原型数据</span></span><br><span class="line">            <span class="comment">// Obtain the next raw blob from the PBF stream.</span></span><br><span class="line">            PbfRawBlob rawBlob = streamSplitter.next();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建结果数据类型去获取解码后的blob,并将其加入blob result 队列里</span></span><br><span class="line">            <span class="comment">// Create the result object to capture the results of the decoded</span></span><br><span class="line">            <span class="comment">// blob and add it to the blob results queue.</span></span><br><span class="line">            <span class="keyword">final</span> PbfBlobResult blobResult = <span class="keyword">new</span> PbfBlobResult();</span><br><span class="line">            blobResults.add(blobResult);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Create the listener object that will update the blob results</span></span><br><span class="line">            <span class="comment">// based on an event fired by the blob decoder.</span></span><br><span class="line">            PbfBlobDecoderListener decoderListener = <span class="keyword">new</span> PbfBlobDecoderListener() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">error</span><span class="params">(Exception ex)</span> </span>&#123;</span><br><span class="line">                    lock.lock();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">// System.out.println(&quot;ERROR: &quot; + new Date());</span></span><br><span class="line">                        blobResult.storeFailureResult(ex);</span><br><span class="line">                        signalUpdate();</span><br><span class="line"></span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">complete</span><span class="params">(List&lt;ReaderElement&gt; decodedEntities)</span> </span>&#123;</span><br><span class="line">                    lock.lock();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        blobResult.storeSuccessResult(decodedEntities);</span><br><span class="line">                        signalUpdate();</span><br><span class="line"></span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Create the blob decoder itself and execute it on a worker thread.</span></span><br><span class="line">            PbfBlobDecoder blobDecoder = <span class="keyword">new</span> PbfBlobDecoder(rawBlob.getType(), rawBlob.getData(), decoderListener);</span><br><span class="line">            executorService.execute(blobDecoder);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// If the number of pending blobs has reached capacity we must begin</span></span><br><span class="line">            <span class="comment">// sending results to the sink. This method will block until blob</span></span><br><span class="line">            <span class="comment">// decoding is complete.</span></span><br><span class="line">            sendResultsToSink(maxPendingBlobs - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// There are no more entities available in the PBF stream, so send all remaining data to the sink.</span></span><br><span class="line">        sendResultsToSink(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            processBlobs();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这段代码的主要目的是:将一个个rawblob的数据给解析出来,因为线程池中只有两个workerthread,只能同时处理两个rawblob,当代码处理到第三个rawblob时,线程池没有空出来,只能等待其他线程结束后再分配,此时我们不能再让主线程再取第四个rawblob往线程池中放,所以在知道第三个rawblob后我们必须将主线程阻塞停下来,等待让两个工人线程完成任务.</p>
-<p>阻塞线程的前提是该线程加了锁,因此我们在run()方法处提前让线程有了锁.于是就可以在第三个rawblob进来时,</p>
-<p>可以调用Condition.await(),有两个作用一是将锁lock解开,二是将该线程阻塞等待;</p>
-<p>两个处理rawblob的工人线程运行到complete()方法,当该方法执行完<code>blobResult.storeSuccessResult(decodedEntities)</code>,即可唤醒主线程继续执行后面的任务,因为调用Condition.signal()的前提是该调用线程有锁,所以必须在此语句前加锁.</p>
-<p>当主线程被唤醒后,又会加上锁,所以当执行到</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (ReaderElement entity : blobResult.getEntities()) &#123;</span><br><span class="line">                    sink.process(entity);</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
-
-<p>时,如果<strong>不对</strong>这段获取数据的时间内解锁的话,线程池的工人线程在执行complete()方法时,会要求加锁lock,但是主线程锁还在,那么必须陷入阻塞等主线程的锁释放,这样<strong>效率不高</strong>;</p>
-<p>对这段获取数据时间解锁,那么两个工人线程就可以利用这段时间去处理数据,那么当主线程处理下一次的rawblob时,很大可能两个工人线程已经完成任务,主线程就不必陷入阻塞,直接取出数据后,就再处理下一个rawblob,<strong>充分利用时间.</strong></p>
-<p><strong>此外</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while (!blobResult.isComplete()) &#123;</span><br><span class="line">    // The thread hasn&#x27;t finished processing yet so wait for an</span><br><span class="line">    // update from another thread before checking again.</span><br><span class="line">    waitForUpdate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这段代码中用的是while,而不是if去作为判断,因为有可能主线程想取出的是线程1的数据而陷入了阻塞,但是因为线程唤醒的随机性,有可能随即唤醒的是线程2,那么我们需要的线程1数据并没有被处理好.如果用if,当线程2处理完后,就立即唤醒了主线程,那么就会漏掉我们线程1的数据.用了while后,我们会一直判断blobResult是否处理好,知道我们需要的线程1数据被处理完,才能退出循环,即使主线程会因此多阻塞几次.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/11/04/%E4%BB%8Egraphhopper%E5%AD%A6%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F/">展开全文 >></a>
         </p>
       
 
@@ -1229,409 +407,39 @@
 
 
   
-    <article id="post-graphhopper系列2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-dpi" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">graphhopper系列2</a>
+      <a class="article-title" href="/2021/10/11/dpi/">dpi相关</a>
     </h1>
   
 
         
-        <a href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/" class="archive-article-date">
-  	<time datetime="2021-10-23T06:21:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-23</time>
+        <a href="/2021/10/11/dpi/" class="archive-article-date">
+  	<time datetime="2021-10-11T07:33:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-11</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="项目框架"><a href="#项目框架" class="headerlink" title="项目框架"></a>项目框架</h1><p>graphhopper-core:核心代码,实现了导航地图编码等功能</p>
-<p>graphhopper-web:项目的启动入口,涉及相关资源配置,注册等</p>
-<p>graphhopper-web-bundle:项目的resource基本都在这里</p>
-<p>graphhopper-web-api:对项目web请求的一些参数处理代码都在这里</p>
-<hr>
-<h1 id="应用的启动配置加载流程"><a href="#应用的启动配置加载流程" class="headerlink" title="应用的启动配置加载流程"></a>应用的启动配置加载流程</h1><p>项目的启动入口:GraphHopperApplication.main</p>
-<p>项目的初始化:GraphHopperApplication.initialize</p>
-<p>在initialize方法中我们看到bootstrap变量执行了bootstrap.addBundle(new GraphHopperBundle());</p>
-<p>每一个bundlle,可以理解成,为了appllication的可读性,分解一个个小任务,然后添加上去即可</p>
-<p>在GraphHopperBundle()的run方法中,我们利用配置文件完成了地图核心类graphHopper类的生成,如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> GraphHopperManaged graphHopperManaged = <span class="keyword">new</span> GraphHopperManaged(configuration.getGraphHopperConfiguration());</span><br><span class="line">environment.lifecycle().manage(graphHopperManaged);</span><br><span class="line"><span class="keyword">final</span> GraphHopper graphHopper = graphHopperManaged.getGraphHopper();</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看到第一行生成利用构造器new出graphHopperManaged,构造器内传入配置文件,进入该构造器中可以看到,利用了该配置文件,生成了graphHopper变量并完成初始化</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">GraphHopperManaged</span><span class="params">(GraphHopperConfig configuration)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (configuration.has(<span class="string">&quot;gtfs.file&quot;</span>)) &#123;</span><br><span class="line">            graphHopper = <span class="keyword">new</span> GraphHopperGtfs(configuration);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            graphHopper = <span class="keyword">new</span> GraphHopper();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String customModelFolder = configuration.getString(<span class="string">&quot;custom_model_folder&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        List&lt;Profile&gt; newProfiles = resolveCustomModelFiles(customModelFolder, configuration.getProfiles());</span><br><span class="line">        configuration.setProfiles(newProfiles);</span><br><span class="line"></span><br><span class="line">        graphHopper.init(configuration);<span class="comment">//将配置文件加载到该类中</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>有了graphhopper后,我们通过graphhopper.importOrLoad()方法,启动graphhopper.load()函数,如果该地图从未加载过，则在此方法中会启动GraphHopperStorage的构造函数，,在构造函数中会new不同name属性的RAMDataAccess类(porperties,nodes,edge),这代表了osm解析出来的文件原型看,如下:</p>
-<table>
-<thead>
-<tr>
-<th align="left">name</th>
-<th>type</th>
-<th>order</th>
-<th align="left">segementSize</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">properties</td>
-<td>RAM_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">32768=$2^{15}$</td>
-</tr>
-<tr>
-<td align="left">geometry</td>
-<td>RAM_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">string_index_keys</td>
-<td>RAM_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">string_index_vals</td>
-<td>RAM_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">nodes</td>
-<td>RAM_INT_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">edges</td>
-<td>RAM_INT_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">nodes_ch_car</td>
-<td>RAM_INT_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">shortcuts_car</td>
-<td>RAM_INT_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-<tr>
-<td align="left">tmp_pillar_info</td>
-<td>RAM_INT_STORE</td>
-<td>LITTLE_ENDIAN</td>
-<td align="left">1048576=$2^{20}$</td>
-</tr>
-</tbody></table>
-<p>名词:</p>
-<p>tower node:指交叉路口的节点,即这条道路有了分叉,分叉处的节点,还包括路尽头的孤立结点，用于routing</p>
-<p>pillar node:指所有位于两个tower node之间的way上的节点</p>
-<p>自此graphhopper拥有了实例化的GraphHopperStorage对象,知识以上格式的数据只是个空壳,我们还未对osm文件解析进行填充,所以graphhopper’接着执行process()方法在其执行了importOSM()方法,</p>
-<p>就可以将osm文件进行处理,并获得</p>
-<p>GraphHopperStorage类实例</p>
-<p>通过此类实例我们就可以读出osm中节点或者道路信息</p>
-<p>当然我们也需要保存相应的类的实例,所以我们通过RAMDataAccess类中的flush()函数去将类中的信息存储保存到文件中,用的是RandomAccessFile()去读取和写入文件,这个类在new的时候会建立相应的文件出来</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RandomAccessFile raFile = <span class="keyword">new</span> RandomAccessFile(getFullName(), <span class="string">&quot;rw&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="EncodingManager的build"><a href="#EncodingManager的build" class="headerlink" title="EncodingManager的build()"></a>EncodingManager的build()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> EncodingManager em = <span class="keyword">new</span> EncodingManager.Builder().</span><br><span class="line">            add(encoder).</span><br><span class="line">            add(<span class="keyword">new</span> BikeFlagEncoder()).add(<span class="keyword">new</span> FootFlagEncoder()).build();</span><br></pre></td></tr></table></figure>
-
-<p>这一串语句最终返回的是设置好后的EncodingManager实例,首先交由Builder()内部类调用空参构造器构造一个EncodingManager(),初始化基础变量.其中有三个变量,代表了对对某些数值的初始化配置.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig turnCostConfig;</span><br><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig relationConfig;</span><br><span class="line"><span class="keyword">private</span> EncodedValue.InitializerConfig edgeConfig;</span><br></pre></td></tr></table></figure>
-
-<p>还有三个是标签解析器,此时都为空</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;RelationTagParser&gt; relationTagParsers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;TagParser&gt; edgeTagParsers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, TurnCostParser&gt; turnCostParsers = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure>
-
-<p>另外还有存储对数值编码的Map,EncodedValue就是一种对数值的编码,有对小数,布尔,整数,等等.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, EncodedValue&gt; encodedValueMap = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure>
-<p>EncodeValue有以下几种实现,并且是在特定的TagParser类中new出来的:</p>
-<table>
-<thead>
-<tr>
-<th>EdgeTagParser</th>
-<th>name</th>
-<th>EncodedValue</th>
-<th>bits</th>
-<th>storeTwoDirections</th>
-<th>fwdMask</th>
-<th>fwdDataIndex</th>
-<th>fwdShift</th>
-<th>maxValue</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>OSMRoundaboutParser</td>
-<td>roundabout</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>false</td>
-<td>1&lt;&lt;0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td>OSMRoadClassParser</td>
-<td>road_class</td>
-<td>EnumEncodedValue</td>
-<td>5</td>
-<td>false</td>
-<td>31&lt;&lt;1</td>
-<td>0</td>
-<td>1</td>
-<td>31</td>
-</tr>
-<tr>
-<td>OSMRoadClassLinkParser</td>
-<td>road_class_link</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>false</td>
-<td>1&lt;&lt;6</td>
-<td>0</td>
-<td>6</td>
-<td>1</td>
-</tr>
-<tr>
-<td>OSMRoadEnvironmentParser</td>
-<td>road_environment</td>
-<td>EnumEncodedValue</td>
-<td>3</td>
-<td>false</td>
-<td>7&lt;&lt;7</td>
-<td>0</td>
-<td>7</td>
-<td>7</td>
-</tr>
-<tr>
-<td>OSMMaxSpeedParser</td>
-<td>max_speed</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>5</td>
-<td>true(此时两个方向,占用bit*2)</td>
-<td>31&lt;&lt;10</td>
-<td>0</td>
-<td>10</td>
-<td>31</td>
-</tr>
-<tr>
-<td>OSMRoadAccessParser</td>
-<td>road_access</td>
-<td>EnumEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;20</td>
-<td>0</td>
-<td>20</td>
-<td>15</td>
-</tr>
-<tr>
-<td>OSMBikeNetworkTagParser</td>
-<td>bike_network</td>
-<td>EnumEncodedValue</td>
-<td>3</td>
-<td>false</td>
-<td>7&lt;&lt;24</td>
-<td>0</td>
-<td>24</td>
-<td>7</td>
-</tr>
-<tr>
-<td>OSMGetOffBikeParser</td>
-<td>get_off_bike</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>false</td>
-<td>1&lt;&lt;27</td>
-<td>0</td>
-<td>27</td>
-<td>1</td>
-</tr>
-<tr>
-<td>OSMSmoothnessParser</td>
-<td>smoothness</td>
-<td>EnumEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;28</td>
-<td>0</td>
-<td>28</td>
-<td>15</td>
-</tr>
-<tr>
-<td>OSMFootNetworkTagParser</td>
-<td>foot_network</td>
-<td>EnumEncodedValue</td>
-<td>3</td>
-<td>false</td>
-<td>7&lt;&lt;0</td>
-<td>1</td>
-<td>0</td>
-<td>7</td>
-</tr>
-<tr>
-<td>carFlagEncoder</td>
-<td>car$access</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>true</td>
-<td>1&lt;&lt;3</td>
-<td>1</td>
-<td>3</td>
-<td>1</td>
-</tr>
-<tr>
-<td>carFlagEncoder</td>
-<td>car$average_speed</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>5</td>
-<td>true</td>
-<td>31&lt;&lt;5</td>
-<td>1</td>
-<td>5</td>
-<td>31</td>
-</tr>
-<tr>
-<td>bikeFlagEncoder</td>
-<td>bike$access</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>true</td>
-<td>1&lt;&lt;15</td>
-<td>1</td>
-<td>15</td>
-<td>1</td>
-</tr>
-<tr>
-<td>bikeFlagEncoder</td>
-<td>bike$average_speed</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;17</td>
-<td>1</td>
-<td>17</td>
-<td>15</td>
-</tr>
-<tr>
-<td>bikeFlagEncoder</td>
-<td>bike$priority</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;21</td>
-<td>1</td>
-<td>21</td>
-<td>15</td>
-</tr>
-<tr>
-<td>footFlagEncoder</td>
-<td>foot$access</td>
-<td>SimpleBooleanEncodedValue</td>
-<td>1</td>
-<td>true</td>
-<td>1&lt;&lt;25</td>
-<td>1</td>
-<td>25</td>
-<td>1</td>
-</tr>
-<tr>
-<td>footFlagEncoder</td>
-<td>foot$average_speed</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;31</td>
-<td>1</td>
-<td>31</td>
-<td>15</td>
-</tr>
-<tr>
-<td>footFlagEncoder</td>
-<td>foot$priority</td>
-<td>UnsignedDecimalEncodedValue</td>
-<td>4</td>
-<td>false</td>
-<td>15&lt;&lt;0</td>
-<td>2</td>
-<td>0</td>
-<td>15</td>
-</tr>
-</tbody></table>
-<p>在new EncodeValue后,我们还需要通过InitializerConfig类实例来对EncodeValue实例初始化</p>
-<p>roundabout使用edgeconfig来初始化</p>
-<p>将此TagParser加入edgeTagParsers列表中</p>
-<table>
-<thead>
-<tr>
-<th>RelationTagParser</th>
-<th>name</th>
-<th>EncodedValue</th>
-<th>bits</th>
-<th>storeTwoDirections</th>
-<th>fwdMask</th>
-<th>fwdDataIndex</th>
-<th>fwdShift</th>
-<th>maxValue</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>OSMBikeNetworkTagParser</td>
-<td>bike$route_relation</td>
-<td>EnumEncodedValue</td>
-<td>3</td>
-<td>false</td>
-<td>7&lt;&lt;0</td>
-<td>0</td>
-<td>0</td>
-<td>7</td>
-</tr>
-<tr>
-<td>OSMFootNetworkTagParser</td>
-<td>foot$route_relation</td>
-<td>EnumEncodedValue</td>
-<td>3</td>
-<td>false</td>
-<td>7&lt;&lt;3</td>
-<td>0</td>
-<td>3</td>
-<td>7</td>
-</tr>
-</tbody></table>
-<h1 id="OSM文件信息的读取组织"><a href="#OSM文件信息的读取组织" class="headerlink" title="OSM文件信息的读取组织"></a><strong>OSM文件信息的读取组织</strong></h1><p><strong>GraphHoperStorage中称为“node”和“edge”的”DataAccess”(存疑)对象的数据布局如下所示：</strong></p>
-<p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/wiki-graph.png" alt="storage layout"></strong></p>
-<p><strong>解释:</strong></p>
-<p><strong>1.每一个”node row”成员有:latitude,longitude,和first edgeID(即指向的第一条边的id)</strong></p>
-<p><strong>2.每个”edge row”成员有:两个edgeIDs即nextA,nextB,接着 two nodeIDs nodeA and nodeB,还有一些性质如:distance和the flages,….,nodeAid总是小于nodeBid</strong></p>
-<p><strong>3.一个node有多条边,这被实现为链表的形式,如:node3第一条边是0-3,接着找3的边从nextB出发找到边1-3,接着从next B出发找到3-5,这时候就得从nodeA出发找3的下一条边于是到了3-7;此时没有下一条边查找中止</strong></p>
-<p><strong>4.尽管node4,6没有边,但是他们仍然存在,需要消耗DataAccess的空间;对于OSMReader来说去除很少几点的网络也是不会这样做的</strong></p>
-<p>5.edgeref等同于node数据结构出的指针,edge处的nextA,B,换了个名称</p>
-<p>以LowLevelAPIExample.java中的一段代码为例,描述上述数据结构的生成过程</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">createAndSaveGraph</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        FlagEncoder encoder = <span class="keyword">new</span> CarFlagEncoder();</span><br><span class="line">        EncodingManager em = EncodingManager.create(encoder);</span><br><span class="line">        GraphHopperStorage graph = <span class="keyword">new</span> GraphBuilder(em).setRAM(graphLocation, <span class="keyword">true</span>).create();</span><br><span class="line">        <span class="comment">// Make a weighted edge between two nodes and set average speed to 50km/h</span></span><br><span class="line">        EdgeIteratorState edge = graph.edge(<span class="number">0</span>, <span class="number">1</span>).setDistance(<span class="number">1234</span>).set(encoder.getAverageSpeedEnc(), <span class="number">50</span>);</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在初始化后,我们手动为添加一条edge,nodeA,B的id分别为0,1,即graph.edge(0, 1)方法.在此方法的<strong>调用栈内部</strong>,首先检测了当前现有edge的总数目是否超标,再检测node数据结构的容量,当新nodeA/B的id&gt;目前nodecount数目后,对于我们线性增加当前node数目到最新id,并且为这些新node分配一个默认edgeref id 值-1.之后接着为edge数据结构内填入nodeA,Bid,再根据nodeA,B的edgeref填入到NextA,B.填入后,再将nodeA,B的edgeref设为该条边的id.</p>
-<p>默认情况下edge数据结构还有Dist(距离),Flag(一些tag,标注速度,路况等等复杂信息,由flagencoder来决定),Geo,Name</p>
-<h2 id="从DataAccess到AbstractDataAccess"><a href="#从DataAccess到AbstractDataAccess" class="headerlink" title="从DataAccess到AbstractDataAccess"></a><strong>从DataAccess到AbstractDataAccess</strong></h2><p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211102205650131.png" alt="image-20211102205650131"></strong></p>
-<p><strong>从继承我们可以看到,这几个对象之间的关系</strong></p>
-<p><strong>DataAccess:规定了数据接口的生命周期:1)对象的创建,2)配置(如segment size),3)crate or loadExisting,4)使用和确保足够的容量空间,5)关闭</strong></p>
-<p><strong>AbstractDataAccess:dui</strong></p>
-<p>以node举例,一张地图有成千上万的节点,存储节点的方式,以系统中的构建为例</p>
-<p>我们在构造GraphHopperStorage时,会同时构造BaseGraph,在BaseGraph中又继续构造了BaseGraphNodesAndEdges,在这个类中我们定义了一个对象DataAccess nodes,此后地图中的所有节点,都会存储其中.被实现后的DataAccees中,拥有一个数组结构int [] [] segments二维数组来存储节点node信息.当然像我们提到的一个node会有很多属性,当我们确定这些属性后,一个node所占据的字节数也就确定了,超出4个字节就多占一个int. </p>
-<p>为什么会有那么多flagecoder,这些flagencoder确定后,就知道给edge的属性+flagencoder会占据多大空间,再根据这个进行空间的分配和索引</p>
-<h1 id="导航api"><a href="#导航api" class="headerlink" title="导航api"></a><strong>导航api</strong></h1><p><strong>请求URL:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8989/route?point=52.596375%2C13.368988&amp;point=52.525413%2C13.458252&amp;type=json&amp;locale=zh-CN&amp;key=&amp;elevation=false&amp;profile=car</span><br></pre></td></tr></table></figure>
-
-<p><strong>请求方法:GET</strong></p>
-<p><strong>传入–&gt;RoutResource.java–&gt;……–&gt;调用Router类的方法routeVia(reques,solver)),</strong></p>
-<p><strong>其中的参数reques ,solver内的变量基本相同</strong></p>
-<p><strong><img src="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/image-20211028144954442.png" alt="image-20211028144954442"></strong></p>
+        <h1 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h1><p>起因:一张图片设置hdpi比xhdpi显示大小大,故产生好奇</p>
+<p>我猜测因为xhdpi是320dpi是大于hdpi的240dpi,所以显示一张图片所需的大小更小</p>
+<p>0.px:pixel的缩写,意为像素,即一个个屏幕发光的点</p>
+<p>1.分辨率 :手机分辨率1080×1920,表示在宽度上有1080个像素,长度上有1920个像素</p>
+<p>2.屏幕大小: 手机对角线物理长度,以英寸为单位 ,5寸手机,即对角线长度5寸×2.54厘米/寸=12.7厘米。</p>
+<p>3.屏幕像素密度(dpi,dots per inch):即每英寸的像素点数目,数值越高越细腻,一部手机的分辨率是1080×1920，屏幕大小是5英寸,通过宽1080和高1920，根据勾股定理，我们得出对角线的像素数大约是2203，那么用 2203除以5就是此屏幕的密度了，计算结果是440。440dpi的屏幕已经相当细腻了.</p>
+<p>4.实际密度:不同手机的分辨率可能都是1080×1920,但是屏幕尺寸大小不同手机不同,实际密度也不同,而密度又是安卓屏幕将界面进行缩放显示的依据，那么安卓是如何适配这么多屏幕的呢？</p>
+<p>5.系统密度:其实，每部安卓手机屏幕都有一个初始的固定密度，这些数值是120、160、240、320、480，我们权且称为“系统密度”,相隔数值之间是2倍的关系。一般情况下，240×320的屏幕是低密度120dpi，即ldpi；320×480的屏幕是中密度160dpi，即 mdpi；480×800的屏幕是高密度240dpi，即hdpi；720×1280的屏幕是超高密度320dpi，即xhdpi；1080×1920的 屏幕是超超高密度480dpi，即xxhdpi。安卓对界面元素进行缩放的比例依据正是系统密度，而不是实际密度。</p>
+<p>6.dp: Density-independent pixel(dp或dip);密度为160dpi时,1dp对应1px,计算公式如:dp=px*(dpi/160),这里的dpi是系统dpi,屏幕密度越大,1dp对应像素点越多</p>
+<p><strong>一张宽和高均为100dp的图片在320×480和480×800的手机上“看起来”一样大。而实际 上，它们的像素值并不一样</strong></p>
+<p><strong>两个同样是5寸的手机,分辨率分别是1080p和720p,一张800*800的图片在两个电脑上显示的大小并不相同,虽然都是占用800像素,但是两张图片的长度不同.但是我们并不会感觉二者的差异有多大</strong></p>
+<p><strong>所以一个图标,图像分辨率固定了后,在720p上显示尺寸大小比1080p上大</strong></p>
+<p>综上dp的作用实际上是衡量图片规格的另一种方式,设置某个View的宽和高为100dp*100dp,那么这个View在任何分辨率屏幕,显示的尺寸大小大约是一致的(可能不精确)</p>
 
       
 
@@ -1645,7 +453,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">graphhopper</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">android</a>
         		</li>
       		
 		</ul>
@@ -1657,7 +465,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        			<a href="/categories/android//" class="article-tag-list-link color3">android</a>
         		</li>
       		
 		</ul>
@@ -1666,7 +474,331 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/23/graphhopper%E7%B3%BB%E5%88%972/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/10/11/dpi/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-LWE-理想格-格中嵌入陷门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/">LWE\理想格\格中嵌入陷门</a>
+    </h1>
+  
+
+        
+        <a href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/" class="archive-article-date">
+  	<time datetime="2021-08-30T07:40:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="LWE问题"><a href="#LWE问题" class="headerlink" title="LWE问题"></a>LWE问题</h1><p>n维空间下,模数取q&gt;2时,</p>
+<p>$a_1 \leftarrow Z^n_q,b_1=&lt;s,a_1&gt;+e_1$</p>
+<p>$a_2 \leftarrow Z^n_q,b_2=&lt;s,a_2&gt;+e_2$</p>
+<p>…</p>
+<p>误差$e_i \leftarrow \chi = $基于整数的高斯分布,标准差$\alpha q &gt; \sqrt{n}$</p>
+<p>此时我们的LWE由两个版本Search和Decision</p>
+<p>**Search:**给定一组$(a_1,b_1)…(a_n,b_n)$,寻找向量$s\in Z^n_q$满足上述公式</p>
+<p>**Decision:**给定上述形式生成的$(a_i,b_i)$,和随机生成的$(a,b)$,能否区分二者?</p>
+<hr>
+<h1 id="基于LWE的公钥加密"><a href="#基于LWE的公钥加密" class="headerlink" title="基于LWE的公钥加密"></a>基于LWE的公钥加密</h1><p>Alice:生成公共参数$A \leftarrow Z_q^{n*m}$ ,生成私钥$s\leftarrow Z_q^n$</p>
+<p>Bob:生成秘密向量$x \leftarrow {0,1}^m$</p>
+<p>Alice              $\Large  \xrightarrow [公钥] {\qquad b^t=s^tA+e^t}$               Bob</p>
+<p>Alice              $\Large \xleftarrow [密文主体] {\qquad u=Ax \qquad}$                Bob</p>
+<p>​                        $\Large \xleftarrow [负载] {u^`=b^tx+bit* \frac{q}{2}}$</p>
+<p>Alice利用私钥s,通过$u^`-s^tu \approx bit*\frac{q}{2}$ 即可求解出明文</p>
+<p>外界可以观察的传输参数只有$(A,b^t),(u,u^`)$</p>
+<h1 id="循环格"><a href="#循环格" class="headerlink" title="循环格"></a>循环格</h1><p>对于任何一个向量$v\in L$,$v$的循环移位后向量仍$\in L$</p>
+<p>如:</p>
+<p>${-1,2,3,-4}$</p>
+<p>${-4,-1,2,3}$</p>
+<p>${3,-4,-1,2}$</p>
+<p>${2,3,-4,-1}$</p>
+<p><strong>循环格=$Z[x]/(x^n-1)$的理想</strong></p>
+<h2 id="循环格进一步拓展-f-理想格"><a href="#循环格进一步拓展-f-理想格" class="headerlink" title="循环格进一步拓展:f-理想格"></a>循环格进一步拓展:f-理想格</h2><p>f-理想格=ideals in Z[x]/f</p>
+<p>因为f选择$x^n-1$时,虽然使用方便,但由于可以因式分解,导致安全性不高</p>
+<p><strong>故通常选择:</strong></p>
+<p>$f=x^{n-1}+x^{n-2}+…+1$,此时n为质数</p>
+<p>$f=x^n+1$,此时$n=2^k$</p>
+<p>但通常使用$f=x^n+1$</p>
+<p>故有$x^n+1$-理想格=$Z[x]/(x^n+1)$的理想</p>
+<h1 id="陷门函数简介"><a href="#陷门函数简介" class="headerlink" title="陷门函数简介"></a>陷门函数简介</h1><p>单向函数(OWF):即给定输入下x,我们可以快速计算f(x),但是我们很难从f(x)值推算出x</p>
+<p>陷门函数(TDF):拥有单向函数的性质,但是生成陷门函数的同时会生成一个trapdoor t,如果不知道trapdoor t的的值,那么其仍然是一个OWF,但得知Trapdoor t 后,就可以有效的从f(x)恢复到x</p>
+<p><img src="https://pic1.zhimg.com/80/v2-6b8f39eb6d518e1de172c52390a854e4_1440w.jpg" alt="img"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">encryption</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/encryption//" class="article-tag-list-link color1">encryption</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-hexo博客搭建" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">hexo博客搭建</a>
+    </h1>
+  
+
+        
+        <a href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="archive-article-date">
+  	<time datetime="2021-08-20T10:41:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="hexo的初步搭建的相关配置"><a href="#hexo的初步搭建的相关配置" class="headerlink" title="hexo的初步搭建的相关配置"></a>hexo的初步搭建的相关配置</h1><h2 id="hexo的环境配置及运行-windows"><a href="#hexo的环境配置及运行-windows" class="headerlink" title="hexo的环境配置及运行(windows)"></a>hexo的环境配置及运行(windows)</h2><p><strong>1.安装nodesjs</strong>(略过详细过程)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm -v</span><br><span class="line">nodejs -v //查看安装是否成功</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.安装cnpm提速</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.安装hexo</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>4.验证hexo是否安装成功</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>5.hexo 初始化</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir blog //建立空文件夹,存放整个博客的配置及文档</span><br><span class="line">hexo init //初始化相应环境</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>6.新建博客文章</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;文章标题&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>7.启动hexo</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo g //先build一下</span><br><span class="line">hexo s //默认启动方式:访问端口为4000</span><br><span class="line">hexo s -p 8080 //访问端口为8080</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h2 id="hexo部署到github-以我的库为例"><a href="#hexo部署到github-以我的库为例" class="headerlink" title="hexo部署到github(以我的库为例)"></a>hexo部署到github(以我的库为例)</h2><p><strong>1.新建仓库</strong></p>
+<p>仓库名:pomeloguy.github.io 只能形如id.github.io</p>
+<p>其他默认建立即可</p>
+<p><strong>2.下载部署到github的相关包</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install --save hexo-deployer-git</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.改_config.yml配置文件</strong></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">找到下列行,改成如下格式</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">&#x27;git&#x27;</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/pomeloguy/pomeloguy.github.io.git</span> </span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>4.部署</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.访问</strong></p>
+<p>访问pomeloy.github.io即可</p>
+<hr>
+<h2 id="结合typora优化体验"><a href="#结合typora优化体验" class="headerlink" title="结合typora优化体验"></a>结合typora优化体验</h2><p><strong>1.new 文档时时自启动typora编辑器</strong></p>
+<p>blog目录下,新建scripts文件夹,创建openNewFile.js文件,在里面填入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> spawn = <span class="built_in">require</span>(<span class="string">&#x27;child_process&#x27;</span>).spawn;</span><br><span class="line">hexo.on(<span class="string">&#x27;new&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">    spawn(<span class="string">&#x27;D:\\typora\\Typora\\Typora.exe&#x27;</span>, [data.path]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>要该为typora的启动路径</p>
+<p><strong>2.新建文章时拥有categories属性</strong></p>
+<p>打开blog下的scaffolds文件夹,打开post.md,</p>
+<p>加入categories:如下</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br></pre></td></tr></table></figure>
+
+<p>此后每个新建的文件,都有以上特征</p>
+<p><strong>3.保证粘贴在typora的图片保存在hexo内</strong></p>
+<p>修改_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
+<p>这样我们保存图像进该文件夹内即可</p>
+<p>点击<strong>格式-&gt;图像-&gt;设置根目录</strong>为文章文件夹即可</p>
+<h2 id="解决图片加载失败问题"><a href="#解决图片加载失败问题" class="headerlink" title="解决图片加载失败问题"></a>解决图片加载失败问题</h2><p>1.修改_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
+<p>2.下载辅助模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><strong>这个模块有bug,需进行稍稍改动,如下:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="regexp">/.*\/index\.html$/</span>.test(link)) &#123;</span><br><span class="line">      <span class="comment">// when permalink is end with index.html, for example 2019/02/20/xxtitle/index.html</span></span><br><span class="line">      <span class="comment">// image in xxtitle/ will go to xxtitle/index/</span></span><br><span class="line">      appendLink = <span class="string">&#x27;index/&#x27;</span>;</span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="comment">//var endPos = link.lastIndexOf(&#x27;.&#x27;);此处为bug</span></span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);<span class="comment">//修改后</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024225944838.png" alt="image-20211024225944838"></p>
+<p>3.markdown设置图片路径</p>
+<p>!!!  一定要使用相对路径,否则生成的html页面的图片路径会有<strong>路径重复</strong>导致加载不出来</p>
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024230008411.png" alt="image-20211024230008411"></p>
+<hr>
+<h1 id="利用yilia主题对hexo美化"><a href="#利用yilia主题对hexo美化" class="headerlink" title="利用yilia主题对hexo美化"></a>利用yilia主题对hexo美化</h1><h2 id="应用主题"><a href="#应用主题" class="headerlink" title="应用主题"></a>应用主题</h2><p><strong>1.下载主题</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.进行配置</strong></p>
+<p>进入_config.yml修改</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">yilia</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.再次build后,部署即可</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean //清理下</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="美化页面"><a href="#美化页面" class="headerlink" title="美化页面"></a>美化页面</h2><p><strong>1.添加网页图标(支持ico,png格式)</strong></p>
+<p>准备一张图片picture.ico,存入yilia目录下的img文件夹中</p>
+<p>修改yilia目录下的_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">favicon:</span> <span class="string">/img/picture.ico</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2.添加用户名和用户图片</strong></p>
+<p>在yilia目录下_config.yml中加入一行author信息如下</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Header</span></span><br><span class="line"><span class="attr">author:</span> <span class="string">&#x27;pomeloguy&#x27;</span></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="string">主页:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">安卓开发:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Java:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">密码学:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Linux:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Windows:</span> <span class="string">/</span></span><br></pre></td></tr></table></figure>
+
+<p>在yilia目录下_config.yml修改</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#你的头像url</span></span><br><span class="line"><span class="attr">avatar:</span> <span class="string">img/head.png</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.简单搜索功能</strong></p>
+<p>将’关于我们’字样改为’search’,其他提示也关闭,将这里充当搜索功能</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 智能菜单</span></span><br><span class="line"><span class="comment"># 如不需要，将该对应项置为false</span></span><br><span class="line"><span class="comment"># 比如</span></span><br><span class="line"><span class="comment">#smart_menu:</span></span><br><span class="line"><span class="comment">#  friends: false</span></span><br><span class="line"><span class="attr">smart_menu:</span></span><br><span class="line">  <span class="attr">innerArchive:</span> <span class="string">&#x27;Search&#x27;</span></span><br><span class="line">  <span class="attr">friends:</span> <span class="literal">false</span></span><br><span class="line">  <span class="comment">#aboutme: &#x27;关于我&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-添加categories页面"><a href="#4-添加categories页面" class="headerlink" title="4.添加categories页面"></a>4.添加categories页面</h2><p><strong>1.生成index.md文件</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br></pre></td></tr></table></figure>
+
+<p>在theme/yilia/souce下生成一个categories文件夹，文件夹下有一个index.md文件</p>
+<p><strong>2.修改index.md文件</strong></p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 文章分类</span><br><span class="line">date: 2019-10-30 16:36:49</span><br><span class="line">type: &quot;categories&quot;</span><br><span class="line">layout: &quot;categories&quot;</span><br><span class="line"><span class="section">comments: false #关闭评论</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.添加想要添加的分类到menu</strong></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="string">主页:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">分类:</span> <span class="string">/categories/目标分类</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>4.新建文档时在categories:后写入目标分类</strong></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">展开全文 >></a>
         </p>
       
 
@@ -1698,7 +830,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
     </nav>
   
 
@@ -1822,10 +954,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">graphhopper</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">hexo</a>
               </li>
              
@@ -1847,10 +975,6 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">database</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">地图</a>
               </li>
             
             <div class="clearfix"></div>

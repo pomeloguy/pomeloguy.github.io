@@ -6,19 +6,16 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>java序列化 | pomeloguy的博客</title>
+  <title>Category: plonkit | pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="个人对序列化的印象之前很少用过,通常我都是把一个对象转换成json,通过网络传输出去,再将json转换成对象,序列化只了解过,但未曾实际用过.学习vulhub介绍了java反序列化漏洞,因此需要完整学习一下,参考资料主要是java核心技术卷Ⅱ,2.3章节的内容. 保存和加载序列化对象当我们学习IO的处理流时会介绍到ObjectInputStream和ObjectOutputStream这两种处理流">
-<meta property="og:type" content="article">
-<meta property="og:title" content="java序列化">
-<meta property="og:url" content="http://example.com/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
+  <meta name="description" content="pomeloguy的博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="pomeloguy的博客">
+<meta property="og:url" content="http://example.com/categories/plonkit/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
-<meta property="og:description" content="个人对序列化的印象之前很少用过,通常我都是把一个对象转换成json,通过网络传输出去,再将json转换成对象,序列化只了解过,但未曾实际用过.学习vulhub介绍了java反序列化漏洞,因此需要完整学习一下,参考资料主要是java核心技术卷Ⅱ,2.3章节的内容. 保存和加载序列化对象当我们学习IO的处理流时会介绍到ObjectInputStream和ObjectOutputStream这两种处理流">
+<meta property="og:description" content="pomeloguy的博客">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-03-14T11:42:28.000Z">
-<meta property="article:modified_time" content="2022-04-04T12:27:18.448Z">
 <meta property="article:author" content="pomeloguy">
-<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="pomeloguy的博客" type="application/atom+xml">
@@ -165,215 +162,71 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-java序列化" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      java序列化
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2023" class="archive-year">2023</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2023/05/09/%E8%AE%A1%E5%88%92%E5%BC%80%E5%90%AF%E6%96%B0%E7%B3%BB%E5%88%97%EF%BC%9A%E7%BF%BB%E8%AF%91plonk-it/" class="archive-article-date">
+  	<time datetime="2023-05-09T13:30:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-05-09</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2023/05/09/%E8%AE%A1%E5%88%92%E5%BC%80%E5%90%AF%E6%96%B0%E7%B3%BB%E5%88%97%EF%BC%9A%E7%BF%BB%E8%AF%91plonk-it/">计划开启新系列：翻译plonk it</a>
     </h1>
   
 
-        
-        <a href="/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2022-03-14T11:42:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="个人对序列化的印象"><a href="#个人对序列化的印象" class="headerlink" title="个人对序列化的印象"></a>个人对序列化的印象</h2><p>之前很少用过,通常我都是把一个对象转换成json,通过网络传输出去,再将json转换成对象,序列化只了解过,但未曾实际用过.学习vulhub介绍了java反序列化漏洞,因此需要完整学习一下,参考资料主要是java核心技术卷Ⅱ,2.3章节的内容.</p>
-<h2 id="保存和加载序列化对象"><a href="#保存和加载序列化对象" class="headerlink" title="保存和加载序列化对象"></a>保存和加载序列化对象</h2><p>当我们学习IO的处理流时会介绍到ObjectInputStream和ObjectOutputStream这两种处理流的类,用于存储和读取<strong>基本数据类型</strong>或者<strong>对象</strong>流</p>
-<p>其实IO的处理流的类都是”工具”类,用于解析流成我们需要的格式.</p>
-<p>如往employee.dat文件 存入对象,再读取回来:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> out=<span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;employee.dat&quot;</span>));</span><br><span class="line"><span class="comment">//new 两个对象出来</span></span><br><span class="line"><span class="keyword">var</span> harry=<span class="keyword">new</span> Employee(<span class="string">&quot;Harry Hacker&quot;</span>,<span class="number">5000</span>,<span class="number">1989</span>,<span class="number">10</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> boss=<span class="keyword">new</span> Manager(<span class="string">&quot;Carl Cracker&quot;</span>,<span class="number">8000</span>,<span class="number">1987</span>,<span class="number">12</span>,<span class="number">15</span>);</span><br><span class="line"><span class="comment">//分别将这两个对象保存</span></span><br><span class="line">out.writeObject(harry);</span><br><span class="line">out.writeObject(boss);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> in=<span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;employee.dat&quot;</span>));</span><br><span class="line"><span class="keyword">var</span> e1=in.readObject();</span><br><span class="line"><span class="keyword">var</span> e2=in.readObject();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>若想对象实现以上的操作,则这些类必须实现Serializable接口:</p>
-<p><code>class Employee implements Serializable&#123;...&#125;</code></p>
-<p>但不需要实现任何方法</p>
-<p>重要情况:当一个对象被多个对象共享,作为共享的对象,被序列化时我们也要保证这一属性的一致性,但是我们并不能将对象的内存地址也保存下来,因为对象恢复时,也不可能恢复与原来完全相同的内存地址.</p>
-<p>因此每个对象被序列化时都会用一个序列号(serial number)保存的,如果第一次遇到,保存其对象数据到输出流中,如果以保存过,仅记录”与之前保存过的序列号为x的对象相同”.读取的过程也是如此;</p>
-<h3 id="对象序列化的文件格式"><a href="#对象序列化的文件格式" class="headerlink" title="对象序列化的文件格式"></a>对象序列化的文件格式</h3><p>略</p>
-<h3 id="修改默认的序列化机制"><a href="#修改默认的序列化机制" class="headerlink" title="修改默认的序列化机制"></a>修改默认的序列化机制</h3><p>某些数据域是不可以序列化的,如只对本地方法有意义的存储文件句柄,这种值传输到其他机器是没有用处的,甚至可能引起本地方法崩溃.java中将数据域标记为transient,来防止被序列化.</p>
-<p>对于含有transient标记的数据域的对象,序列化时,不能再直接由IO流进行自动序列化,需要实现具有下列签名的方法:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStrean in)</span>throw IOException,ClassNotFoundException</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">WriteObject</span><span class="params">(ObjectOutputStrean out)</span>throw IOException,ClassNotFoundException</span></span><br></pre></td></tr></table></figure>
-
-<p>例:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LabeledPoint</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String label;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> Point2D.Double point;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在writeObject方法中,先调用defaultWriteObject方法,写出对象描述符和String域label,这事ObjectOutputStream类中的一个特殊方法,他只能在<strong>可序列化类</strong>的writeObject方法中被调用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">WriteObject</span><span class="params">(ObjectOutputStream out)</span>throw IOException,ClassNotFoundException</span>&#123;&#125;&#123;</span><br><span class="line">	out.defaultWriteObject();</span><br><span class="line">	out.writeDouble(point.getX());</span><br><span class="line">	out.writeDouble(point.getY());</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream in)</span>throw IOException,ClassNotFoundException</span>&#123;</span><br><span class="line">	in.defaultReadObject();</span><br><span class="line">    <span class="keyword">double</span> x=in.readObject();</span><br><span class="line">    <span class="keyword">double</span> x=in.readObject();</span><br><span class="line">    point=<span class="keyword">new</span> Point2D.Double(x,y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>即原来是:ObjectOutputStream.writeObject(需要保存的对象)或者ObjectInputStream.readObject();</p>
-<p>因为对象有了transient数据域后,该对象不能自动由IO流序列化了,需自己在类中实现相应方法</p>
-<p>**需要保存的对象.**writeObject(ObjectOutputStream)或者需要保存的对象.readObject(ObjectInputStream) </p>
-<h3 id="序列化单例和类型安全的枚举"><a href="#序列化单例和类型安全的枚举" class="headerlink" title="序列化单例和类型安全的枚举"></a>序列化单例和类型安全的枚举</h3><p>根据2.3.4节,单纯的enum结构无需担心枚举类型A序列化后反序列化A’,还是原来那个实例A==A’.</p>
-<p>但是文中提到的非enum结构的枚举类型A,在序列化后,再反序列化回来A’,一前一后的对象不相等</p>
-<p>需要按照文中提到的,添加readResolve方法</p>
-<h3 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h3><p>A类会不停的演变,从1.0版本演化到1.1,此时1.0版本可以读入1.1的序列化文件吗,1.1版本可以读入1.0的序列化文件吗,因为sha指纹会变化,理论上来说会将拒绝读入.但是类是可以对他的早期版本进行兼容的.</p>
-<p>原因是,我们在获取初版类的public static final long serialVersionUID=xxxxx</p>
-<p>此后的更新版本都要把serialVersionUID定义为同样的常量</p>
-<p>如果该类只有<strong>方法</strong>产生了变化,那么读入数据是<strong>不会</strong>有任何问题的.</p>
-<p>数据域发生了变化:</p>
-<p>旧文件对象比程序中的对象,有更多或者更少的数据域,或者数据域的类型可能有所不同.此时会尽全力进行转换:</p>
-<p>如果数据域名称匹配,类型不匹配,则不会进行转换.</p>
-<p>如果旧文件中的对象,拥有当前版本没有的数据域,则会忽略这些数据</p>
-<p>如果当前版本的数据域,旧文件中没有,则会赋予默认值</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">plonkit</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        			<a href="/categories/plonkit//" class="article-tag-list-link color3">plonkit</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          pagehelper相关
-        
-      </div>
-    </a>
   
   
-    <a href="/2022/03/11/%E5%8F%8D%E5%BC%B9shell/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">反弹shell</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E5%AF%B9%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E5%8D%B0%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">个人对序列化的印象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E5%92%8C%E5%8A%A0%E8%BD%BD%E5%BA%8F%E5%88%97%E5%8C%96%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.</span> <span class="toc-text">保存和加载序列化对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">对象序列化的文件格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96%E6%9C%BA%E5%88%B6"><span class="toc-number">2.2.</span> <span class="toc-text">修改默认的序列化机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E5%8D%95%E4%BE%8B%E5%92%8C%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%9E%9A%E4%B8%BE"><span class="toc-number">2.3.</span> <span class="toc-text">序列化单例和类型安全的枚举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">版本管理</span></a></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -396,10 +249,10 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
 		isTag: false,
-		isCategory: false,
+		isCategory: true,
 		open_in_new: true,
 		toc_hide_index: true,
 		root: "/",

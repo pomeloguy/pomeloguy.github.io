@@ -164,6 +164,111 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-pom-xml知识点记录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">pom.xml知识点记录</a>
+    </h1>
+  
+
+        
+        <a href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/" class="archive-article-date">
+  	<time datetime="2021-12-02T12:04:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="parent标签"><a href="#parent标签" class="headerlink" title="parent标签"></a>parent标签</h3><p>此说法改自<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41254677/article/details/81011681">链接</a></p>
+<p>当引入parent标签后,再引入的依赖的版本,由parent标签中坐标指向的pom来管理,当且仅当parent中的pom管理着此依赖</p>
+<p>情景一:用于本项目的依赖管理</p>
+<p>我的一个project,专门在project目录下的pom.xml中写入dependencyManagement标签,往其中加入依赖并指定版本.在这里管理着所有用到这些依赖的module所使用依赖的version</p>
+<p>那么此时,其他多个module在使用一些共同的依赖如A时,可以在此module下的pom.xml中引入parent标签填入project下的pom.xml的坐标,这样在<dependencies>中引入依赖A时,只需填入坐标,不需要指定版本,版本已经由parent的dependencyManagement中指定了.</dependencies></p>
+<p>当我想更新依赖A的version时,只需要在project下的pom.xml中改依赖A的version,不必再去一个个module中改掉</p>
+<p>情景二:用于引用maven库中的一些项目</p>
+<p>比如我用spring-boot-starter-web依赖,为了方便,我在parent中写入spring-boot-starter-parent坐标</p>
+<p>这一切的前提是,我知道spring-boot-starter-parent管理着spring-boot-starter-web依赖相应依赖的版本</p>
+<p>此时我也只需要写spring-boot-starter-parent的version,而不需要写spring-boot-starter-web的version,因为在spring-boot-starter-parent的dependencyManagement标签中指定了spring-boot-starter-web的version</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">       &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">       &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">       &lt;version&gt;<span class="number">2.1</span><span class="number">.18</span>.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/parent&gt;</span><br><span class="line">&lt;dependencies&gt;</span><br><span class="line">       &lt;dependency&gt;</span><br><span class="line">           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">           &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">       &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="properties标签中java-version和maven-compiler-source-target的区别"><a href="#properties标签中java-version和maven-compiler-source-target的区别" class="headerlink" title="properties标签中java.version和maven.compiler.source/target的区别"></a>properties标签中java.version和maven.compiler.source/target的区别</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;properties&gt;</span><br><span class="line">    &lt;maven.compiler.source&gt;<span class="number">8</span>&lt;/maven.compiler.source&gt;</span><br><span class="line">    &lt;maven.compiler.target&gt;<span class="number">8</span>&lt;/maven.compiler.target&gt; </span><br><span class="line">&lt;/properties&gt;</span><br><span class="line"> &lt;properties&gt;</span><br><span class="line">    &lt;java.version&gt;<span class="number">8</span>&lt;/java.version&gt;</span><br><span class="line">&lt;/properties&gt;</span><br></pre></td></tr></table></figure>
+
+<p>都是8,所以两者是等价的,java.version更常用于springboot的pom.xml模板中</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">maven</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/12/02/pom-xml%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-椭圆曲线加密" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -975,6 +1080,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">database</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">plonkit</a>
               </li>
             
             <div class="clearfix"></div>

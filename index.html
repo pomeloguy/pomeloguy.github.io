@@ -164,6 +164,315 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-rabbitmq学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/06/19/rabbitmq%E5%AD%A6%E4%B9%A0/">rabbitmq学习</a>
+    </h1>
+  
+
+        
+        <a href="/2023/06/19/rabbitmq%E5%AD%A6%E4%B9%A0/" class="archive-article-date">
+  	<time datetime="2023-06-19T14:41:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>Ubuntu22.04 wsl <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/install-debian.html#apt-quick-start-cloudsmith">官网教程</a>安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line">sudo apt-get install curl gnupg apt-transport-https -y</span><br><span class="line"></span><br><span class="line"><span class="comment">## Team RabbitMQ&#x27;s main signing key</span></span><br><span class="line">curl -1sLf <span class="string">&quot;https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA&quot;</span> | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.rabbitmq.team.gpg &gt; /dev/null</span><br><span class="line"><span class="comment">## Community mirror of Cloudsmith: modern Erlang repository</span></span><br><span class="line">curl -1sLf https://ppa1.novemberain.com/gpg.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg &gt; /dev/null</span><br><span class="line"><span class="comment">## Community mirror of Cloudsmith: RabbitMQ repository</span></span><br><span class="line">curl -1sLf https://ppa1.novemberain.com/gpg.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg &gt; /dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment">## Add apt repositories maintained by Team RabbitMQ</span></span><br><span class="line">sudo tee /etc/apt/sources.list.d/rabbitmq.list &lt;&lt;<span class="string">EOF</span></span><br><span class="line"><span class="string">## Provides modern Erlang/OTP releases</span></span><br><span class="line"><span class="string">##</span></span><br><span class="line"><span class="string">deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main</span></span><br><span class="line"><span class="string">deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## Provides RabbitMQ</span></span><br><span class="line"><span class="string">##</span></span><br><span class="line"><span class="string">deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main</span></span><br><span class="line"><span class="string">deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Update package indices</span></span><br><span class="line">sudo apt-get update -y</span><br><span class="line"></span><br><span class="line"><span class="comment">## Install Erlang packages</span></span><br><span class="line">sudo apt-get install -y erlang-base \</span><br><span class="line">                        erlang-asn1 erlang-crypto erlang-eldap erlang-ftp erlang-inets \</span><br><span class="line">                        erlang-mnesia erlang-os-mon erlang-parsetools erlang-public-key \</span><br><span class="line">                        erlang-runtime-tools erlang-snmp erlang-ssl \</span><br><span class="line">                        erlang-syntax-tools erlang-tftp erlang-tools erlang-xmerl</span><br><span class="line"></span><br><span class="line"><span class="comment">## Install rabbitmq-server and its dependencies</span></span><br><span class="line">sudo apt-get install rabbitmq-server -y --fix-missing</span><br></pre></td></tr></table></figure>
+
+<h2 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl start rabbitmq-server</span><br><span class="line">systemctl status rabbitmq-server</span><br><span class="line">systemctl <span class="built_in">enable</span> rabbitmq-server  //设置开机自启动</span><br><span class="line">systemctl stop rabbitmq-server</span><br><span class="line">systemctl restart rabbitmq-server</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装管理插件启用web页面"><a href="#安装管理插件启用web页面" class="headerlink" title="安装管理插件启用web页面"></a>安装管理插件启用web页面</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rabbitmq-plugins <span class="built_in">enable</span> rabbitmq_management</span><br><span class="line">//访问网址   ip:15672</span><br></pre></td></tr></table></figure>
+
+<h2 id="添加用户和授权"><a href="#添加用户和授权" class="headerlink" title="添加用户和授权"></a>添加用户和授权</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//添加用户</span><br><span class="line">rabbitmqctl add_user <span class="variable">$&#123;username&#125;</span> <span class="variable">$&#123;password&#125;</span></span><br><span class="line">//设置用户角色，分配管理员权限</span><br><span class="line">rabbitmqctl set_user_tags <span class="variable">$&#123;username&#125;</span> administrator</span><br><span class="line"><span class="comment"># 为用户添加资源权限(授予访问虚拟机根节点的所有权限)</span></span><br><span class="line">rabbitmqctl set_permissions -p <span class="string">&quot;/&quot;</span> <span class="variable">$&#123;username&#125;</span> <span class="string">&quot;.*&quot;</span> <span class="string">&quot;.*&quot;</span> <span class="string">&quot;.*&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/06/19/rabbitmq%E5%AD%A6%E4%B9%A0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Springbatch4-3-8源码本地配置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/06/17/Springbatch4-3-8%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE/">Springbatch4.3.8源码本地配置</a>
+    </h1>
+  
+
+        
+        <a href="/2023/06/17/Springbatch4-3-8%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE/" class="archive-article-date">
+  	<time datetime="2023-06-16T16:39:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近研究Springbatch，但是看完一部分的官方文档后，发现对于该框架的理解还是不够深，而源码中的sample有全面的代码示例。因此我需要下载源码进行学习，以下内容都是我在配置源码时遇到的，但任未完全解决，但sample中的test可以正常启动了。</p>
+<h1 id="版本介绍"><a href="#版本介绍" class="headerlink" title="版本介绍"></a>版本介绍</h1><p>Springbatch框架，版本是4.X对应的jdk是8，而目前最新的springbatch版本为5.X对应最低jdk是17.</p>
+<p>故下载最新的4.X版本：[4.3.8](<a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-batch/releases/tag/4.3.8">Release v4.3.8 · spring-projects/spring-batch · GitHub</a>)进行研究，但是4.X版本用gradle管理项目，5.X用maven管理项目。</p>
+<p>而gradle对我来说比较难用，因此遇到了很多问题</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><h2 id="spring-io-plugin-0-0-5和propdeps-plugin-0-0-7无法下载"><a href="#spring-io-plugin-0-0-5和propdeps-plugin-0-0-7无法下载" class="headerlink" title="spring-io-plugin:0.0.5和propdeps-plugin:0.0.7无法下载"></a>spring-io-plugin:0.0.5和propdeps-plugin:0.0.7无法下载</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">	repositories &#123;</span><br><span class="line">		mavenCentral()</span><br><span class="line">		maven &#123; url <span class="string">&#x27;https://plugins.gradle.org/m2/&#x27;</span> &#125;</span><br><span class="line">		maven &#123; url <span class="string">&#x27;https://repo.spring.io/plugins-release&#x27;</span> &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	dependencies &#123;</span><br><span class="line">		classpath <span class="string">&#x27;org.springframework.build.gradle:propdeps-plugin:0.0.7&#x27;</span></span><br><span class="line">		classpath <span class="string">&#x27;io.spring.gradle:spring-io-plugin:0.0.5.RELEASE&#x27;</span></span><br><span class="line">		classpath <span class="string">&quot;io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE&quot;</span></span><br><span class="line">		classpath <span class="string">&quot;org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这两个包对应Gradle 构建脚本的依赖，在build时，下载这两个依赖时报错401无权限。</p>
+<p>但是奇怪的是dependency-management-plugin没有任何问题。</p>
+<p>在spring官网的<a target="_blank" rel="noopener" href="https://repo.spring.io/plugins-release">公告</a>中该repo.spring.io/plugins-release仓库已经不允许匿名使用了，只有以下两个仓库支持匿名使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//repo.spring.io/snapshot</span></span><br><span class="line">https:<span class="comment">//repo.spring.io/milestone</span></span><br></pre></td></tr></table></figure>
+
+<p>但是更改后，我简单测试下，<strong>还是无法下载</strong></p>
+<p>随机看到该公告底下评论中提到propdeps-plugin is deprecated，即废弃了，你可以去<a target="_blank" rel="noopener" href="https://repo.spring.io/ui/packages">仓库官网</a>下载尚存的snapshot版本，又或者去作者的<a target="_blank" rel="noopener" href="https://github.com/spring-attic/propdeps-plugin">github</a>下载,但是github的版本是zip包似乎是源码，不太好用。</p>
+<p>故去分别下载了spring-io-plugin:0.0.5和propdeps-plugin:0.0.7的snapshot版本,每个依赖项需要下载pom和jar文件</p>
+<p>我下载的原名文件类似这样的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">spring-io-plugin-<span class="number">0.0</span><span class="number">.5</span>.BUILD-<span class="number">20150708.083925</span>-<span class="number">1.</span>pom</span><br><span class="line">spring-io-plugin-<span class="number">0.0</span><span class="number">.5</span>.BUILD-<span class="number">20150708.085055</span>-<span class="number">2.</span>jar</span><br></pre></td></tr></table></figure>
+
+<p>我根据pom中的版本号将其修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">propdeps-plugin-<span class="number">0.0</span><span class="number">.7</span>-SNAPSHOT.pom</span><br><span class="line">propdeps-plugin-<span class="number">0.0</span><span class="number">.7</span>-SNAPSHOT.jar</span><br><span class="line">spring-io-plugin-<span class="number">0.0</span><span class="number">.5</span>.BUILD-SNAPSHOT.jar</span><br><span class="line">spring-io-plugin-<span class="number">0.0</span><span class="number">.5</span>.BUILD-SNAPSHOT.pom</span><br></pre></td></tr></table></figure>
+
+<p>将依赖根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/liujinghu/article/details/124244657">这篇文章</a>，安装到本地maven仓库中,我对应的命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -Dfile=D:\test\spring-io-plugin-0.0.5.BUILD-SNAPSHOT.jar -DpomFile=D:\test\spring-io-plugin-0.0.5.BUILD-SNAPSHOT.pom</span><br><span class="line"> mvn install:install-file -Dfile=D:\test\propdeps-plugin-0.0.7-SNAPSHOT.jar -DpomFile=D:\test\propdeps-plugin-0.0.7-SNAPSHOT.pom</span><br></pre></td></tr></table></figure>
+
+<p>最后在buildgradle中加入mavenlocal</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">	repositories &#123;</span><br><span class="line">		mavenLocal()</span><br><span class="line">		mavenCentral()</span><br><span class="line">		maven &#123; url <span class="string">&#x27;https://plugins.gradle.org/m2/&#x27;</span> &#125;</span><br><span class="line">		maven &#123; url <span class="string">&#x27;https://repo.spring.io/plugins-release&#x27;</span> &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	dependencies &#123;</span><br><span class="line">		classpath <span class="string">&#x27;org.springframework.build.gradle:propdeps-plugin:0.0.7-SNAPSHOT&#x27;</span></span><br><span class="line">		classpath <span class="string">&#x27;io.spring.gradle:spring-io-plugin:0.0.5.BUILD-SNAPSHOT&#x27;</span></span><br><span class="line">		classpath <span class="string">&quot;io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE&quot;</span></span><br><span class="line">		classpath <span class="string">&quot;org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重新build即可</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/06/17/Springbatch4-3-8%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Denmark" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/06/03/Denmark/">Denmark</a>
+    </h1>
+  
+
+        
+        <a href="/2023/06/03/Denmark/" class="archive-article-date">
+  	<time datetime="2023-06-03T13:13:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Step1-识别丹麦"><a href="#Step1-识别丹麦" class="headerlink" title="Step1-识别丹麦"></a>Step1-识别丹麦</h1><p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/41574168-1ad5-4b01-ac83-587e2f4b4619/Denmark+Summary+infographic.png?format=1000w" alt="img-1"></p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/aaa031a9-bed0-41db-8352-442a7a2d009c/Denmark_License_Plate.png?format=750w" alt="img-2"></p>
+<p>丹麦有着长条的，白色的车牌，并且车牌左侧有标准的欧盟标志</p>
+<p>商业牌照是<a target="_blank" rel="noopener" href="https://goo.gl/maps/D4ENnLwJ5oDZHuPx6">黄色的</a>。这种经常出现在货车上。</p>
+<p>有些车辆有所谓的“<a target="_blank" rel="noopener" href="https://goo.gl/maps/bPQH7RRQgk1K1wqr7">鹦鹉车牌</a>”，左侧有一个黄色区域。这种鹦鹉车牌是丹麦所独有的。</p>
+<p>提示：The Netherlands，Luxembourg、The UK的私家车使用黄色车牌</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/a0681da9-0f23-40c6-80af-2feac9e7b50e/General_Landscape.png?format=750w" alt="img-3"></p>
+<p>丹麦是一个一般来说比较<a target="_blank" rel="noopener" href="https://goo.gl/maps/wt6BuwquwRoUX68m6">平坦</a>的国家，城镇之间有着广阔的、<a target="_blank" rel="noopener" href="https://goo.gl/maps/Jb3jz3sdcsSrYGQc9">开阔的田野</a>。<a target="_blank" rel="noopener" href="https://goo.gl/maps/17bXd4RSqqJSu26MA">郊区</a>通常是开放的，建筑物之间有足够的空间。城市中心更为密集，建筑更加高耸。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/22fb5167-248e-427b-8434-e2baf1155e9c/Road_Lines.png?format=750w" alt="img-4"></p>
+<p>丹麦的道路标线全部采用白色。双实线在中央非常常见。</p>
+<p>提示：一些其他欧洲国家，尤其是Poland和Greece，也使用双实线</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/a0421b90-cb4f-4632-b292-58bb21b92d11/Blocky_Gapped_Outside_Road_Lines.png?format=750w" alt="img-5"></p>
+<p>丹麦道路外部的标线通常由小白色正方形组成。这种独特的标线是识别丹麦的好方法。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/fc8470a3-e2c1-4a7f-85d9-7a5961eb29f8/Directional_Signs.png?format=750w" alt="img-6"></p>
+<p>丹麦有非常独特的指示牌，很容易识别该国。这些指示牌离地面比较低，被管道框住。它们通常是<a target="_blank" rel="noopener" href="https://goo.gl/maps/xt2jxMHjMQivxS8B7">红白</a>或<a target="_blank" rel="noopener" href="https://goo.gl/maps/zC5mi95DGrvhHD8W6">蓝白</a>相间的颜色，背景上有方向箭头。指示牌上通常会显示道路编号。</p>
+<p>一些较大的道路指示牌采用更<a target="_blank" rel="noopener" href="https://goo.gl/maps/oXjRzsLL2PQBcJC89">标准的布局</a>，没有管道框架。高速公路的指示牌通常有<a target="_blank" rel="noopener" href="https://goo.gl/maps/SZ3AQjYCNbzxErT68">蓝色或绿色</a>的背景。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/91635876-1f21-4b5c-8de2-c252ba4c9e23/Street_Vej.png?format=750w" alt="img-7"></p>
+<p>大多数丹麦街道名称以“vej”结尾。这个词在丹麦语中表示“街道”。街道标志通常采用蓝色背景和白色文字。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/68b21aea-62a9-4faf-9127-11f8212c1adc/Bollard.png?format=750w" alt="img-8"></p>
+<p>丹麦有一种非常具有识别度的白色柱状物，上面有黄色反光器和深橙色条纹。这种柱状物是丹麦独有的。您也可能会发现这种<a target="_blank" rel="noopener" href="https://goo.gl/maps/bDTbzuetrnxPEvyYA">绿色变种</a>。</p>
+<p>提示：Belgium也有一种柱状物看起来可能有些相似，但它永远不会有橙色条纹</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/b6fbc135-bbde-4b60-9bb9-58cf97753a32/Language.png?format=750w" alt="img-9"></p>
+<p>丹麦语是北日耳曼语，与瑞典语和挪威语有着密切的联系。丹麦语字母表包含这些特殊的字母：<strong>Æ</strong>, <strong>Ø</strong>, and <strong>Å</strong>.</p>
+<p>提示：丹麦语中的特殊字母也可以在其他一些北日耳曼语言中找到：</p>
+<p>挪威语使用 Æ, Ø, and Å.</p>
+<p>法罗群岛使用Æ和Ø，但不使用Å</p>
+<p>冰岛语只使用Æ。</p>
+<p>瑞典语只使用Å。此外，瑞典语使用了在丹麦语中没有的É和Ö。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/7d10284b-75bf-4fc0-b26a-a3dcb9c34618/Architecture.png?format=750w" alt="img-10"></p>
+<p>丹麦的许多建筑都是以红砖为主要建材。屋顶通常使用橙色、深棕色或黑色的瓦片。</p>
+<p>提示：Netherlands和Belgium也常见类似的砖砌建筑风格。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/e8d15925-0578-48d2-a450-00da33551b25/Roofs.png?format=750w" alt="img-11"></p>
+<p>丹麦的一些房屋，特别是在乡村地区，采用<a target="_blank" rel="noopener" href="https://goo.gl/maps/aDB7vcs9VXEMNan37">茅草屋顶</a>。你也可以偶尔发现灰色<a target="_blank" rel="noopener" href="https://goo.gl/maps/nGYSiVBbLtqLsbro8">波纹屋顶</a>，这种屋顶看起来有些类似于波罗的海国家常见的屋顶。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/c766eb5e-7b46-4706-a2be-e08c41f8e4ea/Timber_frame_buildings.png?format=750w" alt="img-12"></p>
+<p>一些老旧的或乡村建筑采用木框架墙。</p>
+<p>提示：木框架建筑在其他西欧和中欧国家也很常见，但在丹麦的历史建筑中尤其常见。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/78c660f9-0ff3-4235-860c-b4792b83ce91/Signpost.png?format=750w" alt="img-13"></p>
+<p>这种在标志牌周围弯曲的管道框架标识牌是丹麦独有的。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/f32f29f7-0698-4c10-a7f1-5c91051ff616/Guardrail.png?format=750w" alt="img-14"></p>
+<p>丹麦的护栏通常是普通类型B型的方形护栏，没有反光器。</p>
+<p>提示：丹麦是欧洲极少数使用这种类型护栏的国家之一。如果想要全面了解，请查看这张<a target="_blank" rel="noopener" href="https://cdn.discordapp.com/attachments/1048410629809115227/1061288459697913877/Guardrail_Profiles.png">信息图表</a>。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/2b2739ae-ea35-4e28-80e7-e3566d9bd505/Pedestrian_sign.png?format=750w" alt="img-15"></p>
+<p>这个丹麦的行人标志有5条条纹。独特的是，第一条和第五条条纹与白色三角形的边缘相接触。</p>
+<p>提示： Sweden的行人标志有4条条纹。Norway的行人标志通常也有4条条纹，但很少可以找到有5条条纹的标志。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/00543d9a-eafc-4d25-8387-9af7f6ffd8aa/Town+entry+and+exit+sign.png?format=750w" alt="img-16"></p>
+<p>这是一种特殊的标志，通常出现在进入城镇时。当离开城镇时，标志上会有一个红色的横杠。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/22ae229e-eb90-4807-bc50-29b166513aae/Bus+stop+sign.png?format=750w" alt="img-17"></p>
+<p>丹麦的公交车站标志是黑色和黄色的。顶部有一个小标志，下面放着公交车的时刻表。此外，你可能还会看到这种老式的<a target="_blank" rel="noopener" href="https://goo.gl/maps/fRjTDJetFmcvkqtt6">蓝白相间</a>的版本。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/5a52dac0-83ce-439e-89b7-cec84cee1110/Chevron.png?format=750w" alt="img-18"></p>
+<p>这种红白相间的倒三角形标志在丹麦很常见。它们通常离地面比较低。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/c52e1a3c-2336-428b-b6d4-71a7267215b5/Large_Poles.png?format=750w" alt="img-19"></p>
+<p>在丹麦，标准的街道级别的公用事业电线杆比较少见。你在乡村地区找到的大部分电力基础设施都是高大的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Overhead_power_line">架空电力线路</a>，通常靠近公路。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/e598cd3f-3673-43b2-9868-1aac50baf9bb/Bicycle_Paths.png?format=750w" alt="img-20"></p>
+<p>你有时可以看到自行车道在路边。</p>
+<p>提示：自行车道在荷兰和比利时也很常见。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/aa8b9835-10fe-4be4-aeff-194d6c642fe3/PostNord_Postal_Box.png?format=750w" alt="img-21"></p>
+<p>PostNord（或Post Danmark公司）是丹麦的国家邮政服务提供商。该公司使用这些独特的邮筒。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/24a0f82e-e807-4b6a-b54d-e9ee9afb5a8a/Gas_Station_Brands.png?format=750w" alt="img-22"></p>
+<p>这四个加油站品牌在丹麦几乎是独一无二的。如果你看到其中一个，你就可以把它缩小到两个国家。</p>
+<p><a target="_blank" rel="noopener" href="https://goo.gl/maps/gzK5cAGTik4myC2t6">Ingo</a>可在丹麦和瑞典找到。<a target="_blank" rel="noopener" href="https://goo.gl/maps/ZnQyP9LSGm32coji9">Ok</a>可在丹麦和荷兰找到。<a target="_blank" rel="noopener" href="https://goo.gl/maps/N7BtoCnkt2mgQe5HA">Uno-X</a>和<a target="_blank" rel="noopener" href="https://goo.gl/maps/MnuSF8c2GA8ujdW19">Yx</a>两个品牌都可以在丹麦和挪威找到。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/d4398aa3-f5a6-4c1e-94df-5cd6ee4b76f8/Bicycle_Paths_Bollard2.png?format=750w" alt="img-23"></p>
+<p>你很少会在自行车道附近看到这些石制路障，它们的顶部可能被涂成红色。</p>
+<h1 id="Step2-区域线索"><a href="#Step2-区域线索" class="headerlink" title="Step2-区域线索"></a>Step2-区域线索</h1><p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/b64094a4-7b5d-4f5f-b30d-9de6efb097aa/Denmark_Road_Number_System.png?format=750w" alt="img-23"></p>
+<p>丹麦有一个易学的道路编号系统。他们按东到西的顺序排列道路。</p>
+<p>以2至5数字开头的道路按地区分组。</p>
+<p>以数字1开头的道路可以在全国范围内找到，但第二位数字仍然遵循大致的地区分布。值得注意的是，Bornholm岛只有以数字1开头的道路。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/e631d314-6942-4aaf-a9b4-b168a012dfff/Ring_Roads.png?format=750w" alt="img-24"></p>
+<p>环形公路是靠近大城市的特殊高速公路，标号从O1到O4。编号从中心开始递增，每个环路完全或部分地环绕着城市。</p>
+<p>哥本哈根、奥胡斯、奥尔堡、欧登塞、希勒勒德、科尔丁和韦勒这些城市都有环形公路。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/b58a4867-1f93-47aa-8c88-df69c1010340/Denmark_Bus_Company_Map.png?format=750w" alt="img-25"></p>
+<p>丹麦分为六个地区，每个地区都有不同的公交运输公司。每辆公交车的品牌名称都会写在前面，并且有独特的配色方案。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/d00b1ddf-e54b-4b15-9d39-a3e1c5e231cd/Denmark_Bus_Sign_Map.png?format=750w" alt="img-26"></p>
+<p>此外，这些地区每个都有自己的公交车站牌。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/238dce89-79e1-4842-8645-e3faecaf7660/Denmark_Greenland_General.png?format=750w" alt="img-27"></p>
+<p>格陵兰岛是世界上最大的岛国，是丹麦的一部分。</p>
+<p>可以在<a target="_blank" rel="noopener" href="https://www.plonkit.net/greenland">这里</a>找到一份独立的关于格陵兰岛的指南。</p>
+<p><img src="https://cdn.discordapp.com/attachments/1045971390202925086/1084869566422843392/Denmark_Faroe_Islands_General.png" alt="img-28"></p>
+<p>法罗群岛是北大西洋中一组联合的岛屿，是丹麦的自治领土。</p>
+<p>可以在<a target="_blank" rel="noopener" href="https://www.plonkit.net/faroe-islands">这里</a>找到一份独立的关于法罗群岛的指南。</p>
+<h1 id="Step3-值得关注的"><a href="#Step3-值得关注的" class="headerlink" title="Step3-值得关注的"></a>Step3-值得关注的</h1><p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/0fb64949-bac6-4e77-85f7-c02018c6bf3b/Area_-_Bornholm_Bus_Stop.png?format=750w" alt="img-29"></p>
+<p>在Bornholm岛上，公交车站拥有独特的绿色、红色和白色配色方案。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/a2862225-8b47-48db-a69d-1ab49706d987/Bornholm_bicycle_signs.png?format=750w" alt="img-30"></p>
+<p>这些绿色自行车标志是在Bornholm岛上找到的。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/3b6ac9d1-5bcb-43a6-8d1a-805f9ee29d54/Anholt_Generation_2.png?format=750w" alt="img-31"></p>
+<p>安霍尔特岛只有Gen2覆盖，天气通常阴沉多云。覆盖范围的大部分由于路边的沙土而容易识别。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/06/03/Denmark/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-上海拍牌记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -427,6 +736,37 @@
 <p><img src="/.com//blog\source_posts\Canada\Newfoundland_trees.png" alt="img-56"></p>
 <p>Balsam冷杉是Newfoundland常见的树种之一，它具有类型圣诞树的外观。</p>
 <p>提示：虽然Balsam冷杉最常见于Newfoundland，但它也可以在加拿大东部和美国的其他地区生长。有关简介，请参阅此地图。</p>
+<h2 id="偏远的城镇和徒步旅行者"><a href="#偏远的城镇和徒步旅行者" class="headerlink" title="偏远的城镇和徒步旅行者"></a>偏远的城镇和徒步旅行者</h2><p><img src="/.com//blog\source_posts\Canada\Stewart.png" alt="img-57"></p>
+<p>Stewart镇位于British Columbia西部，靠近Alask边境，有Gen2的覆盖和云雾缭绕的山。</p>
+<p><img src="/.com//blog\source_posts\Canada\Trekker_-_Iqaluit.png" alt="img-58"></p>
+<p>lqaluit是Nunavut的首都，这意味着与其他Nunavut城市相比更具城市化。这座城市以双语绿松石路标为特色。限速标志也是独一无二的双语标志。在城市的郊区，你可以看到这些独特的标志、</p>
+<p><img src="/.com//blog\source_posts\Canada\Trekker_-_Churchill.png" alt="img-59"></p>
+<p>在Monitoba的北部偏远的Churchill镇有一辆徒步旅行者，车的前右侧有一个明显的细天线，该镇也有独特的路标。</p>
+<p>提示：这种覆盖范围也在周围地区可见。</p>
+<p><img src="/.com//blog\source_posts\Canada\ca_tutila.png" alt="img-60"></p>
+<p>这种独特的谷歌汽车和深色土壤位于西北部的图利塔。汽车通常看起来是这样的，但也可以完全模糊，只有天线可见，或者汽车的引擎盖可见</p>
+<p><img src="/.com//blog\source_posts\Canada\Canada_Map7.png" alt="img-61"></p>
+<p>Sanikiluaq是一个位于Hudson Bay的偏远小镇。这个白雪皑皑的小镇被雪地摩托覆盖，司机穿着深棕色外套</p>
+<p><img src="/.com//blog\source_posts\Canada\Unukjuak_map.png" alt="img-62"></p>
+<p>Inukjuak是位于Québec北部的小镇。这个镇可以通过模糊的雪地摩托辨认出来。</p>
+<p>提示：在Sanikiluaq，另一个有雪地摩托覆盖的小镇，你总能看到司机。</p>
+<p><img src="/.com//blog\source_posts\Canada\Grise_Fjord_Map.png" alt="img-63"></p>
+<p>Grise Fiord是加拿大最北端有网络覆盖的城镇。它可以很容易同通过独特的山脉和海岸上的浮冰所识别。</p>
+<p><img src="/.com//blog\source_posts\Canada\Resolute_Map.png" alt="img-64"></p>
+<p>Resolute的北部城镇可以通过贫瘠的景观和可见的积雪辨认出来。</p>
+<p><img src="/.com//blog\source_posts\Canada\Cambride_bay_map.png" alt="img-65"></p>
+<p>Cambridge Bay是Nunavut地区仅有的Gen2 Trekker覆盖的定居点。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/d6de61c3-502f-4128-9fe3-70c15a0d7c67/Qikiqtarjuaq_map.png?format=750w" alt="img-66"></p>
+<p>Qikiqtarjuaq镇特色是独特的山脉和红色的土壤。</p>
+<p><img src="/.com//blog\source_posts\Canada\Northern_Quebec_Town_map.png" alt="img-67"></p>
+<p>Kangiqsualujjuaq是Québec北部的一个城镇，周围是绿色的岩石丘陵，远处可以看到树木。</p>
+<p><img src="/.com//blog\source_posts\Canada\nainMap.png" alt="img-68"></p>
+<p>Nain是Labrador东北海岸的一个小镇，该镇的特色是色彩鲜艳的木屋和城镇内外的数目为特色。往北边，通常可以看到一座大山丘。往南边去，可以看到海湾对岸的岩石峭壁。此外，有时会看到孩子们在Trekker旁边走路</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/22900840-4428-48dd-9f79-ab871ae8cc82/Red_bay_map.png?format=750w" alt="img-69"></p>
+<p>Red Bay是Labrador南部海岸的一个城镇，因此海岸总是可见的。他的特色是略带红色的土壤，和大多数漆呈白色的房子。</p>
+<p><img src="https://images.squarespace-cdn.com/content/v1/60f6054f4e76b03092956de8/a7efa72d-640f-436b-953d-49c0cb4a95d0/Northernmost_trekker.png?format=750w" alt="img-70"></p>
+<p>世界上最北端的谷歌街景是一名Trekker在Nunavut北部的Ellesmere岛摄制的。它展示了一座冰川坐落在一片荒凉的岩石中，没有任何植被</p>
+<p>提示：“Google Street View coverage”指的是Google街景覆盖，是指Google公司对各种地理位置进行拍摄和记录，以提供街景图像。在全球范围内，Nunavut北部Ellesmere岛上的Trekker设备提供了全球最北端的Google街景覆盖范围。由于该区域缺乏明确的地标和标志，因此有时会将此覆盖范围用于地图制作的评分标准，以改善和标准化评分范围。因此，即使该覆盖范围无法精确定位，但你可能会在一些竞技地图如ACW和ADW中遇到这个Trekker设备。</p>
 
       
 
@@ -1289,1414 +1629,9 @@
 
 
   
-    <article id="post-java小技巧" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/">java小技巧</a>
-    </h1>
-  
-
-        
-        <a href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="archive-article-date">
-  	<time datetime="2022-05-24T12:39:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-05-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="整型数组转换为String数组"><a href="#整型数组转换为String数组" class="headerlink" title="整型数组转换为String数组"></a>整型数组转换为String数组</h3><p>int[]  ids 转化为String[] ids_str</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String[] ids_str = Arrays.stream(ids).map(String::valueOf).toArray(String[]::<span class="keyword">new</span>);</span><br></pre></td></tr></table></figure>
-
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-bouncy-castle-learning" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/04/13/bouncy-castle-learning/">bouncy castle learning</a>
-    </h1>
-  
-
-        
-        <a href="/2022/04/13/bouncy-castle-learning/" class="archive-article-date">
-  	<time datetime="2022-04-13T13:27:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="java加密介绍"><a href="#java加密介绍" class="headerlink" title="java加密介绍"></a>java加密介绍</h2><h3 id="java加密体系"><a href="#java加密体系" class="headerlink" title="java加密体系"></a>java加密体系</h3><p>此处参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/penriver/article/details/119875226">此博客</a></p>
-<p>JCA :Java密码体系结构 Java Cryptography Architecture</p>
-<p><strong>JCE</strong>（Java Cryptography Extension），在早期JDK版本中，由于受美国的密码出口条例约束，Java中涉及加解密功能的API被限制出口，所以Java中安全组件被分成了两部分: 不含加密功能的JCA（Java Cryptography Architecture ）和含加密功能的JCE（Java Cryptography Extension）。现在JCE已经捆绑在JDK中，所以，这里JCE是JCA的一部分</p>
-<p>JCA包含一个提供者【Provider】体系结构和一组用于数字签名，消息摘要（哈希），证书和证书验证，加密（对称/非对称块/流密码），密钥生成管理和安全随机数生成等等的API。<br>这些API允许开发人员将安全性轻松集成到应用程序代码中。</p>
-<p><strong>JCA包含两个软件组件：</strong></p>
-<ul>
-<li><p>定义和支持Provider为其提供实现的加密服务的框架。 这个框架包含了诸如java.security，javax.crypto，javax.crypto.spec和javax.crypto.interfaces等软件包。</p>
-</li>
-<li><p>Sun，SunRsaSign，SunJCE等实际提供者都包含了具体的加密实现。</p>
-</li>
-</ul>
-<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><h4 id="加密服务提供者（CSP）与java-security-Provider"><a href="#加密服务提供者（CSP）与java-security-Provider" class="headerlink" title="加密服务提供者（CSP）与java.security.Provider"></a>加密服务提供者（CSP）与java.security.Provider</h4><p>java.security.Provider是所有安全提供程序的基类。 每个CSP都包含这个类的一个实例，它包含了提供者的名字，并列出了它实现的所有安全服务/算法。 当需要特定算法的实例时，<strong>JCA框架</strong>会<strong>咨询</strong>提供者的数据库，如果找到合适的匹配项，则创建该实例。</p>
-<p>Provider包含一个包（或一组包），为声明的加密算法提供具体的实现。 每个JDK安装都默认安装并配置了一个或多个提供程序。<strong>其他提供者</strong>可以静态或动态添加（参见Provider和Security类）。客户端可以<strong>配置其运行时环境来指定提供程序的首选顺序</strong>。 首选顺序是在没有请求特定提供者时提供者搜索请求的服务的顺序。</p>
-<p>要使用JCA，应用程序只需要请求特定类型的对象（如MessageDigest）和特定的算法或服务（如“SHA-256”算法），并从一个已安装的提供者获取实现。 或者，程序可以请求来自特定提供者的对象。 每个提供者都有一个名字来引用它。</p>
-<p>应用程序需要一个“AES”算法的javax.crypto.Cipher实例，并不关心使用哪个提供者。应用程序调用Cipher<strong>引擎类</strong>的getInstance（）工厂方法，然后请求JCA框架查找支持“AES”的第一个提供程序实例。该框架会咨询每个已安装的提供者，并获取提供者类的提供者实例</p>
-<p><img src="/2022/04/13/bouncy-castle-learning/9260cd48d683455b8d637760f745d251.png" alt="在这里插入图片描述"></p>
-<p>在调用时，不指定提供者 和 指定提供者时的调用流程:</p>
-<p><img src="/2022/04/13/bouncy-castle-learning/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3BlbnJpdmVy,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
-<h4 id="provider提供者"><a href="#provider提供者" class="headerlink" title="provider提供者"></a>provider提供者</h4><p>JDK中的加密库出于历史原因，由几个不同的提供者实现：</p>
-<ul>
-<li>SUN</li>
-<li>SunRsaSign</li>
-<li>SunEC</li>
-<li>SunJSSE</li>
-<li>SunJCE</li>
-<li>SunJGSS</li>
-<li>SunSASL</li>
-<li>XMLDSig</li>
-<li>SunPCSC</li>
-<li>SunMSCAPI</li>
-</ul>
-<p>java.security.Provider是所有安全提供程序的基类</p>
-<p>bouncy castle就是一款加密库</p>
-<table>
-<thead>
-<tr>
-<th>提供者</th>
-<th>算法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>SUN</td>
-<td>SHA1PRNG</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA1withDSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>NONEwithDSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA224withDSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA256withDSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>DSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>MD2</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>MD5</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA-224</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA-256</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA-384</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>SHA-512</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>DSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>DSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>DSA</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>X.509</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>JKS</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>CaseExactJKS</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>DKS</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>JavaPolicy</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>JavaLoginConfig</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>PKIX</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>PKIX</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>LDAP</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>Collection</td>
-</tr>
-<tr>
-<td>SUN</td>
-<td>com.sun.security.IndexedCollection</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>MD2withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>MD5withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>SHA1withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>SHA224withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>SHA256withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>SHA384withRSA</td>
-</tr>
-<tr>
-<td>SunRsaSign</td>
-<td>SHA512withRSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>EC</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>EC</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>NONEwithECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>SHA1withECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>SHA224withECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>SHA256withECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>SHA384withECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>SHA512withECDSA</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>EC</td>
-</tr>
-<tr>
-<td>SunEC</td>
-<td>ECDH</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>MD2withRSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>MD5withRSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>SHA1withRSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>MD5andSHA1withRSA</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>SunX509</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>NewSunX509</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>SunX509</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>PKIX</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>TLSv1</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>TLSv1.1</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>TLSv1.2</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>TLS</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>Default</td>
-</tr>
-<tr>
-<td>SunJSSE</td>
-<td>PKCS12</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DESedeWrap</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndTripleDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndDESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>Blowfish</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_128/ECB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_128/CBC/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_128/OFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_128/CFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_128/GCM/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_192/ECB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_192/CBC/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_192/OFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_192/CFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_192/GCM/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_256/ECB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_256/CBC/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_256/OFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_256/CFB/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES_256/GCM/NoPadding</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AESWrap</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AESWrap_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AESWrap_192</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AESWrap_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>RC2</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>ARCFOUR</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>Blowfish</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>RC2</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>ARCFOUR</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacMD5</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA224</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA384</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA512</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DiffieHellman</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DiffieHellman</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DiffieHellman</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DiffieHellman</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBE</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndTripleDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndDESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBES2</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>Blowfish</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>AES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>GCM</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>RC2</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>OAEP</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DiffieHellman</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>DESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithMD5AndTripleDES</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndDESede</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC2_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_40</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithSHA1AndRC4_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_128</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512AndAES_256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBKDF2WithHmacSHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBKDF2WithHmacSHA224</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBKDF2WithHmacSHA256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBKDF2WithHmacSHA384</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBKDF2WithHmacSHA512</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacMD5</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA224</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA384</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacSHA512</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>HmacPBESHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA224</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA256</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA384</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>PBEWithHmacSHA512</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SslMacMD5</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SslMacSHA1</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>JCEKS</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SunTlsPrf</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SunTls12Prf</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SunTlsMasterSecret</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SunTlsKeyMaterial</td>
-</tr>
-<tr>
-<td>SunJCE</td>
-<td>SunTlsRsaPremasterSecret</td>
-</tr>
-<tr>
-<td>SunJGSS</td>
-<td>1.2.840.113554.1.2.2</td>
-</tr>
-<tr>
-<td>SunJGSS</td>
-<td>1.3.6.1.5.5.2</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>DIGEST-MD5</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>NTLM</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>GSSAPI</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>EXTERNAL</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>PLAIN</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>CRAM-MD5</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>CRAM-MD5</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>GSSAPI</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>DIGEST-MD5</td>
-</tr>
-<tr>
-<td>SunSASL</td>
-<td>NTLM</td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2006/12/xml-c14n11#WithComments">http://www.w3.org/2006/12/xml-c14n11#WithComments</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2000/09/xmldsig#base64">http://www.w3.org/2000/09/xmldsig#base64</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/1999/REC-xslt-19991116">http://www.w3.org/TR/1999/REC-xslt-19991116</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2001/10/xml-exc-c14n#">http://www.w3.org/2001/10/xml-exc-c14n#</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments">http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2000/09/xmldsig#enveloped-signature">http://www.w3.org/2000/09/xmldsig#enveloped-signature</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2002/06/xmldsig-filter2">http://www.w3.org/2002/06/xmldsig-filter2</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td>DOM</td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">http://www.w3.org/TR/2001/REC-xml-c14n-20010315</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2001/10/xml-exc-c14n#WithComments">http://www.w3.org/2001/10/xml-exc-c14n#WithComments</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/2006/12/xml-c14n11">http://www.w3.org/2006/12/xml-c14n11</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/1999/REC-xpath-19991116">http://www.w3.org/TR/1999/REC-xpath-19991116</a></td>
-</tr>
-<tr>
-<td>XMLDSig</td>
-<td>DOM</td>
-</tr>
-<tr>
-<td>SunPCSC</td>
-<td>PC/SC</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>Windows-PRNG</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>Windows-MY</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>Windows-ROOT</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>NONEwithRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>SHA1withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>SHA256withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>SHA384withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>SHA512withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>MD5withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>MD2withRSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>RSA</td>
-</tr>
-<tr>
-<td>SunMSCAPI</td>
-<td>RSA/ECB/PKCS1Padding</td>
-</tr>
-</tbody></table>
-<p>获取提供者和算法的代码示例:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;|提供者|算法|&quot;</span>);</span><br><span class="line">   System.out.println(<span class="string">&quot;|:---|:---|&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>(Provider provider: Security.getProviders())&#123;</span><br><span class="line">       <span class="keyword">for</span>(Provider.Service service:provider.getServices())&#123;</span><br><span class="line">  				System.out.println(<span class="string">&quot;|&quot;</span>+provider.getName()+<span class="string">&quot;|&quot;</span>+service.getAlgorithm()+<span class="string">&quot;|&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="Engine类和算法"><a href="#Engine类和算法" class="headerlink" title="Engine类和算法"></a>Engine类和算法</h4><p>引擎类为特定类型的密码服务提供接口，而<strong>不依赖于特定的密码算法或提供者</strong>。 引擎需要提供如下功能：</p>
-<ul>
-<li><p>密码操作（加密，数字签名，消息摘要等），</p>
-</li>
-<li><p>发生器或密码材料的转换器（密钥和算法参数）</p>
-</li>
-<li><p>对象（密钥库或证书）封装了密码数据，可以在更高的抽象层使用。</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>引擎类</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>SecureRandom</td>
-<td>用于生成随机或伪随机数字。</td>
-</tr>
-<tr>
-<td>MessageDigest</td>
-<td>用于计算指定数据的消息摘要（散列）。</td>
-</tr>
-<tr>
-<td>Signature</td>
-<td>使用密钥初始化，这些签名用于签署数据并验证数字签</td>
-</tr>
-<tr>
-<td>Cipher</td>
-<td>用密钥初始化，用于加密/解密数据。存在各种类型的算法</td>
-</tr>
-<tr>
-<td>Message Authentication Codes（MAC）</td>
-<td>与MessageDigests一样，它们也会生成散列值，但是首先使用密钥初始化以保护消息的完整性。</td>
-</tr>
-<tr>
-<td>KeyFactory</td>
-<td>用于将Key类型的现有不透明密钥转换为密钥规范（底层密钥材料的透明表示），反之亦然。</td>
-</tr>
-<tr>
-<td>SecretKeyFactory</td>
-<td>用于将SecretKey类型的现有不透明加密密钥转换为密钥规范（底层密钥材料的透明表示），反之亦然。 SecretKeyFactorys是专门的KeyFactorys，只能创建密钥（对称）。</td>
-</tr>
-<tr>
-<td>KeyPairGenerator</td>
-<td>用于生成一对适用于指定算法的公钥和私钥。</td>
-</tr>
-<tr>
-<td>KeyGenerator</td>
-<td>用于生成与指定算法一起使用的新密钥。</td>
-</tr>
-<tr>
-<td>KeyAgreement</td>
-<td>由两方或多方使用，商定和建立一个特定的密钥，用于特定的密码操作。</td>
-</tr>
-<tr>
-<td>AlgorithmParameters</td>
-<td>用于存储特定算法的参数，包括参数编码和解码。</td>
-</tr>
-<tr>
-<td>AlgorithmParameterGenerator</td>
-<td>用于生成适合于指定算法的一组AlgorithmParameters。</td>
-</tr>
-<tr>
-<td>KeyStore</td>
-<td>用于创建和管理密钥库。密钥库是密钥的数据库。密钥库中的私钥具有与其关联的证书链，用于验证相应的公钥。密钥库还包含来自可信实体的证书。</td>
-</tr>
-<tr>
-<td>CertificateFactory</td>
-<td>用于创建公钥证书和证书吊销列表（CRL）。</td>
-</tr>
-<tr>
-<td>CertPathBuilder</td>
-<td>用于构建证书链（也称为证书路径）。</td>
-</tr>
-<tr>
-<td>CertPathValidator</td>
-<td>用于验证证书链。</td>
-</tr>
-<tr>
-<td>CertStore</td>
-<td>用于从存储库中检索证书和CRL。</td>
-</tr>
-<tr>
-<td>注意</td>
-<td>生成器可以创建具有全新内容的对象，而工厂只能从现有材料（例如编码）中创建对象。</td>
-</tr>
-</tbody></table>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>以md5摘要，演示MessageDigest的使用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] content = <span class="string">&quot;hello world&quot;</span>.getBytes();</span><br><span class="line">        System.out.println(DigestUtils.md5DigestAsHex(content));</span><br><span class="line">        System.out.println(DigestUtils.digestAsHexString(<span class="string">&quot;MD5&quot;</span>, content));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (String algName : Security.getAlgorithms(<span class="string">&quot;MessageDigest&quot;</span>)) &#123;</span><br><span class="line">            System.out.println(algName + <span class="string">&quot;==&gt;&quot;</span> + DigestUtils.digestAsHexString(algName, content));</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DigestUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MD5_ALGORITHM_NAME = <span class="string">&quot;MD5&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">char</span>[] HEX_CHARS =</span><br><span class="line">            &#123;<span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;1&#x27;</span>, <span class="string">&#x27;2&#x27;</span>, <span class="string">&#x27;3&#x27;</span>, <span class="string">&#x27;4&#x27;</span>, <span class="string">&#x27;5&#x27;</span>, <span class="string">&#x27;6&#x27;</span>, <span class="string">&#x27;7&#x27;</span>, <span class="string">&#x27;8&#x27;</span>, <span class="string">&#x27;9&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;f&#x27;</span>&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Calculate the MD5 digest of the given bytes.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the digest</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] md5Digest(<span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">return</span> digest(MD5_ALGORITHM_NAME, bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return a hexadecimal string representation of the MD5 digest of the given bytes.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> a hexadecimal digest string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">md5DigestAsHex</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> digestAsHexString(MD5_ALGORITHM_NAME, bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Append a hexadecimal string representation of the MD5 digest of the given</span></span><br><span class="line"><span class="comment">     * bytes to the given &#123;<span class="doctag">@link</span> StringBuilder&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes   the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> builder the string builder to append the digest to</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the given string builder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuilder <span class="title">appendMd5DigestAsHex</span><span class="params">(<span class="keyword">byte</span>[] bytes, StringBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> appendDigestAsHex(MD5_ALGORITHM_NAME, bytes, builder);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">digestAsHexString</span><span class="params">(String algorithm, <span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] hexDigest = digestAsHexChars(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String(hexDigest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuilder <span class="title">appendDigestAsHex</span><span class="params">(String algorithm, <span class="keyword">byte</span>[] bytes, StringBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] hexDigest = digestAsHexChars(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> builder.append(hexDigest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create a new &#123;<span class="doctag">@link</span> MessageDigest&#125; with the given algorithm.</span></span><br><span class="line"><span class="comment">     * Necessary because &#123;<span class="doctag">@code</span> MessageDigest&#125; is not thread-safe.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> MessageDigest <span class="title">getDigest</span><span class="params">(String algorithm)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> MessageDigest.getInstance(algorithm);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Could not find MessageDigest with algorithm \&quot;&quot;</span> + algorithm + <span class="string">&quot;\&quot;&quot;</span>, ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] digest(String algorithm, <span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">return</span> getDigest(algorithm).digest(bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">char</span>[] digestAsHexChars(String algorithm, <span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] digest = digest(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> encodeHex(digest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">char</span>[] encodeHex(<span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">char</span>[] chars = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">32</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; chars.length; i = i + <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="keyword">byte</span> b = bytes[i / <span class="number">2</span>];</span><br><span class="line">            chars[i] = HEX_CHARS[(b &gt;&gt;&gt; <span class="number">0x4</span>) &amp; <span class="number">0xf</span>];</span><br><span class="line">            chars[i + <span class="number">1</span>] = HEX_CHARS[b &amp; <span class="number">0xf</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> chars;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="bouncy-castle-加密库"><a href="#bouncy-castle-加密库" class="headerlink" title="bouncy castle 加密库"></a>bouncy castle 加密库</h2><p><strong><a target="_blank" rel="noopener" href="https://www.bouncycastle.org/">*<em>BouncyCastle*</em></a><strong>就是一个提供了很多</strong>哈希算法</strong>和加密算法的第三方库。它提供了Java标准库没有的一些算法，例如，RipeMD160哈希算法。</p>
-<p>具体来说分为以下几点：</p>
-<p>1.对JCE API的clean room implementation ，这指代码只根据描述和规范编写，不能访问任何潜在的麻烦代码。这与GPL许可证相关，可能涉及开源协议等</p>
-<p>2.轻量级的密码api，不需要JCE的支持，但是需要开发人员自己理解和使用，支持</p>
-<ul>
-<li>BlockCipher</li>
-<li>BufferedBlockCipher</li>
-<li>AsymmetricBlockCipher</li>
-<li>BufferedAsymmetricBlockCipher</li>
-<li>StreamCipher</li>
-<li>BufferedStreamCipher</li>
-<li>KeyAgreement</li>
-<li>IESCipher</li>
-<li>Digest</li>
-<li>Mac</li>
-<li>PBE</li>
-<li>Signers</li>
-</ul>
-<p>3.JCE的兼容框架：provider “BC”</p>
-<p>4.JCE兼容框架：后量子 provider“BCPQC”</p>
-<h3 id="引入方式"><a href="#引入方式" class="headerlink" title="引入方式"></a>引入方式</h3><p>有多种引入方式，可以参考<a target="_blank" rel="noopener" href="https://www.bouncycastle.org/latest_releases.html">官方release页面</a>，可以直接下载jar包，或者使用maven引用，此网页都有介绍，一般使用轻量级api则引用bcprov包，如果需要JCE的实现则引用bcprov-ext</p>
-<h3 id="JCEapi的使用与配置"><a href="#JCEapi的使用与配置" class="headerlink" title="JCEapi的使用与配置"></a>JCEapi的使用与配置</h3><p>此部分参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27706119/article/details/112912136">此博客</a></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 注册BouncyCastle:</span></span><br><span class="line">    Security.addProvider(<span class="keyword">new</span> BouncyCastleProvider());</span><br><span class="line">    <span class="comment">// 按名称正常调用:</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        md = MessageDigest.getInstance(<span class="string">&quot;RipeMD160&quot;</span>);</span><br><span class="line">        md.update(<span class="string">&quot;HelloWorld&quot;</span>.getBytes(<span class="string">&quot;UTF-8&quot;</span>));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException | UnsupportedEncodingException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">byte</span>[] result = md.digest();</span><br><span class="line">    System.out.println(<span class="keyword">new</span> BigInteger(<span class="number">1</span>, result).toString(<span class="number">16</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注册BouncyCastle的JCE是通过Security.addProvider(new BouncyCastleProvider());实现的。注册只需要在启动时进行一次，后续就可以使用BouncyCastle提供的所有哈希算法和加密算法。</p>
-<p>配置：</p>
-<ul>
-<li><p>去官方站点下载Bouncy Castle的JCE Provider包  bcprov-ext-jdk15-145.jar</p>
-</li>
-<li><p>把jar文件复制到JAVA_HOME\jre\lib\ext 目录下面</p>
-</li>
-<li><p>修改配置文件\jre\lib\security\java.security</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">security.provider<span class="number">.1</span>=sun.security.provider.Sun</span><br><span class="line">security.provider<span class="number">.2</span>=sun.security.rsa.SunRsaSign</span><br><span class="line">security.provider<span class="number">.3</span>=com.sun.net.ssl.internal.ssl.Provider</span><br><span class="line">security.provider<span class="number">.4</span>=com.sun.crypto.provider.SunJCE</span><br><span class="line">security.provider<span class="number">.5</span>=sun.security.jgss.SunProvider</span><br><span class="line">security.provider<span class="number">.6</span>=com.sun.security.sasl.Provider</span><br><span class="line"> </span><br><span class="line">#前面是java环境已经提供的，尾部加上这一行即可</span><br><span class="line">security.provider<span class="number">.7</span>=org.bouncycastle.jce.provider.BouncyCastleProvider</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出加密服务提供者-----&quot;</span>);</span><br><span class="line">    Provider[] pro=Security.getProviders();</span><br><span class="line">    <span class="keyword">for</span>(Provider p:pro)&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Provider:&quot;</span>+p.getName()+<span class="string">&quot; - version:&quot;</span>+p.getVersion());</span><br><span class="line">        System.out.println(p.getInfo());</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出系统支持的消息摘要算法：&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(String s:Security.getAlgorithms(<span class="string">&quot;MessageDigest&quot;</span>))&#123;</span><br><span class="line">        System.out.println(s);</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出系统支持的生成公钥和私钥对的算法：&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(String s:Security.getAlgorithms(<span class="string">&quot;KeyPairGenerator&quot;</span>))&#123;</span><br><span class="line">        System.out.println(s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="java-进口管制限制解除"><a href="#java-进口管制限制解除" class="headerlink" title="java 进口管制限制解除"></a>java 进口管制限制解除</h4><p>不清楚是否需要，备用</p>
-<p><strong>下载策略文件</strong></p>
-<ul>
-<li><p>jdk6→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html">http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html</a></p>
-</li>
-<li><p>jdk7→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html</a></p>
-</li>
-<li><p>jdk8→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.htm">http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.htm</a></p>
-</li>
-</ul>
-<p><strong>覆盖 sdk 和 jre 中的这两个策略文件</strong></p>
-<ul>
-<li><p>sdk 中策略文件位置→C:\Program Files\Java\jdk1.8.0_144\jre\lib\security</p>
-</li>
-<li><p>jre 中策略文件位置→C:\Program Files\Java\jre1.8.0_144\lib\security</p>
-</li>
-</ul>
-<p>是否生效，可以使用下面的程序检验。AES 算法没有解除限制之前，密钥长度只支持128位，其限制解除后，可支持128、192、256位等长度。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case3</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        KeyGenerator kg =  KeyGenerator.getInstance(<span class="string">&quot;AES&quot;</span>);</span><br><span class="line">        kg.init(<span class="number">256</span>);</span><br><span class="line">        SecretKey secretKey=kg.generateKey();</span><br><span class="line">        System.out.println(secretKey.getFormat());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>测试结果出现raw，已解除限制。若出现 java.security.InvalidKeyException: Illegal key 错误，表示限制没有解除。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">encryption</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/04/13/bouncy-castle-learning/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-pagehelper相关" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/">pagehelper相关</a>
-    </h1>
-  
-
-        
-        <a href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/" class="archive-article-date">
-  	<time datetime="2022-04-06T15:34:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="使用相关"><a href="#使用相关" class="headerlink" title="使用相关"></a>使用相关</h2><p>1.在sqlMapConfig.xml文件中进行配置</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span>    </span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span> <span class="attr">interceptor</span>=<span class="string">&quot;com.github.pagehelper.PageHelper&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;dialect&quot;</span> <span class="attr">value</span>=<span class="string">&quot;mysql&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;reasonable&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>2.在需要调用的dao查询语句前添加分页条件</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PageHelper.startPage(currentPage,pageSize);</span><br></pre></td></tr></table></figure>
-
-<p>3.利用返回的page结果,获取总数和当前页返回的List</p>
-<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><p>在前端展示时,如前面说的一样,我们点击页码,即可查询到当前页的内容</p>
-<p>假设上方,加了一个查询按钮,可以进一步细化查询这些条目的id或者name</p>
-<p>这时会出现一个问题:如果此时页面是第3页,则无法进行细化的查询;相反如果是第一页可以做细化的查询.</p>
-<p>这明显是一个bug,但是是因为我们对于查询逻辑没有配置的原因,此处我们没有对PageHelper.reasonable进行配置默认为false.此时的查询逻辑是,个人推测是第i页的数据,进行细化搜索,所以找不到其他页的数据</p>
-<p>但这里矛盾的地方是,如果我在第1页进行搜索,就能查到任意的结果,所以上面的推测不全对.</p>
-<p>但是配置为true后,是先将所有数据找出来,再进行分页,所以就能找到想要结果</p>
-<p>所以更推荐配置pagehelper.reasonable=true</p>
-<p>配置为true还有一个好处是,如果跳传的页数超过最大页数,默认显示最大页数;同时如果跳转第&lt;=0页则会显示第一页数据</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
     </nav>
   
 

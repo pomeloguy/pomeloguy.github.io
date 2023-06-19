@@ -164,6 +164,1411 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-java小技巧" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/">java小技巧</a>
+    </h1>
+  
+
+        
+        <a href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/" class="archive-article-date">
+  	<time datetime="2022-05-24T12:39:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-05-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="整型数组转换为String数组"><a href="#整型数组转换为String数组" class="headerlink" title="整型数组转换为String数组"></a>整型数组转换为String数组</h3><p>int[]  ids 转化为String[] ids_str</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String[] ids_str = Arrays.stream(ids).map(String::valueOf).toArray(String[]::<span class="keyword">new</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/05/24/java%E5%B0%8F%E6%8A%80%E5%B7%A7/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-bouncy-castle-learning" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/13/bouncy-castle-learning/">bouncy castle learning</a>
+    </h1>
+  
+
+        
+        <a href="/2022/04/13/bouncy-castle-learning/" class="archive-article-date">
+  	<time datetime="2022-04-13T13:27:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="java加密介绍"><a href="#java加密介绍" class="headerlink" title="java加密介绍"></a>java加密介绍</h2><h3 id="java加密体系"><a href="#java加密体系" class="headerlink" title="java加密体系"></a>java加密体系</h3><p>此处参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/penriver/article/details/119875226">此博客</a></p>
+<p>JCA :Java密码体系结构 Java Cryptography Architecture</p>
+<p><strong>JCE</strong>（Java Cryptography Extension），在早期JDK版本中，由于受美国的密码出口条例约束，Java中涉及加解密功能的API被限制出口，所以Java中安全组件被分成了两部分: 不含加密功能的JCA（Java Cryptography Architecture ）和含加密功能的JCE（Java Cryptography Extension）。现在JCE已经捆绑在JDK中，所以，这里JCE是JCA的一部分</p>
+<p>JCA包含一个提供者【Provider】体系结构和一组用于数字签名，消息摘要（哈希），证书和证书验证，加密（对称/非对称块/流密码），密钥生成管理和安全随机数生成等等的API。<br>这些API允许开发人员将安全性轻松集成到应用程序代码中。</p>
+<p><strong>JCA包含两个软件组件：</strong></p>
+<ul>
+<li><p>定义和支持Provider为其提供实现的加密服务的框架。 这个框架包含了诸如java.security，javax.crypto，javax.crypto.spec和javax.crypto.interfaces等软件包。</p>
+</li>
+<li><p>Sun，SunRsaSign，SunJCE等实际提供者都包含了具体的加密实现。</p>
+</li>
+</ul>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><h4 id="加密服务提供者（CSP）与java-security-Provider"><a href="#加密服务提供者（CSP）与java-security-Provider" class="headerlink" title="加密服务提供者（CSP）与java.security.Provider"></a>加密服务提供者（CSP）与java.security.Provider</h4><p>java.security.Provider是所有安全提供程序的基类。 每个CSP都包含这个类的一个实例，它包含了提供者的名字，并列出了它实现的所有安全服务/算法。 当需要特定算法的实例时，<strong>JCA框架</strong>会<strong>咨询</strong>提供者的数据库，如果找到合适的匹配项，则创建该实例。</p>
+<p>Provider包含一个包（或一组包），为声明的加密算法提供具体的实现。 每个JDK安装都默认安装并配置了一个或多个提供程序。<strong>其他提供者</strong>可以静态或动态添加（参见Provider和Security类）。客户端可以<strong>配置其运行时环境来指定提供程序的首选顺序</strong>。 首选顺序是在没有请求特定提供者时提供者搜索请求的服务的顺序。</p>
+<p>要使用JCA，应用程序只需要请求特定类型的对象（如MessageDigest）和特定的算法或服务（如“SHA-256”算法），并从一个已安装的提供者获取实现。 或者，程序可以请求来自特定提供者的对象。 每个提供者都有一个名字来引用它。</p>
+<p>应用程序需要一个“AES”算法的javax.crypto.Cipher实例，并不关心使用哪个提供者。应用程序调用Cipher<strong>引擎类</strong>的getInstance（）工厂方法，然后请求JCA框架查找支持“AES”的第一个提供程序实例。该框架会咨询每个已安装的提供者，并获取提供者类的提供者实例</p>
+<p><img src="/2022/04/13/bouncy-castle-learning/9260cd48d683455b8d637760f745d251.png" alt="在这里插入图片描述"></p>
+<p>在调用时，不指定提供者 和 指定提供者时的调用流程:</p>
+<p><img src="/2022/04/13/bouncy-castle-learning/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3BlbnJpdmVy,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
+<h4 id="provider提供者"><a href="#provider提供者" class="headerlink" title="provider提供者"></a>provider提供者</h4><p>JDK中的加密库出于历史原因，由几个不同的提供者实现：</p>
+<ul>
+<li>SUN</li>
+<li>SunRsaSign</li>
+<li>SunEC</li>
+<li>SunJSSE</li>
+<li>SunJCE</li>
+<li>SunJGSS</li>
+<li>SunSASL</li>
+<li>XMLDSig</li>
+<li>SunPCSC</li>
+<li>SunMSCAPI</li>
+</ul>
+<p>java.security.Provider是所有安全提供程序的基类</p>
+<p>bouncy castle就是一款加密库</p>
+<table>
+<thead>
+<tr>
+<th>提供者</th>
+<th>算法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SUN</td>
+<td>SHA1PRNG</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA1withDSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>NONEwithDSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA224withDSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA256withDSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>DSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>MD2</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>MD5</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA-224</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA-256</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA-384</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>SHA-512</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>DSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>DSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>DSA</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>X.509</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>JKS</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>CaseExactJKS</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>DKS</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>JavaPolicy</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>JavaLoginConfig</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>PKIX</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>PKIX</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>LDAP</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>Collection</td>
+</tr>
+<tr>
+<td>SUN</td>
+<td>com.sun.security.IndexedCollection</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>MD2withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>MD5withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>SHA1withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>SHA224withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>SHA256withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>SHA384withRSA</td>
+</tr>
+<tr>
+<td>SunRsaSign</td>
+<td>SHA512withRSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>EC</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>EC</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>NONEwithECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>SHA1withECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>SHA224withECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>SHA256withECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>SHA384withECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>SHA512withECDSA</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>EC</td>
+</tr>
+<tr>
+<td>SunEC</td>
+<td>ECDH</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>MD2withRSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>MD5withRSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>SHA1withRSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>MD5andSHA1withRSA</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>SunX509</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>NewSunX509</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>SunX509</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>PKIX</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>TLSv1</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>TLSv1.1</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>TLSv1.2</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>TLS</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>Default</td>
+</tr>
+<tr>
+<td>SunJSSE</td>
+<td>PKCS12</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DESedeWrap</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndTripleDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndDESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>Blowfish</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_128/ECB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_128/CBC/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_128/OFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_128/CFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_128/GCM/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_192/ECB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_192/CBC/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_192/OFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_192/CFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_192/GCM/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_256/ECB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_256/CBC/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_256/OFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_256/CFB/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES_256/GCM/NoPadding</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AESWrap</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AESWrap_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AESWrap_192</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AESWrap_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>RC2</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>ARCFOUR</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>Blowfish</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>RC2</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>ARCFOUR</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacMD5</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA224</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA384</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA512</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DiffieHellman</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DiffieHellman</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DiffieHellman</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DiffieHellman</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBE</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndTripleDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndDESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBES2</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>Blowfish</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>AES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>GCM</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>RC2</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>OAEP</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DiffieHellman</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>DESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithMD5AndTripleDES</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndDESede</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC2_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_40</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithSHA1AndRC4_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_128</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512AndAES_256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBKDF2WithHmacSHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBKDF2WithHmacSHA224</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBKDF2WithHmacSHA256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBKDF2WithHmacSHA384</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBKDF2WithHmacSHA512</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacMD5</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA224</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA384</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacSHA512</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>HmacPBESHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA224</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA256</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA384</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>PBEWithHmacSHA512</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SslMacMD5</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SslMacSHA1</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>JCEKS</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SunTlsPrf</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SunTls12Prf</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SunTlsMasterSecret</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SunTlsKeyMaterial</td>
+</tr>
+<tr>
+<td>SunJCE</td>
+<td>SunTlsRsaPremasterSecret</td>
+</tr>
+<tr>
+<td>SunJGSS</td>
+<td>1.2.840.113554.1.2.2</td>
+</tr>
+<tr>
+<td>SunJGSS</td>
+<td>1.3.6.1.5.5.2</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>DIGEST-MD5</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>NTLM</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>GSSAPI</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>EXTERNAL</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>PLAIN</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>CRAM-MD5</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>CRAM-MD5</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>GSSAPI</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>DIGEST-MD5</td>
+</tr>
+<tr>
+<td>SunSASL</td>
+<td>NTLM</td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2006/12/xml-c14n11#WithComments">http://www.w3.org/2006/12/xml-c14n11#WithComments</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2000/09/xmldsig#base64">http://www.w3.org/2000/09/xmldsig#base64</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/1999/REC-xslt-19991116">http://www.w3.org/TR/1999/REC-xslt-19991116</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2001/10/xml-exc-c14n#">http://www.w3.org/2001/10/xml-exc-c14n#</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments">http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2000/09/xmldsig#enveloped-signature">http://www.w3.org/2000/09/xmldsig#enveloped-signature</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2002/06/xmldsig-filter2">http://www.w3.org/2002/06/xmldsig-filter2</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td>DOM</td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">http://www.w3.org/TR/2001/REC-xml-c14n-20010315</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2001/10/xml-exc-c14n#WithComments">http://www.w3.org/2001/10/xml-exc-c14n#WithComments</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/2006/12/xml-c14n11">http://www.w3.org/2006/12/xml-c14n11</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td><a target="_blank" rel="noopener" href="http://www.w3.org/TR/1999/REC-xpath-19991116">http://www.w3.org/TR/1999/REC-xpath-19991116</a></td>
+</tr>
+<tr>
+<td>XMLDSig</td>
+<td>DOM</td>
+</tr>
+<tr>
+<td>SunPCSC</td>
+<td>PC/SC</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>Windows-PRNG</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>Windows-MY</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>Windows-ROOT</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>NONEwithRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>SHA1withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>SHA256withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>SHA384withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>SHA512withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>MD5withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>MD2withRSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>RSA</td>
+</tr>
+<tr>
+<td>SunMSCAPI</td>
+<td>RSA/ECB/PKCS1Padding</td>
+</tr>
+</tbody></table>
+<p>获取提供者和算法的代码示例:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;|提供者|算法|&quot;</span>);</span><br><span class="line">   System.out.println(<span class="string">&quot;|:---|:---|&quot;</span>);</span><br><span class="line">   <span class="keyword">for</span>(Provider provider: Security.getProviders())&#123;</span><br><span class="line">       <span class="keyword">for</span>(Provider.Service service:provider.getServices())&#123;</span><br><span class="line">  				System.out.println(<span class="string">&quot;|&quot;</span>+provider.getName()+<span class="string">&quot;|&quot;</span>+service.getAlgorithm()+<span class="string">&quot;|&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Engine类和算法"><a href="#Engine类和算法" class="headerlink" title="Engine类和算法"></a>Engine类和算法</h4><p>引擎类为特定类型的密码服务提供接口，而<strong>不依赖于特定的密码算法或提供者</strong>。 引擎需要提供如下功能：</p>
+<ul>
+<li><p>密码操作（加密，数字签名，消息摘要等），</p>
+</li>
+<li><p>发生器或密码材料的转换器（密钥和算法参数）</p>
+</li>
+<li><p>对象（密钥库或证书）封装了密码数据，可以在更高的抽象层使用。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>引擎类</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SecureRandom</td>
+<td>用于生成随机或伪随机数字。</td>
+</tr>
+<tr>
+<td>MessageDigest</td>
+<td>用于计算指定数据的消息摘要（散列）。</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>使用密钥初始化，这些签名用于签署数据并验证数字签</td>
+</tr>
+<tr>
+<td>Cipher</td>
+<td>用密钥初始化，用于加密/解密数据。存在各种类型的算法</td>
+</tr>
+<tr>
+<td>Message Authentication Codes（MAC）</td>
+<td>与MessageDigests一样，它们也会生成散列值，但是首先使用密钥初始化以保护消息的完整性。</td>
+</tr>
+<tr>
+<td>KeyFactory</td>
+<td>用于将Key类型的现有不透明密钥转换为密钥规范（底层密钥材料的透明表示），反之亦然。</td>
+</tr>
+<tr>
+<td>SecretKeyFactory</td>
+<td>用于将SecretKey类型的现有不透明加密密钥转换为密钥规范（底层密钥材料的透明表示），反之亦然。 SecretKeyFactorys是专门的KeyFactorys，只能创建密钥（对称）。</td>
+</tr>
+<tr>
+<td>KeyPairGenerator</td>
+<td>用于生成一对适用于指定算法的公钥和私钥。</td>
+</tr>
+<tr>
+<td>KeyGenerator</td>
+<td>用于生成与指定算法一起使用的新密钥。</td>
+</tr>
+<tr>
+<td>KeyAgreement</td>
+<td>由两方或多方使用，商定和建立一个特定的密钥，用于特定的密码操作。</td>
+</tr>
+<tr>
+<td>AlgorithmParameters</td>
+<td>用于存储特定算法的参数，包括参数编码和解码。</td>
+</tr>
+<tr>
+<td>AlgorithmParameterGenerator</td>
+<td>用于生成适合于指定算法的一组AlgorithmParameters。</td>
+</tr>
+<tr>
+<td>KeyStore</td>
+<td>用于创建和管理密钥库。密钥库是密钥的数据库。密钥库中的私钥具有与其关联的证书链，用于验证相应的公钥。密钥库还包含来自可信实体的证书。</td>
+</tr>
+<tr>
+<td>CertificateFactory</td>
+<td>用于创建公钥证书和证书吊销列表（CRL）。</td>
+</tr>
+<tr>
+<td>CertPathBuilder</td>
+<td>用于构建证书链（也称为证书路径）。</td>
+</tr>
+<tr>
+<td>CertPathValidator</td>
+<td>用于验证证书链。</td>
+</tr>
+<tr>
+<td>CertStore</td>
+<td>用于从存储库中检索证书和CRL。</td>
+</tr>
+<tr>
+<td>注意</td>
+<td>生成器可以创建具有全新内容的对象，而工厂只能从现有材料（例如编码）中创建对象。</td>
+</tr>
+</tbody></table>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>以md5摘要，演示MessageDigest的使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] content = <span class="string">&quot;hello world&quot;</span>.getBytes();</span><br><span class="line">        System.out.println(DigestUtils.md5DigestAsHex(content));</span><br><span class="line">        System.out.println(DigestUtils.digestAsHexString(<span class="string">&quot;MD5&quot;</span>, content));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (String algName : Security.getAlgorithms(<span class="string">&quot;MessageDigest&quot;</span>)) &#123;</span><br><span class="line">            System.out.println(algName + <span class="string">&quot;==&gt;&quot;</span> + DigestUtils.digestAsHexString(algName, content));</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DigestUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MD5_ALGORITHM_NAME = <span class="string">&quot;MD5&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">char</span>[] HEX_CHARS =</span><br><span class="line">            &#123;<span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;1&#x27;</span>, <span class="string">&#x27;2&#x27;</span>, <span class="string">&#x27;3&#x27;</span>, <span class="string">&#x27;4&#x27;</span>, <span class="string">&#x27;5&#x27;</span>, <span class="string">&#x27;6&#x27;</span>, <span class="string">&#x27;7&#x27;</span>, <span class="string">&#x27;8&#x27;</span>, <span class="string">&#x27;9&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;f&#x27;</span>&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Calculate the MD5 digest of the given bytes.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the digest</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] md5Digest(<span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">return</span> digest(MD5_ALGORITHM_NAME, bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return a hexadecimal string representation of the MD5 digest of the given bytes.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> a hexadecimal digest string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">md5DigestAsHex</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> digestAsHexString(MD5_ALGORITHM_NAME, bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Append a hexadecimal string representation of the MD5 digest of the given</span></span><br><span class="line"><span class="comment">     * bytes to the given &#123;<span class="doctag">@link</span> StringBuilder&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bytes   the bytes to calculate the digest over</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> builder the string builder to append the digest to</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the given string builder</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuilder <span class="title">appendMd5DigestAsHex</span><span class="params">(<span class="keyword">byte</span>[] bytes, StringBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> appendDigestAsHex(MD5_ALGORITHM_NAME, bytes, builder);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">digestAsHexString</span><span class="params">(String algorithm, <span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] hexDigest = digestAsHexChars(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String(hexDigest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuilder <span class="title">appendDigestAsHex</span><span class="params">(String algorithm, <span class="keyword">byte</span>[] bytes, StringBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] hexDigest = digestAsHexChars(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> builder.append(hexDigest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create a new &#123;<span class="doctag">@link</span> MessageDigest&#125; with the given algorithm.</span></span><br><span class="line"><span class="comment">     * Necessary because &#123;<span class="doctag">@code</span> MessageDigest&#125; is not thread-safe.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> MessageDigest <span class="title">getDigest</span><span class="params">(String algorithm)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> MessageDigest.getInstance(algorithm);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Could not find MessageDigest with algorithm \&quot;&quot;</span> + algorithm + <span class="string">&quot;\&quot;&quot;</span>, ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] digest(String algorithm, <span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">return</span> getDigest(algorithm).digest(bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">char</span>[] digestAsHexChars(String algorithm, <span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] digest = digest(algorithm, bytes);</span><br><span class="line">        <span class="keyword">return</span> encodeHex(digest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">char</span>[] encodeHex(<span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">        <span class="keyword">char</span>[] chars = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">32</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; chars.length; i = i + <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="keyword">byte</span> b = bytes[i / <span class="number">2</span>];</span><br><span class="line">            chars[i] = HEX_CHARS[(b &gt;&gt;&gt; <span class="number">0x4</span>) &amp; <span class="number">0xf</span>];</span><br><span class="line">            chars[i + <span class="number">1</span>] = HEX_CHARS[b &amp; <span class="number">0xf</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> chars;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="bouncy-castle-加密库"><a href="#bouncy-castle-加密库" class="headerlink" title="bouncy castle 加密库"></a>bouncy castle 加密库</h2><p><strong><a target="_blank" rel="noopener" href="https://www.bouncycastle.org/">*<em>BouncyCastle*</em></a><strong>就是一个提供了很多</strong>哈希算法</strong>和加密算法的第三方库。它提供了Java标准库没有的一些算法，例如，RipeMD160哈希算法。</p>
+<p>具体来说分为以下几点：</p>
+<p>1.对JCE API的clean room implementation ，这指代码只根据描述和规范编写，不能访问任何潜在的麻烦代码。这与GPL许可证相关，可能涉及开源协议等</p>
+<p>2.轻量级的密码api，不需要JCE的支持，但是需要开发人员自己理解和使用，支持</p>
+<ul>
+<li>BlockCipher</li>
+<li>BufferedBlockCipher</li>
+<li>AsymmetricBlockCipher</li>
+<li>BufferedAsymmetricBlockCipher</li>
+<li>StreamCipher</li>
+<li>BufferedStreamCipher</li>
+<li>KeyAgreement</li>
+<li>IESCipher</li>
+<li>Digest</li>
+<li>Mac</li>
+<li>PBE</li>
+<li>Signers</li>
+</ul>
+<p>3.JCE的兼容框架：provider “BC”</p>
+<p>4.JCE兼容框架：后量子 provider“BCPQC”</p>
+<h3 id="引入方式"><a href="#引入方式" class="headerlink" title="引入方式"></a>引入方式</h3><p>有多种引入方式，可以参考<a target="_blank" rel="noopener" href="https://www.bouncycastle.org/latest_releases.html">官方release页面</a>，可以直接下载jar包，或者使用maven引用，此网页都有介绍，一般使用轻量级api则引用bcprov包，如果需要JCE的实现则引用bcprov-ext</p>
+<h3 id="JCEapi的使用与配置"><a href="#JCEapi的使用与配置" class="headerlink" title="JCEapi的使用与配置"></a>JCEapi的使用与配置</h3><p>此部分参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27706119/article/details/112912136">此博客</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 注册BouncyCastle:</span></span><br><span class="line">    Security.addProvider(<span class="keyword">new</span> BouncyCastleProvider());</span><br><span class="line">    <span class="comment">// 按名称正常调用:</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        md = MessageDigest.getInstance(<span class="string">&quot;RipeMD160&quot;</span>);</span><br><span class="line">        md.update(<span class="string">&quot;HelloWorld&quot;</span>.getBytes(<span class="string">&quot;UTF-8&quot;</span>));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException | UnsupportedEncodingException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">byte</span>[] result = md.digest();</span><br><span class="line">    System.out.println(<span class="keyword">new</span> BigInteger(<span class="number">1</span>, result).toString(<span class="number">16</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注册BouncyCastle的JCE是通过Security.addProvider(new BouncyCastleProvider());实现的。注册只需要在启动时进行一次，后续就可以使用BouncyCastle提供的所有哈希算法和加密算法。</p>
+<p>配置：</p>
+<ul>
+<li><p>去官方站点下载Bouncy Castle的JCE Provider包  bcprov-ext-jdk15-145.jar</p>
+</li>
+<li><p>把jar文件复制到JAVA_HOME\jre\lib\ext 目录下面</p>
+</li>
+<li><p>修改配置文件\jre\lib\security\java.security</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">security.provider<span class="number">.1</span>=sun.security.provider.Sun</span><br><span class="line">security.provider<span class="number">.2</span>=sun.security.rsa.SunRsaSign</span><br><span class="line">security.provider<span class="number">.3</span>=com.sun.net.ssl.internal.ssl.Provider</span><br><span class="line">security.provider<span class="number">.4</span>=com.sun.crypto.provider.SunJCE</span><br><span class="line">security.provider<span class="number">.5</span>=sun.security.jgss.SunProvider</span><br><span class="line">security.provider<span class="number">.6</span>=com.sun.security.sasl.Provider</span><br><span class="line"> </span><br><span class="line">#前面是java环境已经提供的，尾部加上这一行即可</span><br><span class="line">security.provider<span class="number">.7</span>=org.bouncycastle.jce.provider.BouncyCastleProvider</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出加密服务提供者-----&quot;</span>);</span><br><span class="line">    Provider[] pro=Security.getProviders();</span><br><span class="line">    <span class="keyword">for</span>(Provider p:pro)&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Provider:&quot;</span>+p.getName()+<span class="string">&quot; - version:&quot;</span>+p.getVersion());</span><br><span class="line">        System.out.println(p.getInfo());</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出系统支持的消息摘要算法：&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(String s:Security.getAlgorithms(<span class="string">&quot;MessageDigest&quot;</span>))&#123;</span><br><span class="line">        System.out.println(s);</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;-------列出系统支持的生成公钥和私钥对的算法：&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(String s:Security.getAlgorithms(<span class="string">&quot;KeyPairGenerator&quot;</span>))&#123;</span><br><span class="line">        System.out.println(s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="java-进口管制限制解除"><a href="#java-进口管制限制解除" class="headerlink" title="java 进口管制限制解除"></a>java 进口管制限制解除</h4><p>不清楚是否需要，备用</p>
+<p><strong>下载策略文件</strong></p>
+<ul>
+<li><p>jdk6→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html">http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html</a></p>
+</li>
+<li><p>jdk7→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html">http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html</a></p>
+</li>
+<li><p>jdk8→<a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.htm">http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.htm</a></p>
+</li>
+</ul>
+<p><strong>覆盖 sdk 和 jre 中的这两个策略文件</strong></p>
+<ul>
+<li><p>sdk 中策略文件位置→C:\Program Files\Java\jdk1.8.0_144\jre\lib\security</p>
+</li>
+<li><p>jre 中策略文件位置→C:\Program Files\Java\jre1.8.0_144\lib\security</p>
+</li>
+</ul>
+<p>是否生效，可以使用下面的程序检验。AES 算法没有解除限制之前，密钥长度只支持128位，其限制解除后，可支持128、192、256位等长度。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">case3</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        KeyGenerator kg =  KeyGenerator.getInstance(<span class="string">&quot;AES&quot;</span>);</span><br><span class="line">        kg.init(<span class="number">256</span>);</span><br><span class="line">        SecretKey secretKey=kg.generateKey();</span><br><span class="line">        System.out.println(secretKey.getFormat());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>测试结果出现raw，已解除限制。若出现 java.security.InvalidKeyException: Illegal key 错误，表示限制没有解除。</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">encryption</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/04/13/bouncy-castle-learning/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-pagehelper相关" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/">pagehelper相关</a>
+    </h1>
+  
+
+        
+        <a href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/" class="archive-article-date">
+  	<time datetime="2022-04-06T15:34:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="使用相关"><a href="#使用相关" class="headerlink" title="使用相关"></a>使用相关</h2><p>1.在sqlMapConfig.xml文件中进行配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span>    </span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span> <span class="attr">interceptor</span>=<span class="string">&quot;com.github.pagehelper.PageHelper&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;dialect&quot;</span> <span class="attr">value</span>=<span class="string">&quot;mysql&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;reasonable&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2.在需要调用的dao查询语句前添加分页条件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PageHelper.startPage(currentPage,pageSize);</span><br></pre></td></tr></table></figure>
+
+<p>3.利用返回的page结果,获取总数和当前页返回的List</p>
+<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><p>在前端展示时,如前面说的一样,我们点击页码,即可查询到当前页的内容</p>
+<p>假设上方,加了一个查询按钮,可以进一步细化查询这些条目的id或者name</p>
+<p>这时会出现一个问题:如果此时页面是第3页,则无法进行细化的查询;相反如果是第一页可以做细化的查询.</p>
+<p>这明显是一个bug,但是是因为我们对于查询逻辑没有配置的原因,此处我们没有对PageHelper.reasonable进行配置默认为false.此时的查询逻辑是,个人推测是第i页的数据,进行细化搜索,所以找不到其他页的数据</p>
+<p>但这里矛盾的地方是,如果我在第1页进行搜索,就能查到任意的结果,所以上面的推测不全对.</p>
+<p>但是配置为true后,是先将所有数据找出来,再进行分页,所以就能找到想要结果</p>
+<p>所以更推荐配置pagehelper.reasonable=true</p>
+<p>配置为true还有一个好处是,如果跳传的页数超过最大页数,默认显示最大页数;同时如果跳转第&lt;=0页则会显示第一页数据</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/04/06/pagehelper%E7%9B%B8%E5%85%B3/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-java序列化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1074,351 +2479,9 @@
 
 
   
-    <article id="post-mysql疑难杂症" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">mysql疑难杂症</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" class="archive-article-date">
-  	<time datetime="2021-12-25T16:13:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="安装与卸载"><a href="#安装与卸载" class="headerlink" title="安装与卸载"></a>安装与卸载</h1><h2 id="安装和配置-适用于Mariadb10-1-mysql5"><a href="#安装和配置-适用于Mariadb10-1-mysql5" class="headerlink" title="安装和配置(适用于Mariadb10.1,mysql5.*)"></a>安装和配置(适用于Mariadb10.1,mysql5.*)</h2><p>step1,安装(mariadb为例)</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install mariadb-server</span><br></pre></td></tr></table></figure>
-
-<p>step2启动</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service  mysql start</span><br></pre></td></tr></table></figure>
-
-<p>step3配置root密码等</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql_secure_installation</span><br></pre></td></tr></table></figure>
-
-<p>step4 配置端口</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/mysql/mariadb.conf.d</span><br><span class="line">vim 50-server.cnf</span><br></pre></td></tr></table></figure>
-
-<p>step5 授予远程登录的权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> mysql -uroot -p </span><br><span class="line"><span class="meta"> #</span><span class="bash">此处输入密码</span></span><br><span class="line"><span class="meta"> #</span><span class="bash">授权,顶级权限</span></span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO &#x27;root&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;123456&#x27; WITH GRANT OPTION;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
-
-<p>step6 重启</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysql restart</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2><p>如果安装的是mariadb,直接使用以下命令</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get purge mariadb-*</span><br></pre></td></tr></table></figure>
-
-<p>如果用的是mysql</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt-get remove mysql-\*</span><br><span class="line">dpkg -l |grep ^rc|awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span> |sudo xargs dpkg -P</span><br><span class="line">##多删两次</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="疑难杂症"><a href="#疑难杂症" class="headerlink" title="疑难杂症"></a>疑难杂症</h1><h2 id="连接上的问题"><a href="#连接上的问题" class="headerlink" title="连接上的问题"></a>连接上的问题</h2><h3 id="驱动版本不同"><a href="#驱动版本不同" class="headerlink" title="驱动版本不同"></a>驱动版本不同</h3><p>mysql8.0以前都是5.*版本,java对于数据库的连接使用的com.mysql.jdbc.Driver驱动</p>
-<p>但是数据库来到8.0以后对于数据库的连接采用的是com.mysql.cj.jdbc.Driver驱动,如果还采用之前的驱动就会报错</p>
-<p>可以修改为以下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.datasource.driver-<span class="class"><span class="keyword">class</span>-<span class="title">name</span></span>=com.mysql.cj.jdbc.Driver</span><br></pre></td></tr></table></figure>
-
-<h3 id="时区不同"><a href="#时区不同" class="headerlink" title="时区不同"></a>时区不同</h3><p>如果时区不同,高版本的数据库会拒绝连接,一般中国的会采用serverTimezone=GMT%2b8,即GMT+8小时</p>
-<p>连接语句示例如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdbc:mysql:<span class="comment">//119.23.149.215:20092/pkey_mgr?autoReconnect=true&amp;useSSL=false&amp;serverTimezone=GMT%2b8&amp;characterEncoding=utf8</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="无法创建key或者index-报错超过767bytes"><a href="#无法创建key或者index-报错超过767bytes" class="headerlink" title="无法创建key或者index,报错超过767bytes"></a>无法创建key或者index,报错超过767bytes</h2><p>当数据库中创建的表采用的是引擎是InnoDB,此时在默认情况下会要求创建的key或者index的长度不能超过767bytes,当然在经过特殊设置后可以超过.</p>
-<p>那么报错肯定是key的长度超出了,一般我们设置varchar类型长度会为255,此时该varchar类型是utf8编码,则varchar类型占三个字节,255*3&lt;767</p>
-<p>但是varchar类型是utf8mb4编码时,则varchar类型占四个字符,255*4&gt;767</p>
-<p>此时就会报错</p>
-<p>因此必须将改回utf8,才能正常.如果表已经创建了,可以删除后重新建表</p>
-<p>utf8-4编码的好处是兼容更多钟多样的字符</p>
-<h2 id="mysql查看操作记录"><a href="#mysql查看操作记录" class="headerlink" title="mysql查看操作记录"></a>mysql查看操作记录</h2><p>仅使用于实时查看操作记录，而且开启后记得关闭，因为一直开启会影响mysql效率</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//查看日志是否开启，此时会显示off状态</span><br><span class="line">show variables like &#x27;general%&#x27;;</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">| Variable_name    | Value                 |</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">| general_log      | OFF                   |</span><br><span class="line">| general_log_file | /var/lib/mysql/jl.log |</span><br><span class="line">+------------------+-----------------------+</span><br><span class="line">//开启日志</span><br><span class="line">set global general_log=1;</span><br><span class="line"></span><br><span class="line">//此时继续查看，会显示ON状态</span><br><span class="line">show variables like &#x27;general%&#x27;;</span><br><span class="line"></span><br><span class="line">//退出mysql控制台，打印日志流</span><br><span class="line">tail -f /var/lib/mysql/jl.log</span><br><span class="line"></span><br><span class="line">//进入mysql，控制台，关闭日志</span><br><span class="line">set global general_log=0;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mysql</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/26/mysql%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-安装mariadb及配置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/24/%E5%AE%89%E8%A3%85mariadb%E5%8F%8A%E9%85%8D%E7%BD%AE/">安装mariadb及配置</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/24/%E5%AE%89%E8%A3%85mariadb%E5%8F%8A%E9%85%8D%E7%BD%AE/" class="archive-article-date">
-  	<time datetime="2021-12-24T11:42:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="安装-使用于10-1"><a href="#安装-使用于10-1" class="headerlink" title="安装(使用于10.1)"></a>安装(使用于10.1)</h1><p>step1,安装</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install mariadb-server</span><br></pre></td></tr></table></figure>
-
-<p>step2启动</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service  mysql start</span><br></pre></td></tr></table></figure>
-
-<p>step3配置root密码等</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql_secure_installation</span><br></pre></td></tr></table></figure>
-
-<p>step4 配置端口</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/mysql/mariadb.conf.d</span><br><span class="line">vim 50-server.cnf</span><br></pre></td></tr></table></figure>
-
-<p>step5 授予远程登录的权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> mysql -uroot -p </span><br><span class="line"><span class="meta"> #</span><span class="bash">此处输入密码</span></span><br><span class="line"><span class="meta"> #</span><span class="bash">授权,顶级权限</span></span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO &#x27;root&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;123456&#x27; WITH GRANT OPTION;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
-
-<p>step6 重启</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysql restart</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">database</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/24/%E5%AE%89%E8%A3%85mariadb%E5%8F%8A%E9%85%8D%E7%BD%AE/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-java开发疑难杂症集" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/21/java%E5%BC%80%E5%8F%91%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E9%9B%86/">java开发疑难杂症集</a>
-    </h1>
-  
-
-        
-        <a href="/2021/12/21/java%E5%BC%80%E5%8F%91%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E9%9B%86/" class="archive-article-date">
-  	<time datetime="2021-12-21T12:25:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="lombok使用造成反序列化异常"><a href="#lombok使用造成反序列化异常" class="headerlink" title="lombok使用造成反序列化异常"></a>lombok使用造成反序列化异常</h3><p>com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field “XXXX”</p>
-<p>报错找不到某个属性,网上有人说添加@JsonIgnoreProperties(ignoreUnknown = true)</p>
-<p>这种只会忽视掉没有的properties的属性,对于那些明明有对应属性却找不到的</p>
-<p>使用的idea+gradle,网上提示说要在idea中打开annotation processor,亲测无用.只需在build.gradle中的dependencies中添加以下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">annotationProcessor (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br><span class="line"><span class="comment">//亲测下面两个可以不加</span></span><br><span class="line">testCompile (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br><span class="line">testAnnotationProcessor (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>还有人说是高版本的原因,本人测试这种报错提示,于高版本无关</p>
-<h3 id="lombok即使添加-Data-但是在编译时无法编译set方法"><a href="#lombok即使添加-Data-但是在编译时无法编译set方法" class="headerlink" title="lombok即使添加@Data,但是在编译时无法编译set方法"></a>lombok即使添加@Data,但是在编译时无法编译set方法</h3><p>使用的idea+gradle,网上提示说要在idea中打开annotation processor,亲测无用.只需在build.gradle中的dependencies中添加以下</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">annotationProcessor (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br><span class="line"><span class="comment">//亲测下面两个可以不加</span></span><br><span class="line">testCompile (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br><span class="line">testAnnotationProcessor (<span class="string">&#x27;org.projectlombok:lombok:1.18.6&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/21/java%E5%BC%80%E5%8F%91%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E9%9B%86/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
     </nav>
   
 

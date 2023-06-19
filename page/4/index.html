@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives | pomeloguy的博客</title>
+  <title>pomeloguy的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="pomeloguy的博客">
 <meta property="og:type" content="website">
 <meta property="og:title" content="pomeloguy的博客">
-<meta property="og:url" content="http://example.com/archives/index.html">
+<meta property="og:url" content="http://example.com/page/4/index.html">
 <meta property="og:site_name" content="pomeloguy的博客">
 <meta property="og:description" content="pomeloguy的博客">
 <meta property="og:locale" content="zh_CN">
@@ -164,434 +164,333 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-LWE-理想格-格中嵌入陷门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/">LWE\理想格\格中嵌入陷门</a>
+    </h1>
+  
+
+        
+        <a href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/" class="archive-article-date">
+  	<time datetime="2021-08-30T07:40:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-30</time>
+</a>
+        
+      </header>
     
-    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="LWE问题"><a href="#LWE问题" class="headerlink" title="LWE问题"></a>LWE问题</h1><p>n维空间下,模数取q&gt;2时,</p>
+<p>$a_1 \leftarrow Z^n_q,b_1=&lt;s,a_1&gt;+e_1$</p>
+<p>$a_2 \leftarrow Z^n_q,b_2=&lt;s,a_2&gt;+e_2$</p>
+<p>…</p>
+<p>误差$e_i \leftarrow \chi = $基于整数的高斯分布,标准差$\alpha q &gt; \sqrt{n}$</p>
+<p>此时我们的LWE由两个版本Search和Decision</p>
+<p>**Search:**给定一组$(a_1,b_1)…(a_n,b_n)$,寻找向量$s\in Z^n_q$满足上述公式</p>
+<p>**Decision:**给定上述形式生成的$(a_i,b_i)$,和随机生成的$(a,b)$,能否区分二者?</p>
+<hr>
+<h1 id="基于LWE的公钥加密"><a href="#基于LWE的公钥加密" class="headerlink" title="基于LWE的公钥加密"></a>基于LWE的公钥加密</h1><p>Alice:生成公共参数$A \leftarrow Z_q^{n*m}$ ,生成私钥$s\leftarrow Z_q^n$</p>
+<p>Bob:生成秘密向量$x \leftarrow {0,1}^m$</p>
+<p>Alice              $\Large  \xrightarrow [公钥] {\qquad b^t=s^tA+e^t}$               Bob</p>
+<p>Alice              $\Large \xleftarrow [密文主体] {\qquad u=Ax \qquad}$                Bob</p>
+<p>​                        $\Large \xleftarrow [负载] {u^`=b^tx+bit* \frac{q}{2}}$</p>
+<p>Alice利用私钥s,通过$u^`-s^tu \approx bit*\frac{q}{2}$ 即可求解出明文</p>
+<p>外界可以观察的传输参数只有$(A,b^t),(u,u^`)$</p>
+<h1 id="循环格"><a href="#循环格" class="headerlink" title="循环格"></a>循环格</h1><p>对于任何一个向量$v\in L$,$v$的循环移位后向量仍$\in L$</p>
+<p>如:</p>
+<p>${-1,2,3,-4}$</p>
+<p>${-4,-1,2,3}$</p>
+<p>${3,-4,-1,2}$</p>
+<p>${2,3,-4,-1}$</p>
+<p><strong>循环格=$Z[x]/(x^n-1)$的理想</strong></p>
+<h2 id="循环格进一步拓展-f-理想格"><a href="#循环格进一步拓展-f-理想格" class="headerlink" title="循环格进一步拓展:f-理想格"></a>循环格进一步拓展:f-理想格</h2><p>f-理想格=ideals in Z[x]/f</p>
+<p>因为f选择$x^n-1$时,虽然使用方便,但由于可以因式分解,导致安全性不高</p>
+<p><strong>故通常选择:</strong></p>
+<p>$f=x^{n-1}+x^{n-2}+…+1$,此时n为质数</p>
+<p>$f=x^n+1$,此时$n=2^k$</p>
+<p>但通常使用$f=x^n+1$</p>
+<p>故有$x^n+1$-理想格=$Z[x]/(x^n+1)$的理想</p>
+<h1 id="陷门函数简介"><a href="#陷门函数简介" class="headerlink" title="陷门函数简介"></a>陷门函数简介</h1><p>单向函数(OWF):即给定输入下x,我们可以快速计算f(x),但是我们很难从f(x)值推算出x</p>
+<p>陷门函数(TDF):拥有单向函数的性质,但是生成陷门函数的同时会生成一个trapdoor t,如果不知道trapdoor t的的值,那么其仍然是一个OWF,但得知Trapdoor t 后,就可以有效的从f(x)恢复到x</p>
+<p><img src="https://pic1.zhimg.com/80/v2-6b8f39eb6d518e1de172c52390a854e4_1440w.jpg" alt="img"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/06/19/rabbitmq%E5%AD%A6%E4%B9%A0/" class="archive-article-date">
-  	<time datetime="2023-06-19T14:41:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/06/19/rabbitmq%E5%AD%A6%E4%B9%A0/">rabbitmq学习</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/06/17/Springbatch4-3-8%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE/" class="archive-article-date">
-  	<time datetime="2023-06-16T16:39:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/06/17/Springbatch4-3-8%E6%BA%90%E7%A0%81%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE/">Springbatch4.3.8源码本地配置</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/06/03/Denmark/" class="archive-article-date">
-  	<time datetime="2023-06-03T13:13:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-06-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/06/03/Denmark/">Denmark</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/05/18/%E4%B8%8A%E6%B5%B7%E6%8B%8D%E7%89%8C%E8%AE%B0/" class="archive-article-date">
-  	<time datetime="2023-05-18T13:12:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-05-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/18/%E4%B8%8A%E6%B5%B7%E6%8B%8D%E7%89%8C%E8%AE%B0/">上海拍牌记</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/05/10/Canada/" class="archive-article-date">
-  	<time datetime="2023-05-10T13:28:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-05-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/10/Canada/">Canada</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">plonk it</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">encryption</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/plonk-it//" class="article-tag-list-link color4">plonk it</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/05/09/%E8%AE%A1%E5%88%92%E5%BC%80%E5%90%AF%E6%96%B0%E7%B3%BB%E5%88%97%EF%BC%9A%E7%BF%BB%E8%AF%91plonk-it/" class="archive-article-date">
-  	<time datetime="2023-05-09T13:30:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-05-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/05/09/%E8%AE%A1%E5%88%92%E5%BC%80%E5%90%AF%E6%96%B0%E7%B3%BB%E5%88%97%EF%BC%9A%E7%BF%BB%E8%AF%91plonk-it/">计划开启新系列：翻译plonk it</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">plonk it</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/plonk-it//" class="article-tag-list-link color4">plonk it</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/04/05/Quartz/" class="archive-article-date">
-  	<time datetime="2023-04-05T09:37:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-04-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/04/05/Quartz/">Quartz</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/encryption//" class="article-tag-list-link color1">encryption</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/08/30/LWE-%E7%90%86%E6%83%B3%E6%A0%BC-%E6%A0%BC%E4%B8%AD%E5%B5%8C%E5%85%A5%E9%99%B7%E9%97%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-hexo博客搭建" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">hexo博客搭建</a>
+    </h1>
+  
+
+        
+        <a href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="archive-article-date">
+  	<time datetime="2021-08-20T10:41:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="hexo的初步搭建的相关配置"><a href="#hexo的初步搭建的相关配置" class="headerlink" title="hexo的初步搭建的相关配置"></a>hexo的初步搭建的相关配置</h1><h2 id="hexo的环境配置及运行-windows"><a href="#hexo的环境配置及运行-windows" class="headerlink" title="hexo的环境配置及运行(windows)"></a>hexo的环境配置及运行(windows)</h2><p><strong>1.安装nodesjs</strong>(略过详细过程)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm -v</span><br><span class="line">nodejs -v //查看安装是否成功</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.安装cnpm提速</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.安装hexo</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>4.验证hexo是否安装成功</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>5.hexo 初始化</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir blog //建立空文件夹,存放整个博客的配置及文档</span><br><span class="line">hexo init //初始化相应环境</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>6.新建博客文章</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;文章标题&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>7.启动hexo</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo g //先build一下</span><br><span class="line">hexo s //默认启动方式:访问端口为4000</span><br><span class="line">hexo s -p 8080 //访问端口为8080</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h2 id="hexo部署到github-以我的库为例"><a href="#hexo部署到github-以我的库为例" class="headerlink" title="hexo部署到github(以我的库为例)"></a>hexo部署到github(以我的库为例)</h2><p><strong>1.新建仓库</strong></p>
+<p>仓库名:pomeloguy.github.io 只能形如id.github.io</p>
+<p>其他默认建立即可</p>
+<p><strong>2.下载部署到github的相关包</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install --save hexo-deployer-git</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.改_config.yml配置文件</strong></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">找到下列行,改成如下格式</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">&#x27;git&#x27;</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/pomeloguy/pomeloguy.github.io.git</span> </span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>4.部署</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.访问</strong></p>
+<p>访问pomeloy.github.io即可</p>
+<hr>
+<h2 id="结合typora优化体验"><a href="#结合typora优化体验" class="headerlink" title="结合typora优化体验"></a>结合typora优化体验</h2><p><strong>1.new 文档时时自启动typora编辑器</strong></p>
+<p>blog目录下,新建scripts文件夹,创建openNewFile.js文件,在里面填入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> spawn = <span class="built_in">require</span>(<span class="string">&#x27;child_process&#x27;</span>).spawn;</span><br><span class="line">hexo.on(<span class="string">&#x27;new&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">    spawn(<span class="string">&#x27;D:\\typora\\Typora\\Typora.exe&#x27;</span>, [data.path]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>要该为typora的启动路径</p>
+<p><strong>2.新建文章时拥有categories属性</strong></p>
+<p>打开blog下的scaffolds文件夹,打开post.md,</p>
+<p>加入categories:如下</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br></pre></td></tr></table></figure>
+
+<p>此后每个新建的文件,都有以上特征</p>
+<p><strong>3.保证粘贴在typora的图片保存在hexo内</strong></p>
+<p>修改_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
+<p>这样我们保存图像进该文件夹内即可</p>
+<p>点击<strong>格式-&gt;图像-&gt;设置根目录</strong>为文章文件夹即可</p>
+<h2 id="解决图片加载失败问题"><a href="#解决图片加载失败问题" class="headerlink" title="解决图片加载失败问题"></a>解决图片加载失败问题</h2><p>1.修改_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保证每次新建文章的同时,生成于文章同名的文件夹,并将文章保存在其中</p>
+<p>2.下载辅助模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><strong>这个模块有bug,需进行稍稍改动,如下:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="regexp">/.*\/index\.html$/</span>.test(link)) &#123;</span><br><span class="line">      <span class="comment">// when permalink is end with index.html, for example 2019/02/20/xxtitle/index.html</span></span><br><span class="line">      <span class="comment">// image in xxtitle/ will go to xxtitle/index/</span></span><br><span class="line">      appendLink = <span class="string">&#x27;index/&#x27;</span>;</span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">     <span class="comment">//var endPos = link.lastIndexOf(&#x27;.&#x27;);此处为bug</span></span><br><span class="line">      <span class="keyword">var</span> endPos = link.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);<span class="comment">//修改后</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024225944838.png" alt="image-20211024225944838"></p>
+<p>3.markdown设置图片路径</p>
+<p>!!!  一定要使用相对路径,否则生成的html页面的图片路径会有<strong>路径重复</strong>导致加载不出来</p>
+<p><img src="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/image-20211024230008411.png" alt="image-20211024230008411"></p>
+<hr>
+<h1 id="利用yilia主题对hexo美化"><a href="#利用yilia主题对hexo美化" class="headerlink" title="利用yilia主题对hexo美化"></a>利用yilia主题对hexo美化</h1><h2 id="应用主题"><a href="#应用主题" class="headerlink" title="应用主题"></a>应用主题</h2><p><strong>1.下载主题</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.进行配置</strong></p>
+<p>进入_config.yml修改</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">yilia</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.再次build后,部署即可</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean //清理下</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="美化页面"><a href="#美化页面" class="headerlink" title="美化页面"></a>美化页面</h2><p><strong>1.添加网页图标(支持ico,png格式)</strong></p>
+<p>准备一张图片picture.ico,存入yilia目录下的img文件夹中</p>
+<p>修改yilia目录下的_config.yml文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">favicon:</span> <span class="string">/img/picture.ico</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2.添加用户名和用户图片</strong></p>
+<p>在yilia目录下_config.yml中加入一行author信息如下</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Header</span></span><br><span class="line"><span class="attr">author:</span> <span class="string">&#x27;pomeloguy&#x27;</span></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="string">主页:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">安卓开发:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Java:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">密码学:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Linux:</span> <span class="string">/</span></span><br><span class="line">  <span class="attr">Windows:</span> <span class="string">/</span></span><br></pre></td></tr></table></figure>
+
+<p>在yilia目录下_config.yml修改</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#你的头像url</span></span><br><span class="line"><span class="attr">avatar:</span> <span class="string">img/head.png</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.简单搜索功能</strong></p>
+<p>将’关于我们’字样改为’search’,其他提示也关闭,将这里充当搜索功能</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 智能菜单</span></span><br><span class="line"><span class="comment"># 如不需要，将该对应项置为false</span></span><br><span class="line"><span class="comment"># 比如</span></span><br><span class="line"><span class="comment">#smart_menu:</span></span><br><span class="line"><span class="comment">#  friends: false</span></span><br><span class="line"><span class="attr">smart_menu:</span></span><br><span class="line">  <span class="attr">innerArchive:</span> <span class="string">&#x27;Search&#x27;</span></span><br><span class="line">  <span class="attr">friends:</span> <span class="literal">false</span></span><br><span class="line">  <span class="comment">#aboutme: &#x27;关于我&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-添加categories页面"><a href="#4-添加categories页面" class="headerlink" title="4.添加categories页面"></a>4.添加categories页面</h2><p><strong>1.生成index.md文件</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br></pre></td></tr></table></figure>
+
+<p>在theme/yilia/souce下生成一个categories文件夹，文件夹下有一个index.md文件</p>
+<p><strong>2.修改index.md文件</strong></p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 文章分类</span><br><span class="line">date: 2019-10-30 16:36:49</span><br><span class="line">type: &quot;categories&quot;</span><br><span class="line">layout: &quot;categories&quot;</span><br><span class="line"><span class="section">comments: false #关闭评论</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.添加想要添加的分类到menu</strong></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="string">主页:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">分类:</span> <span class="string">/categories/目标分类</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>4.新建文档时在categories:后写入目标分类</strong></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/07/06/canal-lua-openresty/" class="archive-article-date">
-  	<time datetime="2022-07-06T13:52:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-07-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/07/06/canal-lua-openresty/">canal,lua,openresty配置</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        			<a href="/categories/other//" class="article-tag-list-link color1">other</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/08/20/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/07/01/spring-OAuth2/" class="archive-article-date">
-  	<time datetime="2022-07-01T09:20:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-07-01</time>
-</a>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/07/01/spring-OAuth2/">spring-OAuth2.0</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/06/23/swagger%E7%9A%84map%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2022-06-23T12:55:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-06-23</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/06/23/swagger%E7%9A%84map%E9%97%AE%E9%A2%98/">swagger的map问题</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
-  
-
-    
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/2/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
     </nav>
   
 
@@ -615,9 +514,9 @@
     <script>
 	var yiliaConfig = {
 		mathjax: true,
-		isHome: false,
+		isHome: true,
 		isPost: false,
-		isArchive: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: true,
